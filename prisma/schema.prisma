@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @unique @default(cuid())
+  username String   @unique
+  salt     String
+  hash     String
+  type     UserType @default(user)
+
+  tokens      Token[]
+  files       File[]
+  folders     Folder[]
+  pastes      Paste[]
+  collections Collection[]
+  shares      Share[]
+}
+
+enum UserType {
+  user
+  admin
+}
+
+model Token {
+  id        String    @id @unique @default(cuid())
+  hash      String    @unique
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  type      TokenType
+  userAgent String?
+  name      String?
+}
+
+enum TokenType {
+  user
+  uploader
+}
+
+model File {
+  id        String   @id @unique @default(cuid())
+  name      String
+  hash      String
+  mime      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  size      Int
+  public    Boolean  @default(false)
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+
+  folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId String?
+
+  share       Share?
+  collections Collection[]
+}
+
+model Folder {
+  id        String   @id @unique @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  public    Boolean  @default(false)
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+
+  folders  Folder[] @relation("Folders")
+  parentId String?
+  parent   Folder?  @relation("Folders", fields: [parentId], references: [id], onDelete: Cascade)
+  files    File[]
+  share    Share?
+}
+
+model Collection {
+  id        String   @id @unique @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+
+  files File[]
+  share Share?
+}
+
+model Paste {
+  id        String   @id @unique @default(cuid())
+  name      String
+  content   String
+  type      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+
+  share Share?
+}
+
+model Share {
+  id        String    @id @unique @default(cuid())
+  createdAt DateTime  @default(now())
+  type      ShareType
+  views     Int       @default(0)
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+
+  file   File?   @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId String? @unique
+
+  folder   Folder? @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId String? @unique
+
+  collection   Collection? @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId String?     @unique
+
+  paste   Paste?  @relation(fields: [pasteId], references: [id], onDelete: Cascade)
+  pasteId String? @unique
+}
+
+enum ShareType {
+  file
+  folder
+  collection
+  paste
+}

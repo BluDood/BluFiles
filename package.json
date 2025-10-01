@@ -1,0 +1,29 @@
+{
+  "name": "blufiles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .",
+    "dev": "nodemon . -e js -i web",
+    "lint": "eslint ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "nodemon": "^3.0.1",
+    "prisma": "^5.3.1"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.3.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-file-routing": "^3.0.2",
+    "file-type": "^18.5.0",
+    "parse-multipart-data": "^1.5.0",
+    "zod": "^3.22.2"
+  },
+  "type": "module"
+}
