@@ -5,7 +5,7 @@ import { fileTypeFromBuffer as fileType } from 'file-type'
 
 const basePath = path.resolve('data/storage')
 
-export async function exists(id) {
+export async function exists(id: string) {
   try {
     await fs.access(path.join(basePath, id))
     return true
@@ -14,27 +14,27 @@ export async function exists(id) {
   }
 }
 
-export async function read(id) {
+export async function read(id: string) {
   if (!(await exists(id))) return null
 
   return await fs.readFile(path.join(basePath, id))
 }
 
-export async function write(id, data) {
+export async function write(id: string, data: Buffer) {
   return await fs.writeFile(path.join(basePath, id), data)
 }
 
-export async function remove(id) {
+export async function remove(id: string) {
   if (!(await exists(id))) return false
 
   return await fs.rm(path.join(basePath, id))
 }
 
-export async function hashFile(buffer) {
+export async function hashFile(buffer: Buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex')
 }
 
-export async function getType(buffer) {
+export async function getType(buffer: Buffer) {
   const type = await fileType(buffer)
   return type
 }
@@ -51,7 +51,7 @@ export async function getStorageStats() {
   }
 }
 
-export async function getStorageUsage(ids) {
+export async function getStorageUsage(ids: string[] | null = null) {
   let files = await fs.readdir(basePath)
   if (ids) files = files.filter(file => ids.includes(file))
   const stats = await Promise.all(

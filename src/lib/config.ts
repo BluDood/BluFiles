@@ -5,7 +5,24 @@ import { countPastes } from './paste.js'
 import { countUsers } from './users.js'
 import { getStorageUsage } from './filesystem.js'
 
-const defaultConfig = {
+interface Config {
+  maxUsers: number
+  disableRegistration: boolean | 'afterFirstUser'
+  total: {
+    maxFiles: number
+    maxFolders: number
+    maxPastes: number
+    maxStorage: number
+  }
+  user: {
+    maxFiles: number
+    maxFolders: number
+    maxPastes: number
+    maxStorage: number
+  }
+}
+
+const defaultConfig: Config = {
   maxUsers: -1,
   disableRegistration: 'afterFirstUser',
   total: {
@@ -38,13 +55,13 @@ export async function getConfig() {
   }
 }
 
-export async function setConfig(data) {
+export async function setConfig(data: Config) {
   await fs.writeFile(configPath, JSON.stringify(data, null, 2))
 }
 
 await setConfig(await getConfig())
 
-export async function setConfigValue(key, value) {
+export async function setConfigValue(key: string, value: unknown) {
   const config = await getConfig()
   if (!Object.keys(config).includes(key)) return false
   config[key] = value
@@ -66,14 +83,17 @@ export async function checkRegistrationAllowed() {
   return true
 }
 
-export async function checkFileCreationAllowed(userId, size) {
+export async function checkFileCreationAllowed(
+  userId: string,
+  size: number
+) {
   const config = await getConfig()
 
   const files = await countFiles(userId)
   if (config.user.maxFiles !== -1 && files >= config.user.maxFiles)
     return false
 
-  const totalFiles = await countFiles()
+  const totalFiles = await countFiles(null)
   if (config.total.maxFiles !== -1 && totalFiles >= config.total.maxFiles)
     return false
 
@@ -95,14 +115,14 @@ export async function checkFileCreationAllowed(userId, size) {
   return true
 }
 
-export async function checkFolderCreationAllowed(userId) {
+export async function checkFolderCreationAllowed(userId: string) {
   const config = await getConfig()
 
   const folders = await countFolders(userId)
   if (config.user.maxFolders !== -1 && folders >= config.user.maxFolders)
     return false
 
-  const totalFolders = await countFolders()
+  const totalFolders = await countFolders(null)
   if (
     config.total.maxFolders !== -1 &&
     totalFolders >= config.total.maxFolders
@@ -112,7 +132,7 @@ export async function checkFolderCreationAllowed(userId) {
   return true
 }
 
-export async function checkPasteCreationAllowed(userId) {
+export async function checkPasteCreationAllowed(userId: string) {
   const config = await getConfig()
 
   const pastes = await countPastes(userId)

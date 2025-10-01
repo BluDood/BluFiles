@@ -1,9 +1,29 @@
+import { Collection } from '@prisma/client'
 import { filterFile } from './files.js'
 import prisma from './prisma.js'
 
-export const filterCollection = c => {
+interface FilteredCollection {
+  id: string
+  name: string
+  ownerId: string
+  createdAt: Date
+  updatedAt: Date
+  files?: ReturnType<typeof filterFile>[]
+  count?: number
+  shareId?: string
+}
+
+export const filterCollection = (
+  c:
+    | Collection
+    | (Collection & {
+        files: any[]
+        _count: { files: number }
+        share: { id: string }
+      })
+): FilteredCollection | null => {
   if (!c) return null
-  const collection = {
+  const collection: FilteredCollection = {
     id: c.id,
     name: c.name,
     ownerId: c.ownerId,
@@ -11,15 +31,15 @@ export const filterCollection = c => {
     updatedAt: c.updatedAt
   }
 
-  if (c.files) collection.files = c.files.map(filterFile)
-  if (c._count) collection.count = c._count.files
+  if ('files' in c) collection.files = c.files.map(filterFile)
+  if ('_count' in c) collection.count = c._count.files
 
-  if (c.share) collection.shareId = c.share.id
+  if ('share' in c) collection.shareId = c.share.id
 
   return collection
 }
 
-export async function getCollections(userId) {
+export async function getCollections(userId: string) {
   const collections = await prisma.collection.findMany({
     where: {
       ownerId: userId
@@ -36,7 +56,13 @@ export async function getCollections(userId) {
   return collections
 }
 
-export async function createCollection({ name, ownerId }) {
+export async function createCollection({
+  name,
+  ownerId
+}: {
+  name: string
+  ownerId: string
+}) {
   const collection = await prisma.collection.create({
     data: {
       name,
@@ -47,7 +73,7 @@ export async function createCollection({ name, ownerId }) {
   return collection
 }
 
-export async function deleteCollection(id) {
+export async function deleteCollection(id: string) {
   const collection = await prisma.collection.delete({
     where: {
       id
@@ -57,7 +83,10 @@ export async function deleteCollection(id) {
   return collection
 }
 
-export async function updateCollection(id, { name, fileIds }) {
+export async function updateCollection(
+  id: string,
+  { name, fileIds }: { name: string; fileIds: string[] }
+) {
   const collection = await prisma.collection.update({
     where: {
       id
@@ -73,7 +102,7 @@ export async function updateCollection(id, { name, fileIds }) {
   return collection
 }
 
-export async function getCollection(id) {
+export async function getCollection(id: string) {
   const collection = await prisma.collection.findUnique({
     where: {
       id

@@ -1,9 +1,24 @@
 import { getType, hashFile, remove, write } from './filesystem.js'
 import prisma from './prisma.js'
+import { File, Folder } from '@prisma/client'
 
-export const filterFile = f => {
+interface FilteredFile {
+  id: string
+  name: string
+  mime: string
+  size: number
+  ownerId: string
+  folderId: string | null
+  createdAt: Date
+  updatedAt: Date
+  shareId?: string
+}
+
+export const filterFile = (
+  f: File | (File & { share: { id: string } })
+): FilteredFile | null => {
   if (!f) return null
-  const file = {
+  const file: FilteredFile = {
     id: f.id,
     name: f.name,
     mime: f.mime,
@@ -14,36 +29,54 @@ export const filterFile = f => {
     updatedAt: f.updatedAt
   }
 
-  if (f.share) file.shareId = f.share.id
+  if ('share' in f) file.shareId = f.share.id
 
   return file
 }
 
-export const filterFolder = f => {
+interface FilteredFolder {
+  id: string
+  name: string
+  ownerId: string
+  parentId: string | null
+  files?: FilteredFile[]
+  folders?: FilteredFolder[]
+  createdAt: Date
+  updatedAt: Date
+  shareId?: string
+}
+
+export const filterFolder = (
+  f:
+    | Folder
+    | (Folder & { files: any[]; folders: any[]; share: { id: string } })
+): FilteredFolder | null => {
   if (!f) return null
-  const folder = {
+  const folder: FilteredFolder = {
     id: f.id,
     name: f.name,
     ownerId: f.ownerId,
     parentId: f.parentId,
-    files: f.files?.map(filterFile),
-    folders: f.folders?.map(filterFolder),
     createdAt: f.createdAt,
     updatedAt: f.updatedAt
   }
 
-  if (f.share) folder.shareId = f.share.id
+  if ('files' in f)
+    folder.files = f.files.map(filterFile).filter(f => f !== null)
+  if ('folders' in f)
+    folder.folders = f.folders.map(filterFolder).filter(f => f !== null)
+  if ('share' in f) folder.shareId = f.share.id
 
   return folder
 }
 
-export async function countFolders(ownerId) {
+export async function countFolders(ownerId: string | null) {
   return prisma.folder.count({
     where: ownerId ? { ownerId } : undefined
   })
 }
 
-export async function getRootFolder(ownerId) {
+export async function getRootFolder(ownerId: string) {
   const folders = await prisma.folder.findMany({
     where: { parentId: null, ownerId },
     include: { share: { select: { id: true } } }
@@ -61,7 +94,7 @@ export async function getRootFolder(ownerId) {
   }
 }
 
-export async function getFolder(id) {
+export async function getFolder(id: string) {
   const folder = await prisma.folder.findUnique({
     where: { id },
     include: {
@@ -82,7 +115,15 @@ export async function getFolder(id) {
   return folder
 }
 
-export async function createFolder({ name, parentId, ownerId }) {
+export async function createFolder({
+  name,
+  parentId,
+  ownerId
+}: {
+  name: string
+  parentId: string | null
+  ownerId: string
+}) {
   const folder = await prisma.folder.create({
     data: { name, parentId, ownerId }
   })
@@ -90,7 +131,7 @@ export async function createFolder({ name, parentId, ownerId }) {
   return folder
 }
 
-export async function getFolders(ownerId) {
+export async function getFolders(ownerId: string | null) {
   const folders = await prisma.folder.findMany({
     where: ownerId ? { ownerId } : undefined
   })
@@ -98,7 +139,7 @@ export async function getFolders(ownerId) {
   return folders
 }
 
-export async function deleteFolder(id) {
+export async function deleteFolder(id: string) {
   const files = await getFilesRecursive(id)
 
   for (const file of files) {
@@ -112,7 +153,16 @@ export async function deleteFolder(id) {
   return folder
 }
 
-export async function updateFolder(id, { name, parentId }) {
+export async function updateFolder(
+  id: string,
+  {
+    name,
+    parentId
+  }: {
+    name: string
+    parentId: string | null
+  }
+) {
   const folder = await prisma.folder.update({
     where: { id },
     data: { name, parentId }
@@ -121,13 +171,13 @@ export async function updateFolder(id, { name, parentId }) {
   return folder
 }
 
-export async function countFiles(ownerId) {
+export async function countFiles(ownerId: string | null) {
   return prisma.file.count({
     where: ownerId ? { ownerId } : undefined
   })
 }
 
-export async function getFiles(ownerId, onlyIds = false) {
+export async function getFiles(ownerId: string | null, onlyIds = false) {
   const files = await prisma.file.findMany({
     where: ownerId ? { ownerId } : undefined,
     select: onlyIds ? { id: true } : undefined
@@ -136,7 +186,7 @@ export async function getFiles(ownerId, onlyIds = false) {
   return files
 }
 
-export async function getFile(id) {
+export async function getFile(id: string) {
   const file = await prisma.file.findUnique({
     where: { id },
     include: {
@@ -151,8 +201,18 @@ export async function getFile(id) {
   return file
 }
 
-export async function createFile({ name, folderId, ownerId, data }) {
-  const fileHash = (await hashFile(data)).toString('hex')
+export async function createFile({
+  name,
+  folderId,
+  ownerId,
+  data
+}: {
+  name: string
+  folderId: string | null
+  ownerId: string
+  data: Buffer
+}) {
+  const fileHash = await hashFile(data)
   const mime = (await getType(data))?.mime || 'unknown'
   const size = data.byteLength
 
@@ -172,7 +232,7 @@ export async function createFile({ name, folderId, ownerId, data }) {
   return file
 }
 
-export async function deleteFile(id) {
+export async function deleteFile(id: string) {
   const file = await prisma.file.delete({
     where: { id }
   })
@@ -182,7 +242,16 @@ export async function deleteFile(id) {
   return file
 }
 
-export async function updateFile(id, { name, folderId }) {
+export async function updateFile(
+  id: string,
+  {
+    name,
+    folderId
+  }: {
+    name: string
+    folderId: string | null
+  }
+) {
   const file = await prisma.file.update({
     where: { id },
     data: {
@@ -194,7 +263,7 @@ export async function updateFile(id, { name, folderId }) {
   return file
 }
 
-export async function getFilesRecursive(folderId) {
+export async function getFilesRecursive(folderId: string) {
   const folder = await prisma.folder.findUnique({
     where: { id: folderId },
     include: {
@@ -202,6 +271,7 @@ export async function getFilesRecursive(folderId) {
       folders: true
     }
   })
+  if (!folder) return []
 
   const files = folder.files
 
