@@ -1,18 +1,36 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
-  import Loader from '$components/Loader.svelte'
   import { formatDate, req } from '$lib/utils'
   import { alert } from '$lib/popups'
+  import Loader from './Loader.svelte'
 
-  export let id
-  export let onclose
-  let closing = false
-  let info
-  let loading = true
-  let editing = false
-  let content
+  // export let id
+  // export let onclose
 
-  function close(c) {
+  let {
+    id,
+    onclose
+  }: {
+    id: string
+    onclose: (deleted?: boolean) => void
+  } = $props()
+
+  let closing = $state(false)
+  interface PasteInfo {
+    id: string
+    name: string
+    type: string
+    content: string
+    createdAt: string
+    updatedAt: string
+    shareId: string | null
+  }
+  let info: PasteInfo | null = $state(null)
+  let loading = $state(true)
+  let editing = $state(false)
+  let content: string = $state('')
+
+  function close(c: boolean = false) {
     closing = true
     setTimeout(() => {
       closing = false
@@ -25,11 +43,12 @@
     if (!res) return
 
     info = res.data
-    content = info.content
+    content = info!.content
     loading = false
   }
 
   async function share() {
+    if (!info) return
     if (info.shareId) {
       const res = await alert({
         title: `Sharing ${info.name}`,
@@ -37,8 +56,7 @@
         buttons: [
           {
             text: 'Copy Link',
-            type: 'submit',
-            color: 'blue'
+            type: 'submit'
           },
           {
             text: 'Delete Link',
@@ -52,30 +70,28 @@
         ]
       })
 
-      if (res === 'submit') {
+      if (res.type === 'submit') {
         await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
         await alert({
           title: 'Link Copied',
           content: 'The link has been copied to your clipboard.'
         })
-      } else if (res === 'delete') {
+      } else if (res.type === 'delete') {
         const confirmed = await alert({
           title: 'Delete Link',
           content: `Are you sure you want to delete the link for "${info.name}"?`,
           buttons: [
             {
               text: 'Delete',
-              color: 'red',
-              type: true
+              color: 'red'
             },
             {
-              text: 'Cancel',
-              type: false
+              text: 'Cancel'
             }
           ]
         })
 
-        if (!confirmed) return
+        if (!confirmed.type) return
 
         const delRes = await req.delete(`share/${info.shareId}`)
         if (!delRes) return
@@ -83,7 +99,7 @@
         if (delRes.status !== 204)
           return await alert({
             title: 'Error',
-            text: delRes.data.message
+            content: delRes.data.message
           })
 
         info.shareId = null
@@ -100,8 +116,7 @@
         buttons: [
           {
             text: 'Create Link',
-            type: 'submit',
-            color: 'blue'
+            type: 'submit'
           },
           {
             text: 'Cancel',
@@ -110,7 +125,7 @@
         ]
       })
 
-      if (res !== 'submit') return
+      if (res.type !== 'submit') return
       const shareRes = await req.post(`share`, {
         type: 'paste',
         id: info.id
@@ -120,7 +135,7 @@
       if (shareRes.status !== 200)
         return await alert({
           title: 'Error',
-          text: shareRes.data.message
+          content: shareRes.data.message
         })
       info.shareId = shareRes.data.id
       await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
@@ -139,22 +154,20 @@
       buttons: [
         {
           text: 'Delete',
-          color: 'red',
-          type: true
+          color: 'red'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
-    if (!confirmed) return
+    if (!confirmed.type) return
 
     const res = await req.delete(`paste/${id}`)
     if (!res) return
 
     if (res.status !== 204)
-      return await alert({ title: 'Error', text: res.data.message })
+      return await alert({ title: 'Error', content: res.data.message })
 
     close(true)
   }
@@ -166,7 +179,7 @@
     if (!res) return
 
     if (res.status !== 204)
-      return await alert({ title: 'Error', text: res.data.message })
+      return await alert({ title: 'Error', content: res.data.message })
 
     editing = false
   }
@@ -174,22 +187,22 @@
   onMount(load)
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
   class="wrapper"
   data-closing={closing}
-  on:mousedown={e => {
+  onmousedown={e => {
     if (e.target === e.currentTarget) close()
   }}
   role="dialog"
+  tabindex="-1"
 >
-  {#if loading}
+  {#if loading || !info}
     <Loader />
   {:else}
     <div class="pasteview">
       <div class="v-align">
         <h1>{info.name}</h1>
-        <button on:click={close}>
+        <button onclick={() => close()}>
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -197,29 +210,29 @@
         <span>{formatDate(info.updatedAt)}</span>
         <span>{info.type}</span>
       </div>
-      <textarea readonly={!editing} bind:value={content} />
+      <textarea readonly={!editing} bind:value={content}></textarea>
       <div class="actions">
         {#if editing}
-          <button on:click={edit} data-color="green">
+          <button onclick={edit} data-color="green">
             <span class="material-icons">done</span>
           </button>
           <button
-            on:click={() => {
+            onclick={() => {
               editing = false
-              content = info.content
+              content = info!.content
             }}
             data-color="red"
           >
             <span class="material-icons">close</span>
           </button>
         {:else}
-          <button on:click={share} data-color={info.shareId ? 'blue' : 'gray'}>
+          <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
             <span class="material-icons">share</span>
           </button>
-          <button on:click={() => (editing = true)} data-color="orange">
+          <button onclick={() => (editing = true)} data-color="orange">
             <span class="material-icons">edit</span>
           </button>
-          <button on:click={del} data-color="red">
+          <button onclick={del} data-color="red">
             <span class="material-icons">delete</span>
           </button>
         {/if}

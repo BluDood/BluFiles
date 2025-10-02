@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
   import { userStore } from '$lib/stores'
   import { onMount } from 'svelte'
   import { req } from '$lib/utils'
 
-  let newUsername = ''
-  let profileLoading = false
+  let newUsername = $state('')
+  let profileLoading = $state(false)
 
   async function save() {
     if (newUsername === $userStore.username) return
@@ -33,7 +33,7 @@
     <div class="v-align">
       <h2>Profile</h2>
       <button
-        on:click={save}
+        onclick={save}
         data-hidden={$userStore.username === newUsername}
         disabled={profileLoading}
       >

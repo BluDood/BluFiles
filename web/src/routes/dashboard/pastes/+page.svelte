@@ -1,12 +1,20 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
-  import Loader from '$components/Loader.svelte'
   import { formatDate, req } from '$lib/utils'
   import { prompt, alert } from '$lib/popups'
   import PasteView from '../../../components/PasteView.svelte'
+  import Loader from '../../../components/Loader.svelte'
 
-  let pastes
-  let previewing = false
+  interface Paste {
+    id: string
+    name: string
+    type: string
+    createdAt: string
+    updatedAt: string
+  }
+
+  let pastes: Paste[] | null = $state(null)
+  let previewing: string | false = $state(false)
 
   async function load() {
     pastes = null
@@ -23,12 +31,10 @@
       placeholder: 'Enter a name...',
       buttons: [
         {
-          text: 'Continue',
-          type: true
+          text: 'Continue'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
@@ -40,12 +46,10 @@
       placeholder: 'Enter content...',
       buttons: [
         {
-          text: 'Create',
-          type: true
+          text: 'Create'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
@@ -58,54 +62,63 @@
     })
     if (!res) return
 
-    if (res.status !== 200) return alert('An error has occurred')
+    if (res.status !== 200)
+      return await alert({
+        title: 'Error',
+        content: res.data.message
+      })
 
     load()
   }
 
-  async function delPaste(id) {
+  async function delPaste(id: string) {
     const confirmed = await alert({
       title: 'Delete Paste',
       content: 'Are you sure you want to delete this paste?',
       buttons: [
         {
           text: 'Delete',
-          color: 'red',
-          type: true
+          color: 'red'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
-    if (!confirmed) return
+    if (!confirmed.type) return
 
     const res = await req.delete(`paste/${id}`)
     if (!res) return
 
-    if (res.status !== 204) return alert('An error has occurred')
+    if (res.status !== 204)
+      return await alert({
+        title: 'Error',
+        content: res.data.message
+      })
 
     load()
   }
 
-  async function editPaste(id) {
+  async function editPaste(id: string) {
+    if (!pastes) return
     const paste = pastes.find(p => p.id === id)
-    if (!paste) return alert('Paste not found')
+    if (!paste)
+      return await alert({
+        title: 'Error',
+        content: 'Paste not found'
+      })
 
     const name = await prompt({
       title: 'Edit Paste',
       content: 'Please enter a new name for the paste',
       placeholder: 'Enter a name...',
-      value: paste.name,
+      defaultValue: paste.name,
       buttons: [
         {
-          text: 'Continue',
-          type: true
+          text: 'Continue'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
@@ -119,7 +132,7 @@
     if (res.status !== 204)
       return await alert({
         title: 'Error',
-        text: res.data.message
+        content: res.data.message
       })
 
     load()
@@ -131,7 +144,7 @@
 <main>
   <div class="v-align">
     <h2>Pastes</h2>
-    <button on:click={add}>
+    <button onclick={add}>
       <span class="material-icons">add</span>
     </button>
   </div>
@@ -150,32 +163,43 @@
         <p>No pastes found. Press + to create one!</p>
       {:else}
         {#each pastes as paste}
-          <button class="paste" on:click={() => (previewing = paste.id)}>
+          <button
+            class="paste"
+            tabindex="0"
+            onclick={() => (previewing = paste.id)}
+          >
             <p>{paste.name}</p>
             <div class="right">
               <div class="info">
                 <p>{formatDate(paste.updatedAt)}</p>
                 <p>{paste.type}</p>
               </div>
+              <!-- svelte-ignore a11y_click_events_have_key_events -->
               <div class="actions">
-                <button
+                <span
+                  class="action"
                   data-color="orange"
-                  on:click={e => {
+                  tabindex="0"
+                  role="button"
+                  onclick={e => {
                     e.stopPropagation()
                     editPaste(paste.id)
                   }}
                 >
                   <span class="material-icons">edit</span>
-                </button>
-                <button
+                </span>
+                <span
+                  class="action"
                   data-color="red"
-                  on:click={e => {
+                  tabindex="0"
+                  role="button"
+                  onclick={e => {
                     e.stopPropagation()
                     delPaste(paste.id)
                   }}
                 >
                   <span class="material-icons">delete</span>
-                </button>
+                </span>
               </div>
             </div>
           </button>
@@ -271,11 +295,11 @@
 
   .paste .actions {
     display: flex;
+    align-items: center;
     gap: 10px;
-    width: max-content;
   }
 
-  .paste .actions button {
+  .paste .actions .action {
     all: unset;
     display: flex;
     align-items: center;
@@ -284,19 +308,19 @@
     opacity: 0.8;
   }
 
-  .paste .actions button:hover {
+  .paste .actions .action:hover {
     opacity: 1;
   }
 
-  .paste .actions button[data-color='red'] {
+  .paste .actions .action[data-color='red'] {
     color: red;
   }
 
-  .paste .actions button[data-color='orange'] {
+  .paste .actions .action[data-color='orange'] {
     color: orange;
   }
 
-  .paste .actions button span {
+  .paste .actions .action span {
     font-size: 20px;
   }
 </style>

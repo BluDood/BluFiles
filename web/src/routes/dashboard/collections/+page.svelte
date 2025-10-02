@@ -1,14 +1,21 @@
-<script>
-  import Loader from '$components/Loader.svelte'
+<script lang="ts">
   import { onMount } from 'svelte'
 
   import { formatDate, req } from '$lib/utils'
   import { prompt, alert } from '$lib/popups'
   import CollectionView from '../../../components/CollectionView.svelte'
+  import Loader from '../../../components/Loader.svelte'
 
-  let previewing = false
+  let previewing: string | false = $state(false)
 
-  let collections
+  interface Collection {
+    id: string
+    name: string
+    count: number
+    createdAt: string
+  }
+
+  let collections: Collection[] | null = $state(null)
 
   async function load() {
     const res = await req.get('collection')
@@ -24,12 +31,10 @@
       placeholder: 'Enter a name...',
       buttons: [
         {
-          text: 'Continue',
-          type: true
+          text: 'Continue'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
@@ -49,13 +54,13 @@
 <main>
   <div class="v-align">
     <h2>Collections</h2>
-    <button on:click={add}>
+    <button onclick={add}>
       <span class="material-icons">add</span>
     </button>
   </div>
   {#if previewing}
     <CollectionView
-      onclose={c => {
+      onclose={(c: boolean) => {
         if (c === true) load()
         previewing = false
       }}
@@ -70,7 +75,7 @@
         {#each collections as collection}
           <button
             class="collection"
-            on:click={() => (previewing = collection.id)}
+            onclick={() => (previewing = collection.id)}
           >
             <p>{collection.name}</p>
             <div class="info">

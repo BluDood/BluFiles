@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { formatBytes } from '$lib/utils'
   import { onMount } from 'svelte'
   import Loader from '../../../components/Loader.svelte'
@@ -8,15 +8,46 @@
   import FolderView from '../../../components/FolderView.svelte'
   import PasteView from '../../../components/PasteView.svelte'
 
-  let dialog = {
+  interface Dialog {
+    open: boolean
+    type: 'file' | 'folder' | 'collection' | 'paste' | null
+    id: string | null
+  }
+
+  let dialog: Dialog = $state({
     open: false,
     type: null,
     id: null
+  })
+
+  interface Share {
+    type: 'file' | 'folder' | 'collection' | 'paste'
+    views: number
+    file?: {
+      id: string
+      name: string
+      size: number
+    }
+    folder?: {
+      id: string
+      name: string
+      fileCount: number
+      folderCount: number
+    }
+    collection?: {
+      id: string
+      name: string
+      fileCount: number
+    }
+    paste?: {
+      id: string
+      name: string
+    }
   }
 
-  let shares = null
+  let shares: Share[] | null = $state(null)
 
-  function showFile(id) {
+  function showFile(id: string) {
     dialog = {
       open: true,
       type: 'file',
@@ -24,7 +55,7 @@
     }
   }
 
-  function showFolder(id) {
+  function showFolder(id: string) {
     dialog = {
       open: true,
       type: 'folder',
@@ -32,7 +63,7 @@
     }
   }
 
-  function showCollection(id) {
+  function showCollection(id: string) {
     dialog = {
       open: true,
       type: 'collection',
@@ -40,7 +71,7 @@
     }
   }
 
-  function showPaste(id) {
+  function showPaste(id: string) {
     dialog = {
       open: true,
       type: 'paste',
@@ -90,15 +121,15 @@
             {#each shares.filter(s => s.type === 'collection') as collection}
               <button
                 class="item"
-                on:click={() => showCollection(collection.collection.id)}
+                onclick={() => showCollection(collection.collection!.id)}
               >
                 <span class="material-icons icon"> collections </span>
                 <div class="info">
                   <div class="name">
-                    {collection.collection.name}
+                    {collection.collection!.name}
                   </div>
                   <span class="metadata">
-                    {collection.collection.fileCount} items • {collection.views}
+                    {collection.collection!.fileCount} items • {collection.views}
                     views
                   </span>
                 </div>
@@ -114,15 +145,16 @@
             {#each shares.filter(s => s.type === 'folder') as folder}
               <button
                 class="item"
-                on:click={() => showFolder(folder.folder.id)}
+                onclick={() => showFolder(folder.folder!.id)}
               >
                 <span class="material-icons icon"> folder </span>
                 <div class="info">
                   <div class="name">
-                    {folder.folder.name}
+                    {folder.folder!.name}
                   </div>
                   <div class="metadata">
-                    {folder.folder.fileCount + folder.folder.folderCount} items •
+                    {folder.folder!.fileCount + folder.folder!.folderCount} items
+                    •
                     {folder.views} views
                   </div>
                 </div>
@@ -136,14 +168,14 @@
           <h2>Shared Files</h2>
           <div class="list">
             {#each shares.filter(s => s.type === 'file') as share}
-              <button class="item" on:click={() => showFile(share.file.id)}>
+              <button class="item" onclick={() => showFile(share.file!.id)}>
                 <span class="material-icons icon"> insert_drive_file </span>
                 <div class="info">
                   <div class="name">
-                    {share.file.name}
+                    {share.file!.name}
                   </div>
                   <div class="metadata">
-                    {formatBytes(share.file.size)} • {share.views} views
+                    {formatBytes(share.file!.size)} • {share.views} views
                   </div>
                 </div>
               </button>
@@ -156,11 +188,11 @@
           <h2>Shared Pastes</h2>
           <div class="list">
             {#each shares.filter(s => s.type === 'paste') as share}
-              <button class="item" on:click={() => showPaste(share.paste.id)}>
+              <button class="item" onclick={() => showPaste(share.paste!.id)}>
                 <span class="material-icons icon"> description </span>
                 <div class="info">
                   <div class="name">
-                    {share.paste.name}
+                    {share.paste!.name}
                   </div>
                   <div class="metadata">
                     {share.views} views

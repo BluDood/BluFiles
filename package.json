@@ -6,16 +6,17 @@
   "scripts": {
     "start": "node .",
     "build": "tsc",
-    "dev": "tsc-watch --onSuccess \"node .\"",
-    "lint": "eslint ."
+    "dev": "tsc-watch --onSuccess \"node .\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "imports": {
+    "#lib/*": "./dist/lib/*"
+  },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "eslint": "^9.36.0",
     "prisma": "^6.16.3",
     "tsc-watch": "^7.2.0",
     "typescript": "^5.9.3"

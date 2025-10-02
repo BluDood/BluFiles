@@ -1,29 +1,22 @@
-<script>
+<script lang="ts">
   import { req } from '$lib/utils'
 
-  let currentPassword = ''
-  let newPassword = ''
-  let confirmPassword = ''
-  let passLoading = false
+  let currentPassword = $state('')
+  let newPassword = $state('')
+  let confirmPassword = $state('')
+  let passLoading = $state(false)
 
   async function changePassword() {
     if (newPassword.length < 8)
       return alert('Password must be at least 8 characters long')
-    if (newPassword !== confirmPassword)
-      return alert('Passwords do not match')
+    if (newPassword !== confirmPassword) return alert('Passwords do not match')
 
     passLoading = true
 
-    const res = await req.patch(
-      'me/password',
-      {
-        currentPassword,
-        newPassword
-      },
-      {
-        no401Redirect: true
-      }
-    )
+    const res = await req.patch('me/password', {
+      currentPassword,
+      newPassword
+    })
 
     if (res.status === 200) {
       currentPassword = ''
@@ -54,7 +47,7 @@
       placeholder="Confirm Password"
     />
     <button
-      on:click={changePassword}
+      onclick={changePassword}
       disabled={passLoading ||
         !currentPassword ||
         !newPassword ||

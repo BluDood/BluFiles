@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { popups, closeAll } from '$lib/popups'
   import Popup from './Popup.svelte'
 </script>
@@ -8,7 +8,7 @@
 <div
   class="popups"
   data-active={$popups.filter(p => !p.closing).length !== 0}
-  on:click={e => {
+  onclick={e => {
     if (e.target === e.currentTarget) closeAll()
   }}
 >

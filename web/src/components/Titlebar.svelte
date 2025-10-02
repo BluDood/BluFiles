@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { req } from '$lib/utils'
   import { userStore } from '$lib/stores'
   import { alert } from '$lib/popups'

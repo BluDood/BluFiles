@@ -1,5 +1,5 @@
-<script>
-  import { page } from '$app/stores'
+<script lang="ts">
+  import { page } from '$app/state'
 
   const items = [
     {
@@ -56,7 +56,7 @@
     <a
       href={item.path}
       class="item"
-      data-active={$page.url.pathname === item.path}
+      data-active={page.url.pathname === item.path}
     >
       <span class="material-icons">{item.icon}</span>
       <span class="popup">{item.name}</span>

@@ -1,23 +1,40 @@
-<script>
-  export let popup
+<script lang="ts">
+  import type { Popup } from '$lib/popups.js'
 
-  let input = popup.input.enabled
-    ? popup.input.value || ''
-    : popup.select.enabled
-      ? popup.select.value || ''
-      : ''
+  let { popup }: { popup: Popup } = $props()
+  let inputElement: HTMLInputElement | null = $state(null)
+  let selectElement: HTMLSelectElement | null = $state(null)
+  let buttonsElement: HTMLDivElement | null = $state(null)
+
+  let input = $state(
+    popup.input?.enabled
+      ? popup.input.value || ''
+      : popup.select?.enabled
+        ? popup.select.value || ''
+        : ''
+  )
+
+  $effect(() => {
+    if (popup.input?.enabled && inputElement) {
+      inputElement.focus()
+      inputElement.setSelectionRange(0, inputElement.value.length)
+    } else if (popup.select?.enabled && selectElement) {
+      selectElement.focus()
+    } else if (buttonsElement) {
+      const firstButton = popup.buttons[0]
+      if (firstButton) {
+        const button = buttonsElement.querySelector(
+          `button[data-color='${firstButton.color}']`
+        ) as HTMLButtonElement
+        button?.focus()
+      }
+    }
+  })
 </script>
 
 <svelte:window
   on:keydown={e => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      const firstButton = popup.buttons[0]
-      popup.callback({
-        type: firstButton.type,
-        input: input
-      })
-    } else if (e.key === 'Escape') {
+    if (e.key === 'Escape') {
       e.preventDefault()
       popup.callback({
         type: popup.dismissValue
@@ -30,7 +47,7 @@
   <div class="header">
     <h2 class="title">{popup.title}</h2>
     <button
-      on:click={() => {
+      onclick={() => {
         popup.callback({
           type: popup.dismissValue
         })
@@ -40,8 +57,9 @@
     </button>
   </div>
   <p class="content">{popup.content}</p>
-  {#if popup.input.enabled}
+  {#if popup.input?.enabled}
     <input
+      bind:this={inputElement}
       type="text"
       class="input"
       placeholder={popup.input.placeholder}
@@ -49,8 +67,8 @@
       readonly={popup.input.readonly}
     />
   {/if}
-  {#if popup.select.enabled}
-    <select class="input" bind:value={input}>
+  {#if popup.select?.enabled}
+    <select class="input select" bind:value={input} bind:this={selectElement}>
       <option value="" disabled selected hidden>
         {popup.select.placeholder}
       </option>
@@ -59,14 +77,14 @@
       {/each}
     </select>
   {/if}
-  <div class="buttons">
+  <div class="buttons" bind:this={buttonsElement}>
     {#each popup.buttons as button}
       <button
         data-color={button.color}
-        on:click={() => {
+        onclick={() => {
           popup.callback({
             type: button.type,
-            input: input
+            input
           })
         }}
       >
@@ -96,12 +114,25 @@
   .header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    word-break: break-all;
+    gap: 20px;
   }
 
   .header button {
     all: unset;
     cursor: pointer;
+    display: flex;
+
+    border-radius: 5px;
+    transition: 200ms ease;
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .header button:focus {
+    color: red;
+    outline-color: red;
   }
 
   .buttons {
@@ -116,28 +147,26 @@
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 5px;
-    background: #333;
+    background: var(--button-color, #333);
     transition: 200ms ease;
+    outline: 1px solid transparent;
+    outline-offset: 2px;
   }
 
   .buttons button:hover {
-    background: #222;
+    opacity: 0.8;
+  }
+
+  .buttons button:focus {
+    outline-color: var(--button-color, #666);
   }
 
   .buttons button[data-color='blue'] {
-    background: #0064ff;
-  }
-
-  .buttons button[data-color='blue']:hover {
-    background: #004fc7;
+    --button-color: #0064ff;
   }
 
   .buttons button[data-color='red'] {
-    background: #ff0000;
-  }
-
-  .buttons button[data-color='red']:hover {
-    background: #c70000;
+    --button-color: #ff0000;
   }
 
   .input {
@@ -149,5 +178,29 @@
     color: #fff;
     margin-top: 10px;
     width: 100%;
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+    transition: 200ms ease;
+  }
+
+  .input:focus {
+    outline-color: #0064ff;
+  }
+
+  .input:not(select):read-only:focus {
+    outline-color: #666;
+  }
+
+  .select {
+    background-image: linear-gradient(45deg, transparent 50%, white 50%),
+      linear-gradient(135deg, white 50%, transparent 50%);
+    background-position:
+      calc(100% - 20px) calc(14px),
+      calc(100% - 15px) calc(14px);
+    background-size:
+      5px 5px,
+      5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 40px;
   }
 </style>

@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
   import { alert } from '$lib/popups'
   import { req } from '$lib/utils'
   import { userStore } from '$lib/stores'
+
   async function deleteAccount() {
     const confirmed = await alert({
       title: 'Delete Account',
@@ -10,17 +11,15 @@
       buttons: [
         {
           text: 'Delete',
-          color: 'red',
-          type: true
+          color: 'red'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
 
-    if (!confirmed) return
+    if (!confirmed.type) return
 
     const res = await req.delete('me')
 
@@ -48,8 +47,7 @@
       buttons: [
         {
           text: 'Revoke All',
-          color: 'red',
-          type: true
+          color: 'red'
         },
         {
           text: 'Revoke All Except Current',
@@ -57,13 +55,12 @@
           type: 'except'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
 
-    if (!confirmed) return
+    if (!confirmed.type) return
 
     const res = await req.delete('me/tokens')
 
@@ -88,17 +85,15 @@
       buttons: [
         {
           text: 'Delete',
-          color: 'red',
-          type: true
+          color: 'red'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
 
-    if (!confirmed) return
+    if (!confirmed.type) return
 
     const res = await req.delete('me/files')
 
@@ -120,11 +115,9 @@
   <div class="section">
     <h2>Danger Zone</h2>
     <div class="buttons">
-      <button on:click={deleteAccount}>Delete Account</button>
-      <button on:click={deleteAllTokens}>Revoke All Tokens</button>
-      <button on:click={deleteAllFiles}>
-        Delete All Files and Folders
-      </button>
+      <button onclick={deleteAccount}>Delete Account</button>
+      <button onclick={deleteAllTokens}>Revoke All Tokens</button>
+      <button onclick={deleteAllFiles}> Delete All Files and Folders </button>
     </div>
   </div>
 </main>

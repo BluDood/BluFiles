@@ -5,7 +5,7 @@
     "lib": ["ES2020"],
     "moduleResolution": "node",
 
-    "allowJs": true,
+    "allowJs": false,
     "checkJs": false,
 
     "strict": true,
@@ -25,7 +25,7 @@
     "rootDir": "./src",
     "baseUrl": "./src",
     "paths": {
-      "#lib/*": ["src/lib/*"]
+      "#lib/*": ["lib/*"]
     },
     "typeRoots": ["src/types"],
 

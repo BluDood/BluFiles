@@ -1,16 +1,36 @@
-<script>
-  import Loader from '$components/Loader.svelte'
+<script lang="ts">
   import { onMount } from 'svelte'
   import { formatBytes, formatDate, req } from '$lib/utils'
   import { createMessage } from '$lib/messages'
   import { prompt, alert, select } from '$lib/popups'
   import FileView from '../../../components/FileView.svelte'
+  import Loader from '../../../components/Loader.svelte'
 
-  let loading = false
-  let info
-  let previewing = false
+  interface FolderInfo {
+    id: string
+    name: string
+    parentId: string | null
+    files: {
+      id: string
+      name: string
+      mime: string
+      size: number
+      updatedAt: string
+      shareId: string | null
+    }[]
+    folders: {
+      id: string
+      name: string
+      updatedAt: string
+      shareId: string | null
+    }[]
+  }
 
-  async function load(id) {
+  let loading = $state(false)
+  let info: FolderInfo | null = $state(null)
+  let previewing: string | false = $state(false)
+
+  async function load(id: string | null = null) {
     info = null
     loading = true
 
@@ -22,7 +42,7 @@
   }
 
   async function reload() {
-    load(info.id)
+    load(info?.id)
   }
 
   async function upload() {
@@ -30,7 +50,9 @@
     input.type = 'file'
 
     input.onchange = e => {
-      const file = e.target.files[0]
+      const files = (input as HTMLInputElement).files
+      if (!files || files.length === 0) return
+      const file = files[0]
       if (file.size > 100000000)
         return createMessage({
           type: 'error',
@@ -41,11 +63,12 @@
       const reader = new FileReader()
 
       reader.onload = async e => {
-        const content = e.target.result
+        const content = e.target ? e.target.result : null
+        if (!content) return
 
         const form = new FormData()
         form.append('data', new Blob([content]))
-        if (info.id) form.append('folderId', info.id)
+        if (info?.id) form.append('folderId', info.id)
         const filename = await prompt({
           title: 'Upload File',
           content: 'Please enter a name for the new file',
@@ -53,18 +76,17 @@
           defaultValue: file.name,
           buttons: [
             {
-              text: 'Upload',
-              type: true
+              text: 'Upload'
             },
             {
               text: 'Cancel Upload',
-              type: false
+              color: 'red'
             }
           ]
         })
 
-        if (!filename.type) return
-        form.append('name', filename.input)
+        if (!filename.type || !filename.input) return
+        form.append('name', filename.input as string)
 
         const res = await req.post('file', form)
         if (!res) return
@@ -92,21 +114,19 @@
       placeholder: 'Enter a name...',
       buttons: [
         {
-          text: 'Create',
-          type: true
+          text: 'Create'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
 
-    if (!name.type) return
+    if (!name.type || !name.input) return
 
     const res = await req.post(`folder`, {
       name: name.input,
-      parentId: info.id
+      parentId: info?.id
     })
     if (!res) return
 
@@ -120,24 +140,22 @@
     reload()
   }
 
-  async function delFile(id, name) {
+  async function delFile(id: string, name: string) {
     const confirmed = await alert({
       title: 'Delete File',
       content: `Are you sure you want to delete the file "${name}"?`,
       buttons: [
         {
           text: 'Delete',
-          color: 'red',
-          type: true
+          color: 'red'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
 
-    if (!confirmed) return
+    if (!confirmed.type) return
 
     const res = await req.delete(`file/${id}`)
     if (!res) return
@@ -152,23 +170,21 @@
     reload()
   }
 
-  async function delFolder(id, name) {
+  async function delFolder(id: string, name: string) {
     const confirmed = await alert({
       title: 'Delete Folder',
       content: `Are you sure you want to delete the folder "${name}"? This will also delete all contents recursively.`,
       buttons: [
         {
           text: 'Delete',
-          color: 'red',
-          type: true
+          color: 'red'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
-    if (!confirmed) return
+    if (!confirmed.type) return
 
     const res = await req.delete(`folder/${id}`)
     if (!res) return
@@ -183,24 +199,22 @@
     reload()
   }
 
-  async function editFile(id, oldName) {
+  async function editFile(id: string, oldName: string) {
     const name = await prompt({
       title: 'Edit File',
       content: 'Please enter a new name for the file',
       defaultValue: oldName,
       buttons: [
         {
-          text: 'Done',
-          type: true
+          text: 'Done'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
 
-    if (!name.type) return
+    if (!name.type || !name.input) return
 
     const res = await req.patch(`file/${id}`, {
       name: name.input || undefined
@@ -217,24 +231,22 @@
     reload()
   }
 
-  async function editFolder(id, oldName) {
+  async function editFolder(id: string, oldName: string) {
     const name = await prompt({
       title: 'Edit Folder',
       content: 'Please enter a new name for the folder',
       defaultValue: oldName,
       buttons: [
         {
-          text: 'Done',
-          type: true
+          text: 'Done'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
 
-    if (!name.type) return
+    if (!name.type || !name.input) return
 
     const res = await req.patch(`folder/${id}`, {
       name: name.input || undefined
@@ -251,7 +263,7 @@
     reload()
   }
 
-  async function moveFile(id, folder) {
+  async function moveFile(id: string, folder: string | null) {
     const res = await req.patch(`file/${id}`, {
       folderId: folder
     })
@@ -273,7 +285,7 @@
     reload()
   }
 
-  async function moveFolder(id, parent) {
+  async function moveFolder(id: string, parent: string | null) {
     const res = await req.patch(`folder/${id}`, {
       parentId: parent
     })
@@ -295,7 +307,10 @@
     reload()
   }
 
-  async function share(info, type) {
+  async function share(
+    info: { id: string; name: string; shareId: string | null },
+    type: 'file' | 'folder'
+  ) {
     if (info.shareId) {
       const res = await alert({
         title: `Sharing ${info.name}`,
@@ -303,8 +318,7 @@
         buttons: [
           {
             text: 'Copy Link',
-            type: 'submit',
-            color: 'blue'
+            type: 'submit'
           },
           {
             text: 'Delete Link',
@@ -312,36 +326,33 @@
             color: 'red'
           },
           {
-            text: 'Cancel',
-            type: 'cancel'
+            text: 'Cancel'
           }
         ]
       })
 
-      if (res === 'submit') {
+      if (res.type === 'submit') {
         await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
         await alert({
           title: 'Link Copied',
           content: 'The link has been copied to your clipboard.'
         })
-      } else if (res === 'delete') {
+      } else if (res.type === 'delete') {
         const confirmed = await alert({
           title: 'Delete Link',
           content: `Are you sure you want to delete the link for "${info.name}"?`,
           buttons: [
             {
               text: 'Delete',
-              color: 'red',
-              type: true
+              color: 'red'
             },
             {
-              text: 'Cancel',
-              type: false
+              text: 'Cancel'
             }
           ]
         })
 
-        if (!confirmed) return
+        if (!confirmed.type) return
 
         const delRes = await req.delete(`share/${info.shareId}`)
         if (!delRes) return
@@ -349,7 +360,7 @@
         if (delRes.status !== 204)
           return await alert({
             title: 'Error',
-            text: delRes.data.message
+            content: delRes.data.message
           })
 
         info.shareId = null
@@ -366,17 +377,15 @@
         buttons: [
           {
             text: 'Create Link',
-            type: 'submit',
-            color: 'blue'
+            type: 'submit'
           },
           {
-            text: 'Cancel',
-            type: 'cancel'
+            text: 'Cancel'
           }
         ]
       })
 
-      if (res !== 'submit') return
+      if (res.type !== 'submit') return
       const shareRes = await req.post(`share`, {
         type,
         id: info.id
@@ -386,7 +395,7 @@
       if (shareRes.status !== 200)
         return await alert({
           title: 'Error',
-          text: shareRes.data.message
+          content: shareRes.data.message
         })
       info.shareId = shareRes.data.id
       await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
@@ -399,25 +408,23 @@
     }
   }
 
-  async function addToCollection(file) {
+  async function addToCollection(file: { id: string; name: string }) {
     const collections = await req.get('collection')
     if (!collections) return
     const res = await select({
       title: 'Add to Collection',
       content: `Select a collection to add "${file.name}" to:`,
-      options: collections.data.map(c => ({
+      options: collections.data.map((c: { id: string; name: string }) => ({
         text: c.name,
         value: c.id
       })),
       defaultValue: collections.data[0]?.id || '',
       buttons: [
         {
-          text: 'Add',
-          type: true
+          text: 'Add'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
@@ -426,7 +433,10 @@
     const collection = await req.get(`collection/${res.input}`)
     if (!collection) return
     const addRes = await req.patch(`collection/${collection.data.id}`, {
-      fileIds: [...collection.data.files.map(f => f.id), file.id]
+      fileIds: [
+        ...collection.data.files.map((f: { id: string }) => f.id),
+        file.id
+      ]
     })
     if (!addRes) return
     if (addRes.status !== 204)
@@ -450,7 +460,7 @@
     {#if previewing}
       <FileView
         id={previewing}
-        onclose={r => {
+        onclose={(r: boolean) => {
           previewing = false
           if (r) reload()
         }}
@@ -466,30 +476,32 @@
         </button> -->
         <button
           disabled={loading || !info?.id}
-          on:click={() => load(info.parentId)}
-          on:drop={e => {
+          onclick={() => load(info?.parentId)}
+          ondrop={e => {
             e.preventDefault()
+            if (!info) return
+            if (!e.dataTransfer) return
             const id = e.dataTransfer.getData('id')
             const type = e.dataTransfer.getData('type')
             if (type === 'folder') moveFolder(id, info.parentId)
             else moveFile(id, info.parentId)
           }}
-          on:dragover={e => {
+          ondragover={e => {
             e.preventDefault()
           }}
         >
           <span class="material-icons">arrow_upward</span>
         </button>
-        <button disabled={loading} on:click={reload}>
+        <button disabled={loading} onclick={reload}>
           <span class="material-icons">refresh</span>
         </button>
         <div class="menuWrapper">
           <div class="menu">
-            <button disabled={loading} on:click={upload}>
+            <button disabled={loading} onclick={upload}>
               <span class="material-icons">add</span>
               <p>Upload</p>
             </button>
-            <button disabled={loading} on:click={newFolder}>
+            <button disabled={loading} onclick={newFolder}>
               <span class="material-icons">create_new_folder</span>
               <p>New Folder</p>
             </button>
@@ -500,15 +512,16 @@
         </div>
         <button
           disabled={loading || !info?.id}
-          on:click={() => load(null)}
-          on:drop={e => {
+          onclick={() => load(null)}
+          ondrop={e => {
             e.preventDefault()
+            if (!e.dataTransfer) return
             const id = e.dataTransfer.getData('id')
             const type = e.dataTransfer.getData('type')
             if (type === 'folder') moveFolder(id, null)
             else moveFile(id, null)
           }}
-          on:dragover={e => {
+          ondragover={e => {
             e.preventDefault()
           }}
         >
@@ -531,20 +544,22 @@
           {#each info.folders as folder}
             <button
               draggable="true"
-              on:click={() => load(folder.id)}
+              onclick={() => load(folder.id)}
               class="item"
-              on:drop={e => {
+              ondrop={e => {
                 e.preventDefault()
+                if (!e.dataTransfer) return
                 const id = e.dataTransfer.getData('id')
                 const type = e.dataTransfer.getData('type')
                 if (folder.id === id) return
                 if (type === 'folder') moveFolder(id, folder.id)
                 else moveFile(id, folder.id)
               }}
-              on:dragover={e => {
+              ondragover={e => {
                 e.preventDefault()
               }}
-              on:dragstart={e => {
+              ondragstart={e => {
+                if (!e.dataTransfer) return
                 e.dataTransfer.setData('id', folder.id)
                 e.dataTransfer.setData('type', 'folder')
               }}
@@ -557,34 +572,44 @@
                 <div class="info">
                   <span>{formatDate(folder.updatedAt)}</span>
                 </div>
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <div class="actions">
-                  <button
+                  <span
+                    class="action"
                     data-color={folder.shareId ? 'blue' : 'gray'}
-                    on:click={e => {
+                    tabindex="0"
+                    role="button"
+                    onclick={e => {
                       e.stopPropagation()
                       share(folder, 'folder')
                     }}
                   >
                     <span class="material-icons">share</span>
-                  </button>
-                  <button
+                  </span>
+                  <span
+                    class="action"
                     data-color="orange"
-                    on:click={e => {
+                    tabindex="0"
+                    role="button"
+                    onclick={e => {
                       e.stopPropagation()
                       editFolder(folder.id, folder.name)
                     }}
                   >
                     <span class="material-icons">edit</span>
-                  </button>
-                  <button
+                  </span>
+                  <span
+                    class="action"
                     data-color="red"
-                    on:click={e => {
+                    tabindex="0"
+                    role="button"
+                    onclick={e => {
                       e.stopPropagation()
                       delFolder(folder.id, folder.name)
                     }}
                   >
                     <span class="material-icons">delete</span>
-                  </button>
+                  </span>
                 </div>
               </div>
             </button>
@@ -593,8 +618,9 @@
             <button
               draggable="true"
               class="item"
-              on:click={() => (previewing = file.id)}
-              on:dragstart={e => {
+              onclick={() => (previewing = file.id)}
+              ondragstart={e => {
+                if (!e.dataTransfer) return
                 e.dataTransfer.setData('id', file.id)
                 e.dataTransfer.setData('type', 'file')
               }}
@@ -620,43 +646,56 @@
                   <span>{formatDate(file.updatedAt)}</span>
                   <span>{formatBytes(file.size)}</span>
                 </div>
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <div class="actions">
-                  <button
+                  <span
+                    class="action"
+                    tabindex="0"
+                    role="button"
                     data-color="orange"
-                    on:click={e => {
+                    onclick={e => {
                       e.stopPropagation()
                       addToCollection(file)
                     }}
                   >
                     <span class="material-icons"> playlist_add </span>
-                  </button>
-                  <button
+                  </span>
+                  <span
+                    class="action"
                     data-color={file.shareId ? 'blue' : 'gray'}
-                    on:click={e => {
+                    tabindex="0"
+                    role="button"
+                    onclick={e => {
                       e.stopPropagation()
                       share(file, 'file')
                     }}
                   >
                     <span class="material-icons">share</span>
-                  </button>
-                  <button
+                  </span>
+                  <span
+                    class="action"
                     data-color="orange"
-                    on:click={e => {
+                    role="button"
+                    tabindex="0"
+                    onclick={e => {
                       e.stopPropagation()
                       editFile(file.id, file.name)
                     }}
                   >
                     <span class="material-icons">edit</span>
-                  </button>
-                  <button
+                  </span>
+                  <span
+                    class="action"
                     data-color="red"
-                    on:click={e => {
+                    tabindex="0"
+                    role="button"
+                    onclick={e => {
                       e.stopPropagation()
                       delFile(file.id, file.name)
                     }}
                   >
                     <span class="material-icons">delete</span>
-                  </button>
+                  </span>
                 </div>
               </div>
             </button>
@@ -857,7 +896,7 @@
     width: max-content;
   }
 
-  .content .item .actions button {
+  .content .item .actions .action {
     all: unset;
     display: flex;
     align-items: center;
@@ -865,26 +904,26 @@
     transition: 200ms ease;
   }
 
-  .content .item .actions button:hover {
+  .content .item .actions .action:hover {
   }
 
-  .content .item .actions button[data-color='gray'] {
+  .content .item .actions .action[data-color='gray'] {
     color: gray;
   }
 
-  .content .item .actions button[data-color='blue'] {
+  .content .item .actions .action[data-color='blue'] {
     color: #0064ff;
   }
 
-  .content .item .actions button[data-color='red'] {
+  .content .item .actions .action[data-color='red'] {
     color: red;
   }
 
-  .content .item .actions button[data-color='orange'] {
+  .content .item .actions .action[data-color='orange'] {
     color: orange;
   }
 
-  .content .item .actions button span {
+  .content .item .actions .action span {
     font-size: 20px;
   }
 </style>

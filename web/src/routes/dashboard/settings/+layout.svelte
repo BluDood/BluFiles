@@ -1,5 +1,5 @@
-<script>
-  import { page } from '$app/stores'
+<script lang="ts">
+  import { page } from '$app/state'
 
   const tabs = [
     {
@@ -17,7 +17,7 @@
   <h2>Settings</h2>
   <div class="tabs">
     {#each tabs as tab}
-      <a href={tab.path} class:active={tab.path === $page.url.pathname}>
+      <a href={tab.path} class:active={tab.path === page.url.pathname}>
         {tab.name}
       </a>
     {/each}

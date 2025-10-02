@@ -1,0 +1,19 @@
+services:
+  blufiles:
+    build: .
+    restart: unless-stopped
+    ports:
+      - 1337:1337
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/files
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: files
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+volumes:
+  postgres:

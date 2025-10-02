@@ -1,26 +1,27 @@
 {
-	"name": "web",
+	"name": "blufiles-web",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-    "lint": "eslint ."
+		"lint": "eslint ."
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^2.0.0",
-		"@sveltejs/kit": "^1.20.4",
-    "eslint": "^8.54.0",
-    "eslint-plugin-svelte": "^2.35.0",
-		"svelte": "^4.0.5",
-		"vite": "^4.4.2"
+		"@sveltejs/adapter-static": "^3.0.9",
+		"@sveltejs/kit": "^2.43.7",
+		"@sveltejs/vite-plugin-svelte": "^6.2.1",
+		"eslint": "^9.36.0",
+		"eslint-plugin-svelte": "^3.12.4",
+		"svelte": "^5.39.8",
+		"vite": "^7.1.8"
 	},
 	"type": "module",
 	"dependencies": {
-		"@fontsource-variable/inter": "^5.0.8",
-		"@fontsource/material-icons": "^5.0.7",
-		"axios": "^1.5.0",
-		"bowser": "^2.11.0"
+		"@fontsource-variable/inter": "^5.2.8",
+		"@fontsource/material-icons": "^5.2.7",
+		"axios": "^1.12.2",
+		"bowser": "^2.12.1"
 	}
 }

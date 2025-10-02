@@ -1,6 +1,5 @@
-import { getType, hashFile, remove, write } from './filesystem.js'
-import prisma from './prisma.js'
-import { File, Folder } from '@prisma/client'
+import { getType, hashFile, remove, write } from '#lib/filesystem.js'
+import prisma, { File, Folder } from '#lib/prisma.js'
 
 interface FilteredFile {
   id: string
@@ -29,7 +28,7 @@ export const filterFile = (
     updatedAt: f.updatedAt
   }
 
-  if ('share' in f) file.shareId = f.share.id
+  if ('share' in f && f.share) file.shareId = f.share.id
 
   return file
 }
@@ -50,24 +49,29 @@ export const filterFolder = (
   f:
     | Folder
     | (Folder & { files: any[]; folders: any[]; share: { id: string } })
+    | { name: string; files: any[]; folders: any[] }
+    | null
 ): FilteredFolder | null => {
   if (!f) return null
-  const folder: FilteredFolder = {
-    id: f.id,
-    name: f.name,
-    ownerId: f.ownerId,
-    parentId: f.parentId,
-    createdAt: f.createdAt,
-    updatedAt: f.updatedAt
+  const folder: Partial<FilteredFolder> = {
+    name: f.name
+  }
+
+  if ('id' in f) {
+    folder.id = f.id
+    folder.ownerId = f.ownerId
+    folder.parentId = f.parentId
+    folder.createdAt = f.createdAt
+    folder.updatedAt = f.updatedAt
   }
 
   if ('files' in f)
     folder.files = f.files.map(filterFile).filter(f => f !== null)
   if ('folders' in f)
     folder.folders = f.folders.map(filterFolder).filter(f => f !== null)
-  if ('share' in f) folder.shareId = f.share.id
+  if ('share' in f && f.share) folder.shareId = f.share.id
 
-  return folder
+  return folder as FilteredFolder
 }
 
 export async function countFolders(ownerId: string | null) {
@@ -121,7 +125,7 @@ export async function createFolder({
   ownerId
 }: {
   name: string
-  parentId: string | null
+  parentId?: string
   ownerId: string
 }) {
   const folder = await prisma.folder.create({
@@ -159,13 +163,17 @@ export async function updateFolder(
     name,
     parentId
   }: {
-    name: string
-    parentId: string | null
+    name?: string
+    parentId?: string | null
   }
 ) {
+  const update: any = {}
+  if (name) update.name = name
+  if (parentId) update.parentId = parentId
+
   const folder = await prisma.folder.update({
     where: { id },
-    data: { name, parentId }
+    data: update
   })
 
   return folder
@@ -208,7 +216,7 @@ export async function createFile({
   data
 }: {
   name: string
-  folderId: string | null
+  folderId?: string
   ownerId: string
   data: Buffer
 }) {
@@ -248,16 +256,17 @@ export async function updateFile(
     name,
     folderId
   }: {
-    name: string
-    folderId: string | null
+    name?: string
+    folderId?: string | null
   }
 ) {
+  const update: any = {}
+  if (name) update.name = name
+  if (folderId !== undefined) update.folderId = folderId
+
   const file = await prisma.file.update({
     where: { id },
-    data: {
-      name,
-      folderId
-    }
+    data: update
   })
 
   return file

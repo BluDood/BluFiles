@@ -1,18 +1,27 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
-  import Loader from '$components/Loader.svelte'
   import { formatDate, req, formatUA } from '$lib/utils'
   import { prompt, alert } from '$lib/popups'
+  import Loader from '../../../components/Loader.svelte'
 
-  let tokens
+  interface Token {
+    id: string
+    name: string
+    type: 'user' | 'uploader'
+    userAgent: string
+    usedAt: number | null
+    me: boolean
+  }
+
+  let tokens: Token[] | null = $state(null)
 
   async function load() {
     tokens = null
-    const res = await req.get('me/tokens')
+    const res = await req.get<Token[]>('me/tokens')
     if (!res) return
 
     tokens = res.data
-      .sort((a, b) => b.usedAt - a.usedAt)
+      .sort((a, b) => (b.usedAt ?? 0) - (a.usedAt ?? 0))
       .sort(a => (a.me ? -1 : 1))
   }
 
@@ -23,17 +32,15 @@
       placeholder: 'Enter a name...',
       buttons: [
         {
-          text: 'Create',
-          type: true
+          text: 'Create'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
 
-    if (!name.type) return
+    if (!name.type || !name.input) return
 
     const res = await req.post('me/tokens', {
       name: name.input
@@ -62,7 +69,7 @@
     load()
   }
 
-  async function del(id, self) {
+  async function del(id: string, self: boolean) {
     const confirmed = await alert({
       title: 'Delete Token',
       content: `Are you sure you want to delete this token? ${
@@ -71,17 +78,15 @@
       buttons: [
         {
           text: self ? 'Delete and Log Out' : 'Delete',
-          color: 'red',
-          type: 'done'
+          color: 'red'
         },
         {
-          text: 'Cancel',
-          type: 'cancel'
+          text: 'Cancel'
         }
       ]
     })
 
-    if (confirmed !== 'done') return
+    if (!confirmed.type) return
 
     const res = await req.delete(`me/tokens`, {
       data: {
@@ -105,7 +110,7 @@
 <main>
   <div class="v-align">
     <h2>Tokens</h2>
-    <button on:click={add}>
+    <button onclick={add}>
       <span class="material-icons">add</span>
     </button>
   </div>
@@ -124,7 +129,7 @@
                 {#if token.type === 'user'}
                   {formatUA(token.userAgent)}
                   {#if token.me}
-                    <p class="current">(current session)</p>
+                    <span class="current">(current session)</span>
                   {/if}
                 {:else}
                   {token.name}
@@ -138,7 +143,7 @@
                   : 'Never used'}
               </p>
               <div class="actions">
-                <button on:click={() => del(token.id, token.me)}>
+                <button onclick={() => del(token.id, token.me)}>
                   <span class="material-icons">delete</span>
                 </button>
               </div>

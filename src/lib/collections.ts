@@ -1,6 +1,5 @@
-import { Collection } from '@prisma/client'
-import { filterFile } from './files.js'
-import prisma from './prisma.js'
+import prisma, { Collection } from '#lib/prisma.js'
+import { filterFile } from '#lib/files.js'
 
 interface FilteredCollection {
   id: string
@@ -34,7 +33,7 @@ export const filterCollection = (
   if ('files' in c) collection.files = c.files.map(filterFile)
   if ('_count' in c) collection.count = c._count.files
 
-  if ('share' in c) collection.shareId = c.share.id
+  if ('share' in c && c.share) collection.shareId = c.share.id
 
   return collection
 }
@@ -85,18 +84,16 @@ export async function deleteCollection(id: string) {
 
 export async function updateCollection(
   id: string,
-  { name, fileIds }: { name: string; fileIds: string[] }
+  { name, fileIds }: { name?: string; fileIds?: string[] }
 ) {
+  const update: any = {}
+  if (name) update.name = name
+  if (fileIds) update.files = { set: fileIds.map(id => ({ id })) }
   const collection = await prisma.collection.update({
     where: {
       id
     },
-    data: {
-      name,
-      files: {
-        set: fileIds.map(id => ({ id }))
-      }
-    }
+    data: update
   })
 
   return collection

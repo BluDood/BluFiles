@@ -1,12 +1,12 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
   import { req } from '$lib/utils'
 
-  let loading = false
-  let error
-  let username
-  let password
+  let loading = $state(false)
+  let error: string | null = $state(null)
+  let username: string = $state('')
+  let password: string = $state('')
 
   async function login() {
     if (!username || !password) {
@@ -82,9 +82,7 @@
         placeholder=" "
       />
     </div>
-    <button disabled={loading} on:click={login} class="submit"
-      >Login</button
-    >
+    <button disabled={loading} onclick={login} class="submit">Login</button>
   </div>
 </div>
 

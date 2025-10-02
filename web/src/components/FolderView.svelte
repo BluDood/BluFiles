@@ -1,26 +1,70 @@
-<script>
-  import Loader from '$components/Loader.svelte'
+<script lang="ts">
   import { onMount } from 'svelte'
   import { formatDate, formatBytes, req } from '$lib/utils'
   import { prompt, alert, select } from '$lib/popups'
   import { createMessage } from '$lib/messages'
   import FileView from './FileView.svelte'
   import FolderView from './FolderView.svelte'
+  import Loader from './Loader.svelte'
 
-  export let id
-  export let onclose
+  // export let id
+  // export let onclose
 
-  let dialog = {
+  let {
+    id,
+    onclose
+  }: {
+    id: string
+    onclose: (reload: boolean) => void
+  } = $props()
+
+  interface Dialog {
+    open: boolean
+    type: 'file' | 'folder' | null
+    id: string | null
+  }
+
+  let dialog: Dialog = $state({
     open: false,
     type: null,
     id: null
+  })
+
+  let closing = $state(false)
+  let loading = $state(true)
+  interface FolderInfo {
+    id: string
+    name: string
+    createdAt: string
+    updatedAt: string
+    shareId: string | null
+    files: {
+      id: string
+      name: string
+      size: number
+      mime: string
+      createdAt: string
+      updatedAt: string
+    }[]
+    folders: {
+      id: string
+      name: string
+      createdAt: string
+      updatedAt: string
+    }[]
+  }
+  let info: FolderInfo | null = $state(null)
+
+  interface File {
+    id: string
+    name: string
+    size: number
+    mime: string
+    createdAt: string
+    updatedAt: string
   }
 
-  let closing = false
-  let loading = true
-  let info
-
-  let files
+  let files: File[] = $state([])
 
   function close(reload = false) {
     closing = true
@@ -30,6 +74,7 @@
   async function removeFile() {}
 
   async function share() {
+    if (!info) return
     if (info.shareId) {
       const res = await alert({
         title: `Sharing ${info.name}`,
@@ -37,8 +82,7 @@
         buttons: [
           {
             text: 'Copy Link',
-            type: 'submit',
-            color: 'blue'
+            type: 'submit'
           },
           {
             text: 'Delete Link',
@@ -52,30 +96,28 @@
         ]
       })
 
-      if (res === 'submit') {
+      if (res.type === 'submit') {
         await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
         await alert({
           title: 'Link Copied',
           content: 'The link has been copied to your clipboard.'
         })
-      } else if (res === 'delete') {
+      } else if (res.type === 'delete') {
         const confirmed = await alert({
           title: 'Delete Link',
           content: `Are you sure you want to delete the link for "${info.name}"?`,
           buttons: [
             {
               text: 'Delete',
-              color: 'red',
-              type: true
+              color: 'red'
             },
             {
-              text: 'Cancel',
-              type: false
+              text: 'Cancel'
             }
           ]
         })
 
-        if (!confirmed) return
+        if (!confirmed.type) return
 
         const delRes = await req.delete(`share/${info.shareId}`)
         if (!delRes) return
@@ -83,7 +125,7 @@
         if (delRes.status !== 204)
           return await alert({
             title: 'Error',
-            text: delRes.data.message
+            content: delRes.data.message
           })
 
         info.shareId = null
@@ -99,18 +141,15 @@
           'Are you sure you want to create a shareable link for this folder?',
         buttons: [
           {
-            text: 'Create Link',
-            type: 'submit',
-            color: 'blue'
+            text: 'Create Link'
           },
           {
-            text: 'Cancel',
-            type: 'cancel'
+            text: 'Cancel'
           }
         ]
       })
 
-      if (res !== 'submit') return
+      if (!res.type) return
       const shareRes = await req.post(`share`, {
         type: 'folder',
         id: info.id
@@ -120,7 +159,7 @@
       if (shareRes.status !== 200)
         return await alert({
           title: 'Error',
-          text: shareRes.data.message
+          content: shareRes.data.message
         })
       info.shareId = shareRes.data.id
       await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
@@ -133,22 +172,21 @@
   }
 
   async function delFolder() {
+    if (!info) return
     const confirmed = await alert({
       title: 'Delete Folder',
       content: `Are you sure you want to delete the collection "${info.name}"? This will also delete all contents recursively.`,
       buttons: [
         {
           text: 'Delete',
-          color: 'red',
-          type: true
+          color: 'red'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
-    if (!confirmed) return
+    if (!confirmed.type) return
 
     const res = await req.delete(`folder/${id}`)
 
@@ -175,14 +213,14 @@
   onMount(load)
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
   class="wrapper"
   data-closing={closing}
-  on:mousedown={e => {
+  onmousedown={e => {
     if (e.target === e.currentTarget) close()
   }}
   role="dialog"
+  tabindex="-1"
 >
   {#if dialog.open}
     {#if dialog.type === 'file'}
@@ -195,7 +233,7 @@
           }
           load()
         }}
-        id={dialog.id}
+        id={dialog.id!}
       />
     {:else if dialog.type === 'folder'}
       <FolderView
@@ -207,17 +245,17 @@
           }
           load()
         }}
-        id={dialog.id}
+        id={dialog.id!}
       />
     {/if}
   {/if}
-  {#if loading}
+  {#if loading || !info}
     <Loader />
   {:else}
     <div class="folder">
       <div class="v-align">
         <h1>{info.name}</h1>
-        <button on:click={() => close()}>
+        <button onclick={() => close()}>
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -231,7 +269,7 @@
         <div class="items">
           {#each info.folders as folder}
             <button
-              on:click={() =>
+              onclick={() =>
                 (dialog = {
                   open: true,
                   type: 'folder',
@@ -250,7 +288,7 @@
           {/each}
           {#each info.files as file}
             <button
-              on:click={() =>
+              onclick={() =>
                 (dialog = {
                   open: true,
                   type: 'file',
@@ -283,10 +321,10 @@
         </div>
       {/if}
       <div class="actions">
-        <button on:click={share} data-color={info.shareId ? 'blue' : 'gray'}>
+        <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
           <span class="material-icons">share</span>
         </button>
-        <button on:click={delFolder} data-color="red">
+        <button onclick={delFolder} data-color="red">
           <span class="material-icons">delete</span>
         </button>
       </div>

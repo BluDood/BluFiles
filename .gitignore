@@ -4,3 +4,5 @@ package-lock.json
 data
 .svelte-kit
 dist
+generated
+build

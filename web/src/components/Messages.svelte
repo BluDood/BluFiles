@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   import { messages } from '$lib/messages'
 </script>
 
 <div class="messages">
-  {#each $messages as message}
+  {#each $messages as message (message.id)}
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <!-- svelte-ignore a11y-no-static-element-interactions -->
     <div
@@ -11,7 +11,7 @@
       data-type={message.type}
       data-dismissable={message.dismissable}
       data-closing={message.closing}
-      on:click={() => message.dismissable && message.dismiss()}
+      onclick={() => message.dismissable && message.dismiss()}
     >
       <span class="icon material-icons">
         {#if message.type === 'success'}
@@ -41,9 +41,18 @@
     pointer-events: none;
     display: flex;
     flex-direction: column-reverse;
-    margin: 10px;
     gap: 10px;
     z-index: 15;
+    height: 100vh;
+    z-index: 1000;
+    overflow: hidden;
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 10px;
+  }
+
+  .messages::-webkit-scrollbar {
+    display: none;
   }
 
   .message {
@@ -56,7 +65,8 @@
     padding: 10px;
     border-radius: 8px;
     gap: 10px;
-    transition: transform 500ms ease;
+    transition: 500ms ease;
+    height: 44px;
   }
 
   .message[data-dismissable='true'] {
@@ -64,15 +74,17 @@
   }
 
   .message[data-closing='true'] {
-    transform: translateX(110%);
+    transform: translateX(110%) scale(0);
+    height: 0;
+    padding: 0;
   }
 
   .message[data-type='success'] {
-    background: rgb(0, 200, 0);
+    background: #31b331;
   }
 
   .message[data-type='info'] {
-    background: rgb(0, 50, 255);
+    background: #0064ff;
   }
 
   .message[data-type='warning'] {
@@ -80,7 +92,7 @@
   }
 
   .message[data-type='error'] {
-    background: rgb(255, 0, 0);
+    background: hsl(0, 70%, 55%);
   }
 
   .content {

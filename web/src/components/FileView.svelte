@@ -1,18 +1,36 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
-  import Loader from '$components/Loader.svelte'
   import { formatBytes, formatDate, req } from '$lib/utils'
   import { alert } from '$lib/popups'
+  import Loader from './Loader.svelte'
 
-  export let onclose
-  export let id
+  // export let onclose
+  // export let id
 
-  let closing = false
-  let loading = true
-  let info
-  let data
-  let type
-  let dataURL
+  let {
+    id,
+    onclose
+  }: {
+    id: string
+    onclose: (reload: boolean) => void
+  } = $props()
+
+  let closing = $state(false)
+  let loading = $state(true)
+
+  interface FileInfo {
+    id: string
+    name: string
+    size: number
+    mime: string
+    updatedAt: string
+    shareId: string | null
+  }
+
+  let info: FileInfo | null = $state(null)
+  let data: Blob | null = $state(null)
+  let type: string | null = $state(null)
+  let dataURL: string | null = $state(null)
 
   const types = [
     {
@@ -46,6 +64,7 @@
   }
 
   async function share() {
+    if (!info) return
     if (info.shareId) {
       const res = await alert({
         title: `Sharing ${info.name}`,
@@ -53,8 +72,7 @@
         buttons: [
           {
             text: 'Copy Link',
-            type: 'submit',
-            color: 'blue'
+            type: 'submit'
           },
           {
             text: 'Delete Link',
@@ -68,30 +86,28 @@
         ]
       })
 
-      if (res === 'submit') {
+      if (res.type === 'submit') {
         await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
         await alert({
           title: 'Link Copied',
           content: 'The link has been copied to your clipboard.'
         })
-      } else if (res === 'delete') {
+      } else if (res.type === 'delete') {
         const confirmed = await alert({
           title: 'Delete Link',
           content: `Are you sure you want to delete the link for "${info.name}"?`,
           buttons: [
             {
               text: 'Delete',
-              color: 'red',
-              type: true
+              color: 'red'
             },
             {
-              text: 'Cancel',
-              type: false
+              text: 'Cancel'
             }
           ]
         })
 
-        if (!confirmed) return
+        if (!confirmed.type) return
 
         const delRes = await req.delete(`share/${info.shareId}`)
         if (!delRes) return
@@ -99,7 +115,7 @@
         if (delRes.status !== 204)
           return await alert({
             title: 'Error',
-            text: delRes.data.message
+            content: delRes.data.message
           })
 
         info.shareId = null
@@ -115,18 +131,15 @@
           'Are you sure you want to create a shareable link for this file?',
         buttons: [
           {
-            text: 'Create Link',
-            type: 'submit',
-            color: 'blue'
+            text: 'Create Link'
           },
           {
-            text: 'Cancel',
-            type: 'cancel'
+            text: 'Cancel'
           }
         ]
       })
 
-      if (res !== 'submit') return
+      if (!res.type) return
       const shareRes = await req.post(`share`, {
         type: 'file',
         id: info.id
@@ -136,7 +149,7 @@
       if (shareRes.status !== 200)
         return await alert({
           title: 'Error',
-          text: shareRes.data.message
+          content: shareRes.data.message
         })
       info.shareId = shareRes.data.id
       await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
@@ -149,6 +162,7 @@
   }
 
   async function download() {
+    if (!info) return
     const raw = await req.get(`file/${id}/raw`, {
       responseType: 'blob'
     })
@@ -165,23 +179,22 @@
   }
 
   async function del() {
+    if (!info) return
     const confirmed = await alert({
       title: 'Delete File',
       content: `Are you sure you want to delete the file "${info.name}"?`,
       buttons: [
         {
           text: 'Delete',
-          color: 'red',
-          type: true
+          color: 'red'
         },
         {
-          text: 'Cancel',
-          type: false
+          text: 'Cancel'
         }
       ]
     })
 
-    if (!confirmed) return
+    if (!confirmed.type) return
 
     const res = await req.delete(`file/${id}`)
     if (!res) return
@@ -189,20 +202,21 @@
     if (res.status !== 204)
       return await alert({
         title: 'Error',
-        text: res.data.message
+        content: res.data.message
       })
 
     close(true)
   }
 
   async function convert() {
+    if (!data || !info) return null
     return await new Promise((resolve, reject) => {
       const fileReader = new FileReader()
-      fileReader.onload = e => resolve(e.target.result)
+      fileReader.onload = e => resolve(e.target!.result)
 
       fileReader.onerror = e => reject(e)
 
-      fileReader.readAsDataURL(new File([data], '', { type: info.mime }))
+      fileReader.readAsDataURL(new File([data!], '', { type: info!.mime }))
     })
   }
 
@@ -211,8 +225,8 @@
     if (!res) return
 
     info = res.data
-    const foundType = types.find(t => t.mime.includes(info.mime))
-    type = foundType?.type
+    const foundType = types.find(t => t.mime.includes(info!.mime))
+    type = foundType?.type ?? null
 
     if (foundType?.downloadRaw === true) {
       const raw = await req.get(`file/${id}/raw`, {
@@ -220,28 +234,31 @@
       })
       if (!res) return
       data = raw.data
-      if (foundType.downloadBlob) dataURL = await convert()
+      if (foundType.downloadBlob) {
+        const url = await convert()
+        dataURL = url as string
+      }
     }
     loading = false
   })
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <div
   class="wrapper"
   data-closing={closing}
-  on:mousedown={e => {
+  onmousedown={e => {
     if (e.target === e.currentTarget) close()
   }}
   role="dialog"
+  tabindex="-1"
 >
-  {#if loading}
+  {#if loading || !info}
     <Loader />
   {:else}
     <div class="fileview">
       <div class="v-align">
         <h1>{info.name}</h1>
-        <button on:click={() => close()}>
+        <button onclick={() => close()}>
           <span class="material-icons">close</span>
         </button>
       </div>
@@ -256,8 +273,8 @@
       {:else if type === 'text'}
         <pre>{data}</pre>
       {:else if type === 'video'}
-        <!-- svelte-ignore a11y-media-has-caption -->
-        <video src={dataURL} controls />
+        <!-- svelte-ignore a11y_media_has_caption -->
+        <video src={dataURL} controls></video>
       {:else if type === 'audio'}
         <audio controls>
           <source src={dataURL} type={info.mime} />
@@ -266,13 +283,13 @@
         <div class="unsupported">Unsupported file type</div>
       {/if}
       <div class="actions">
-        <button on:click={share} data-color={info.shareId ? 'blue' : 'gray'}>
+        <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
           <span class="material-icons">share</span>
         </button>
-        <button on:click={download} data-color="green">
+        <button onclick={download} data-color="green">
           <span class="material-icons">download</span>
         </button>
-        <button on:click={del} data-color="red">
+        <button onclick={del} data-color="red">
           <span class="material-icons">delete</span>
         </button>
       </div>

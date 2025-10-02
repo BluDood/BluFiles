@@ -1,13 +1,13 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation'
   import { onMount } from 'svelte'
   import { req } from '$lib/utils'
 
-  let loading = false
-  let error
-  let username
-  let password
-  let confirmPassword
+  let loading = $state(false)
+  let error: string | null = $state(null)
+  let username: string = $state('')
+  let password: string = $state('')
+  let confirmPassword: string = $state('')
 
   async function register() {
     if (!username || !password) {
@@ -102,7 +102,7 @@
         placeholder=" "
       />
     </div>
-    <button disabled={loading} on:click={register} class="submit"
+    <button disabled={loading} onclick={register} class="submit"
       >Register</button
     >
   </div>

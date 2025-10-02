@@ -1,12 +1,26 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte'
   import { req, formatBytes } from '$lib/utils'
   import { alert } from '$lib/popups'
 
-  let info
+  interface DashboardInfo {
+    user: {
+      name: string
+      email: string
+    }
+    storage: {
+      used: number
+      total: number
+    }
+    files: number
+    folders: number
+    pastes: number
+  }
+
+  let info: DashboardInfo | null = $state(null)
 
   onMount(async () => {
-    const res = await req.get()
+    const res = await req.get('/')
     if (!res) return
 
     if (res.status !== 200) {
@@ -37,7 +51,8 @@
             : ''}
         </p>
         {#if info.storage.total !== -1}
-          <progress max={info.storage.total} value={info.storage.used} />
+          <progress max={info.storage.total} value={info.storage.used}
+          ></progress>
         {/if}
       </button>
       <a class="item" href="/dashboard/files">
