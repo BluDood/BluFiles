@@ -35,7 +35,7 @@ export const filterShare = (
   s:
     | Share
     | (Share & {
-        file?: { id: string; name: string; size: number; mimeType: string }
+        file?: { id: string; name: string; size: number; mime: string }
         folder?: {
           id: string
           name: string
@@ -59,7 +59,7 @@ export const filterShare = (
       id: s.file.id,
       name: s.file.name,
       size: s.file.size,
-      mime: s.file.mimeType
+      mime: s.file.mime
     }
   } else if (s.type === 'folder' && 'folder' in s && s.folder) {
     share.folder = {
@@ -175,10 +175,76 @@ export async function getShare(id: string) {
     },
     include: {
       file: true,
-      folder: true,
-      collection: true
+      folder: {
+        include: {
+          _count: {
+            select: {
+              files: true,
+              folders: true
+            }
+          }
+        }
+      },
+      collection: true,
+      paste: true
     }
   })
 
   return share
+}
+
+export async function isFolderShared(folderId: string, shareId: string) {
+  const share = await prisma.share.findFirst({
+    where: {
+      id: shareId
+    }
+  })
+  if (!share || share.type !== 'folder') return false
+  if (share.folderId === folderId) return true
+  let folder = await prisma.folder.findUnique({
+    where: {
+      id: folderId
+    }
+  })
+  while (folder) {
+    if (folder.id === share.folderId) return true
+    if (!folder.parentId) break
+    folder = await prisma.folder.findUnique({
+      where: {
+        id: folder.parentId
+      }
+    })
+  }
+  return false
+}
+
+export async function isFileInFolderSHared(fileId: string, shareId: string) {
+  const share = await prisma.share.findFirst({
+    where: {
+      id: shareId
+    }
+  })
+  if (!share || share.type !== 'folder') return false
+  const file = await prisma.file.findUnique({
+    where: {
+      id: fileId
+    }
+  })
+  if (!file || !file.folderId) return false
+  if (file.folderId === share.folderId) return true
+  let folder = await prisma.folder.findUnique({
+    where: {
+      id: file.folderId
+    }
+  })
+  while (folder) {
+    if (folder.id === share.folderId) return true
+    if (!folder.parentId) break
+    folder = await prisma.folder.findUnique({
+      where: {
+        id: folder.parentId
+      }
+    })
+  }
+  return false
 }

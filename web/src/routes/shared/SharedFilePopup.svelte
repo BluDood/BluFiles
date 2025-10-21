@@ -1,9 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { formatBytes, formatDate, req } from '$lib/utils'
-  import { alert } from '$lib/popups'
-  import Loader from './Loader.svelte'
-  import { createMessage } from '$lib/messages.js'
+  import Loader from '../../components/Loader.svelte'
+  import { page } from '$app/state'
 
   // export let onclose
   // export let id
@@ -64,114 +63,14 @@
     setTimeout(() => onclose(reload), 200)
   }
 
-  async function share() {
-    if (!info) return
-    if (info.shareId) {
-      const res = await alert({
-        title: `Sharing ${info.name}`,
-        content: 'What would you like to do?',
-        buttons: [
-          {
-            text: 'Copy Link',
-            type: 'submit'
-          },
-          {
-            text: 'Delete Link',
-            type: 'delete',
-            color: 'red'
-          },
-          {
-            text: 'Cancel',
-            type: 'cancel'
-          }
-        ]
-      })
-
-      if (res.type === 'submit') {
-        await navigator.clipboard.writeText(
-          `${location.origin}/shared?id=${info.shareId}`
-        )
-        await createMessage({
-          title: 'Link copied!',
-          type: 'success',
-          content: 'Shareable link copied to your clipboard'
-        })
-      } else if (res.type === 'delete') {
-        const confirmed = await alert({
-          title: 'Delete Link',
-          content: `Are you sure you want to delete the link for "${info.name}"?`,
-          buttons: [
-            {
-              text: 'Delete',
-              color: 'red'
-            },
-            {
-              text: 'Cancel'
-            }
-          ]
-        })
-
-        if (!confirmed.type) return
-
-        const delRes = await req.delete(`share/${info.shareId}`)
-        if (!delRes) return
-
-        if (delRes.status !== 204)
-          return await alert({
-            title: 'Error',
-            content: delRes.data.message
-          })
-
-        info.shareId = null
-        createMessage({
-          title: 'Link deleted!',
-          type: 'success',
-          content: 'The link has been deleted'
-        })
-      }
-    } else {
-      const res = await alert({
-        title: `Share ${info.name}`,
-        content:
-          'Are you sure you want to create a shareable link for this file?',
-        buttons: [
-          {
-            text: 'Create Link'
-          },
-          {
-            text: 'Cancel'
-          }
-        ]
-      })
-
-      if (!res.type) return
-      const shareRes = await req.post(`share`, {
-        type: 'file',
-        id: info.id
-      })
-
-      if (!shareRes) return
-      if (shareRes.status !== 200)
-        return await alert({
-          title: 'Error',
-          content: shareRes.data.message
-        })
-      info.shareId = shareRes.data.id
-      await navigator.clipboard.writeText(
-        `${location.origin}/shared?id=${info.shareId}`
-      )
-      createMessage({
-        title: 'Link created and copied!',
-        type: 'success',
-        content: 'Shareable link copied to your clipboard'
-      })
-    }
-  }
-
   async function download() {
     if (!info) return
+    const shareId = page.url.searchParams.get('id')
     const raw = await req.get(`file/${id}/raw`, {
-      responseType: 'blob'
+      responseType: 'blob',
+      params: {
+        shareId
+      }
     })
     if (!raw) return
 
@@ -183,36 +82,6 @@
     a.click()
     URL.revokeObjectURL(url)
     a.remove()
-  }
-
-  async function del() {
-    if (!info) return
-    const confirmed = await alert({
-      title: 'Delete File',
-      content: `Are you sure you want to delete the file "${info.name}"?`,
-      buttons: [
-        {
-          text: 'Delete',
-          color: 'red'
-        },
-        {
-          text: 'Cancel'
-        }
-      ]
-    })
-
-    if (!confirmed.type) return
-
-    const res = await req.delete(`file/${id}`)
-    if (!res) return
-
-    if (res.status !== 204)
-      return await alert({
-        title: 'Error',
-        content: res.data.message
-      })
-
-    close(true)
   }
 
   async function convert() {
@@ -228,7 +97,12 @@
   }
 
   onMount(async () => {
-    const res = await req.get(`file/${id}`)
+    const shareId = page.url.searchParams.get('id')
+    const res = await req.get(`file/${id}`, {
+      params: {
+        shareId
+      }
+    })
     if (!res) return
 
     info = res.data
@@ -237,7 +111,10 @@
 
     if (foundType?.downloadRaw === true) {
       const raw = await req.get(`file/${id}/raw`, {
-        responseType: 'blob'
+        responseType: 'blob',
+        params: {
+          shareId
+        }
       })
       if (!res) return
       data = raw.data
@@ -290,14 +167,8 @@
         <div class="unsupported">Unsupported file type</div>
       {/if}
       <div class="actions">
-        <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
-          <span class="material-icons">share</span>
-        </button>
         <button onclick={download} data-color="green">
           <span class="material-icons">download</span>
-        </button>
-        <button onclick={del} data-color="red">
-          <span class="material-icons">delete</span>
         </button>
       </div>
     </div>

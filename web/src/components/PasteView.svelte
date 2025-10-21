@@ -3,6 +3,7 @@
   import { formatDate, req } from '$lib/utils'
   import { alert } from '$lib/popups'
   import Loader from './Loader.svelte'
+  import { createMessage } from '$lib/messages.js'
 
   // export let id
   // export let onclose
@@ -71,10 +72,13 @@
       })
 
       if (res.type === 'submit') {
-        await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
-        await alert({
-          title: 'Link Copied',
-          content: 'The link has been copied to your clipboard.'
+        await navigator.clipboard.writeText(
+          `${location.origin}/shared?id=${info.shareId}`
+        )
+        await createMessage({
+          title: 'Link copied!',
+          type: 'success',
+          content: 'Shareable link copied to your clipboard'
         })
       } else if (res.type === 'delete') {
         const confirmed = await alert({
@@ -103,9 +107,10 @@
           })
 
         info.shareId = null
-        await alert({
-          title: 'Link Deleted',
-          content: 'The link has been deleted.'
+        createMessage({
+          title: 'Link deleted!',
+          type: 'success',
+          content: 'The link has been deleted'
         })
       }
     } else {
@@ -138,11 +143,13 @@
           content: shareRes.data.message
         })
       info.shareId = shareRes.data.id
-      await navigator.clipboard.writeText(`${location.origin}/f/${info.id}`)
-      await alert({
-        title: 'Link Created',
-        content:
-          'The shareable link has been created and copied to your clipboard.'
+      await navigator.clipboard.writeText(
+        `${location.origin}/shared?id=${info.shareId}`
+      )
+      createMessage({
+        title: 'Link created and copied!',
+        type: 'success',
+        content: 'Shareable link copied to your clipboard'
       })
     }
   }

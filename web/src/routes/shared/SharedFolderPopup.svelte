@@ -3,9 +3,10 @@
   import { formatDate, formatBytes, req } from '$lib/utils'
   import { prompt, alert, select } from '$lib/popups'
   import { createMessage } from '$lib/messages'
-  import FileView from './FileView.svelte'
-  import FolderView from './FolderView.svelte'
-  import Loader from './Loader.svelte'
+  import FileView from './SharedFilePopup.svelte'
+  import FolderView from './SharedFolderPopup.svelte'
+  import Loader from '../../components/Loader.svelte'
+  import { page } from '$app/state'
 
   // export let id
   // export let onclose
@@ -71,143 +72,13 @@
     setTimeout(() => onclose(reload), 200)
   }
 
-  async function removeFile() {}
-
-  async function share() {
-    if (!info) return
-    if (info.shareId) {
-      const res = await alert({
-        title: `Sharing ${info.name}`,
-        content: 'What would you like to do?',
-        buttons: [
-          {
-            text: 'Copy Link',
-            type: 'submit'
-          },
-          {
-            text: 'Delete Link',
-            type: 'delete',
-            color: 'red'
-          },
-          {
-            text: 'Cancel',
-            type: 'cancel'
-          }
-        ]
-      })
-
-      if (res.type === 'submit') {
-        await navigator.clipboard.writeText(
-          `${location.origin}/shared?id=${info.shareId}`
-        )
-        await createMessage({
-          title: 'Link copied!',
-          type: 'success',
-          content: 'Shareable link copied to your clipboard'
-        })
-      } else if (res.type === 'delete') {
-        const confirmed = await alert({
-          title: 'Delete Link',
-          content: `Are you sure you want to delete the link for "${info.name}"?`,
-          buttons: [
-            {
-              text: 'Delete',
-              color: 'red'
-            },
-            {
-              text: 'Cancel'
-            }
-          ]
-        })
-
-        if (!confirmed.type) return
-
-        const delRes = await req.delete(`share/${info.shareId}`)
-        if (!delRes) return
-
-        if (delRes.status !== 204)
-          return await alert({
-            title: 'Error',
-            content: delRes.data.message
-          })
-
-        info.shareId = null
-        createMessage({
-          title: 'Link deleted!',
-          type: 'success',
-          content: 'The link has been deleted'
-        })
-      }
-    } else {
-      const res = await alert({
-        title: `Share ${info.name}`,
-        content:
-          'Are you sure you want to create a shareable link for this folder?',
-        buttons: [
-          {
-            text: 'Create Link'
-          },
-          {
-            text: 'Cancel'
-          }
-        ]
-      })
-
-      if (!res.type) return
-      const shareRes = await req.post(`share`, {
-        type: 'folder',
-        id: info.id
-      })
-
-      if (!shareRes) return
-      if (shareRes.status !== 200)
-        return await alert({
-          title: 'Error',
-          content: shareRes.data.message
-        })
-      info.shareId = shareRes.data.id
-      await navigator.clipboard.writeText(
-        `${location.origin}/shared?id=${info.shareId}`
-      )
-      createMessage({
-        title: 'Link created and copied!',
-        type: 'success',
-        content: 'Shareable link copied to your clipboard'
-      })
-    }
-  }
-
-  async function delFolder() {
-    if (!info) return
-    const confirmed = await alert({
-      title: 'Delete Folder',
-      content: `Are you sure you want to delete the collection "${info.name}"? This will also delete all contents recursively.`,
-      buttons: [
-        {
-          text: 'Delete',
-          color: 'red'
-        },
-        {
-          text: 'Cancel'
-        }
-      ]
-    })
-    if (!confirmed.type) return
-
-    const res = await req.delete(`folder/${id}`)
-
-    if (!res) return
-
-    await createMessage({
-      title: 'Folder deleted!',
-      type: 'success'
-    })
-
-    close(true)
-  }
-
   async function load() {
-    const res = await req.get(`folder/${id}`)
+    const id = page.url.searchParams.get('id')
+    const res = await req.get(`folder/${id}`, {
+      params: {
+        shareId: id
+      }
+    })
 
     if (!res) return close()
 
@@ -326,14 +197,7 @@
           {/each}
         </div>
       {/if}
-      <div class="actions">
-        <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
-          <span class="material-icons">share</span>
-        </button>
-        <button onclick={delFolder} data-color="red">
-          <span class="material-icons">delete</span>
-        </button>
-      </div>
+      <div class="actions"></div>
     </div>
   {/if}
 </div>

@@ -6,17 +6,33 @@ import {
   getFolder,
   updateFolder
 } from '#lib/files.js'
-import { updateFolderSchema } from '#lib/schemas.js'
+import { genericShareSchema, updateFolderSchema } from '#lib/schemas.js'
+import { getShare, isFolderShared } from '#lib/shares.js'
 
 export async function get(req: Request, res: Response) {
-  if (!req.user) return res.sendStatus(401)
+  const parsed = genericShareSchema.safeParse(req.query)
+  if (!parsed.success) return res.sendStatus(400)
+  const { shareId } = parsed.data
 
   const { id } = req.params
   if (!id) return res.sendStatus(400)
 
+  let validShare = false
+  if (shareId) {
+    const share = await getShare(shareId)
+
+    if (share && share.type === 'folder' && share.folderId) {
+      if (await isFolderShared(id, shareId)) {
+        validShare = true
+      }
+    }
+  }
+
+  if (!req.user && !validShare) return res.sendStatus(401)
+
   const folder = await getFolder(id)
   if (!folder) return res.sendStatus(404)
-  if (folder.ownerId !== req.user.id) return res.sendStatus(404)
+  if (!validShare && folder.ownerId !== req.user?.id) return res.sendStatus(404)
 
   return res.json(filterFolder(folder))
 }

@@ -14,8 +14,13 @@ export const registerSchema = z.object({
   password
 })
 
+export const genericShareSchema = z.object({
+  shareId: z.string().optional()
+})
+
 export const getRawFileSchema = z.object({
-  token: z.string()
+  token: z.string().optional(),
+  shareId: z.string().optional()
 })
 
 export const createFileSchema = z.object({

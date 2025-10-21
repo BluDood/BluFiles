@@ -59,7 +59,7 @@
     animation: slideIn 500ms ease;
     pointer-events: all;
     background: #111;
-    width: 300px;
+    width: 350px;
     display: flex;
     align-items: center;
     padding: 10px;
