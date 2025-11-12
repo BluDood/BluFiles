@@ -102,13 +102,13 @@
 <main>
   {#if dialog.open}
     {#if dialog.type === 'collection'}
-      <CollectionView id={dialog.id} {onclose} />
+      <CollectionView id={dialog.id!} {onclose} />
     {:else if dialog.type === 'folder'}
-      <FolderView id={dialog.id} {onclose} />
+      <FolderView id={dialog.id!} {onclose} />
     {:else if dialog.type === 'file'}
-      <FileView id={dialog.id} {onclose} />
+      <FileView id={dialog.id!} {onclose} />
     {:else if dialog.type === 'paste'}
-      <PasteView id={dialog.id} {onclose} />
+      <PasteView id={dialog.id!} {onclose} />
     {/if}
   {/if}
   <h2>Sharing</h2>
