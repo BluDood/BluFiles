@@ -23,10 +23,10 @@
 </script>
 
 <div class="titlebar">
-  <div class="title">
+  <a href="/" class="title">
     <img src="/assets/BluFilesSquare.png" alt="" />
     <div class="text">BluFiles</div>
-  </div>
+  </a>
   <div class="actions">
     <div class="menu">
       <button class="opener">
@@ -60,9 +60,17 @@
   }
 
   .title {
+    all: unset;
+    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 10px;
+    transition: 200ms ease;
+  }
+
+  .title:hover,
+  .title:focus {
+    color: #bbb;
   }
 
   .title img {
