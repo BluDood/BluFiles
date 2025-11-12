@@ -5,6 +5,7 @@
   import { prompt, alert } from '$lib/popups'
   import CollectionView from '../../../components/CollectionView.svelte'
   import Loader from '../../../components/Loader.svelte'
+  import { createMessage } from '$lib/messages.js'
 
   let previewing: string | false = $state(false)
 
@@ -45,6 +46,12 @@
     })
     if (!res) return
 
+    createMessage({
+      title: 'Collection Created',
+      type: 'success',
+      content: 'The collection has been created.'
+    })
+
     load()
   }
 
@@ -84,6 +91,12 @@
         content: res.data.message
       })
 
+    createMessage({
+      title: 'Collection Updated',
+      type: 'success',
+      content: 'The collection has been updated.'
+    })
+
     load()
   }
 
@@ -112,6 +125,12 @@
         title: 'Error',
         content: res.data.message
       })
+
+    createMessage({
+      title: 'Collection Deleted',
+      type: 'success',
+      content: 'The collection has been deleted.'
+    })
 
     load()
   }

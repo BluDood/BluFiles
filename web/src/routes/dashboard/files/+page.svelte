@@ -98,6 +98,12 @@
             content: 'Please try again later.'
           })
 
+        createMessage({
+          title: 'File Uploaded',
+          type: 'success',
+          content: 'The file has been uploaded successfully.'
+        })
+
         reload()
       }
 
@@ -137,6 +143,12 @@
         content: 'Please try again later.'
       })
 
+    createMessage({
+      title: 'Folder Created',
+      type: 'success',
+      content: 'The folder has been created successfully.'
+    })
+
     reload()
   }
 
@@ -167,6 +179,12 @@
         content: 'Please try again later.'
       })
 
+    createMessage({
+      title: 'File Deleted',
+      type: 'success',
+      content: 'The file has been deleted successfully.'
+    })
+
     reload()
   }
 
@@ -195,6 +213,12 @@
         title: 'An error has occurred',
         content: 'Please try again later.'
       })
+
+    createMessage({
+      title: 'Folder Deleted',
+      type: 'success',
+      content: 'The folder has been deleted successfully.'
+    })
 
     reload()
   }
@@ -228,6 +252,12 @@
         content: 'Please try again later.'
       })
 
+    createMessage({
+      title: 'File Updated',
+      type: 'success',
+      content: 'The file has been updated successfully.'
+    })
+
     reload()
   }
 
@@ -259,6 +289,12 @@
         title: 'An error has occurred',
         content: 'Please try again later.'
       })
+
+    createMessage({
+      title: 'Folder Updated',
+      type: 'success',
+      content: 'The folder has been updated successfully.'
+    })
 
     reload()
   }
@@ -451,9 +487,10 @@
         content: 'Please try again later.'
       })
 
-    await alert({
-      title: 'File Added',
-      content: `"${file.name}" has been added to "${collection.data.name}".`
+    createMessage({
+      title: 'File Added to Collection',
+      type: 'success',
+      content: `The file has been added.`
     })
     await reload()
   }

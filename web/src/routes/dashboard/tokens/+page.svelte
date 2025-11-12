@@ -3,6 +3,7 @@
   import { formatDate, req, formatUA } from '$lib/utils'
   import { prompt, alert } from '$lib/popups'
   import Loader from '../../../components/Loader.svelte'
+  import { createMessage } from '$lib/messages.js'
 
   interface Token {
     id: string
@@ -100,6 +101,12 @@
         title: 'An error has occurred',
         content: res.data.message
       })
+
+    createMessage({
+      title: 'Token Deleted',
+      type: 'success',
+      content: 'The token has been deleted successfully.'
+    })
 
     load()
   }

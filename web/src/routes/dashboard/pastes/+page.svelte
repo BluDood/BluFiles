@@ -4,6 +4,7 @@
   import { prompt, alert } from '$lib/popups'
   import PasteView from '../../../components/PasteView.svelte'
   import Loader from '../../../components/Loader.svelte'
+  import { createMessage } from '$lib/messages.js'
 
   interface Paste {
     id: string
@@ -68,6 +69,12 @@
         content: res.data.message
       })
 
+    createMessage({
+      title: 'Paste Created',
+      type: 'success',
+      content: 'The paste has been created.'
+    })
+
     load()
   }
 
@@ -95,6 +102,12 @@
         title: 'Error',
         content: res.data.message
       })
+
+    createMessage({
+      title: 'Paste Deleted',
+      type: 'success',
+      content: 'The paste has been deleted.'
+    })
 
     load()
   }
@@ -134,6 +147,12 @@
         title: 'Error',
         content: res.data.message
       })
+
+    createMessage({
+      title: 'Paste Updated',
+      type: 'success',
+      content: 'The paste has been updated.'
+    })
 
     load()
   }
