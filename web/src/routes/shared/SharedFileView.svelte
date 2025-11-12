@@ -1,13 +1,16 @@
 <script lang="ts">
-  import { formatBytes, req } from '$lib/utils.js'
+  import { page } from '$app/state'
+  import { formatBytes, formatDate, req } from '$lib/utils.js'
   import { onMount } from 'svelte'
+  import Loader from '../../components/Loader.svelte'
 
   interface Props {
     info: {
       id: string
       ownerId: string
-      views: number
       type: 'file'
+      views: number
+      createdAt: string
       file: {
         id: string
         name: string
@@ -22,6 +25,7 @@
   let type: string | null = $state(null)
   let data: Blob | null = $state(null)
   let dataURL: string | null = $state(null)
+  let loading = $state(true)
 
   async function convert() {
     if (!data) return null
@@ -55,6 +59,7 @@
         dataURL = url as string
       }
     }
+    loading = false
   }
 
   const types = [
@@ -83,35 +88,61 @@
     }
   ]
 
+  async function download() {
+    if (!data) {
+      const res = await req.get(`file/${shareInfo.file.id}/raw`, {
+        responseType: 'blob',
+        params: {
+          shareId: shareInfo.id
+        }
+      })
+      if (!res) return
+      data = res.data
+    }
+
+    const url = URL.createObjectURL(data!)
+
+    const a = document.createElement('a')
+    a.href = url
+    a.download = shareInfo.file.name
+    a.click()
+    URL.revokeObjectURL(url)
+    a.remove()
+  }
+
   onMount(load)
 </script>
 
 <div class="file">
-  <div class="preview">
-    {#if type === 'image'}
-      <img src={dataURL} alt="" />
-    {:else if type === 'text'}
-      <pre>{data}</pre>
-    {:else if type === 'video'}
-      <!-- svelte-ignore a11y_media_has_caption -->
-      <video src={dataURL} controls></video>
-    {:else if type === 'audio'}
-      <audio controls>
-        <source src={dataURL} type={shareInfo.file.mime} />
-      </audio>
-    {:else}
-      <div class="unsupported">Unsupported file type</div>
-    {/if}
-  </div>
+  {#if !loading}
+    <div class="preview">
+      {#if type === 'image'}
+        <img src={dataURL} alt="" />
+      {:else if type === 'text'}
+        <pre>{data}</pre>
+      {:else if type === 'video'}
+        <!-- svelte-ignore a11y_media_has_caption -->
+        <video src={dataURL} controls></video>
+      {:else if type === 'audio'}
+        <audio controls>
+          <source src={dataURL} type={shareInfo.file.mime} />
+        </audio>
+      {/if}
+    </div>
+  {:else}
+    <Loader />
+  {/if}
   <div class="info">
     <h2>{shareInfo.file.name}</h2>
     <div class="details">
       <span>File</span>
       <span>{formatBytes(shareInfo.file.size)}</span>
       <span>{shareInfo.file.mime}</span>
+      <span>{shareInfo.views} view{shareInfo.views === 1 ? '' : 's'}</span>
+      <span>{formatDate(shareInfo.createdAt)}</span>
     </div>
     <div class="buttons">
-      <button data-color="blue"> Download File </button>
+      <button data-color="blue" onclick={download}> Download File </button>
     </div>
   </div>
 </div>
@@ -121,8 +152,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
     animation: appear 500ms ease;
+  }
+
+  .preview:empty {
+    display: none;
   }
 
   .preview video {
@@ -137,6 +174,7 @@
     background: #111;
     border-radius: 10px;
     padding: 20px;
+    width: 100%;
   }
 
   .info h2 {

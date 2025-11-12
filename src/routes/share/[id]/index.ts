@@ -1,12 +1,21 @@
 import { Request, Response } from 'express'
 
-import { deleteShare, filterShare, getShare } from '#lib/shares.js'
+import {
+  deleteShare,
+  filterShare,
+  getShare,
+  incrementShareViews
+} from '#lib/shares.js'
 
 export async function get(req: Request, res: Response) {
   const { id } = req.params
   const share = await getShare(id)
 
   if (!share) return res.sendStatus(404)
+
+  const newCount = await incrementShareViews(id)
+
+  share.views = newCount
 
   return res.json(filterShare(share))
 }

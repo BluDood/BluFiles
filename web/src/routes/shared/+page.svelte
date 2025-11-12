@@ -7,12 +7,14 @@
   import SharedFolderView from './SharedFolderView.svelte'
   import SharedPasteView from './SharedPasteView.svelte'
   import { goto } from '$app/navigation'
+  import SharedCollectionView from './SharedCollectionView.svelte'
 
   interface BaseShareInfo {
     id: string
     ownerId: string
     type: 'file' | 'folder' | 'collection' | 'paste'
     views: number
+    createdAt: string
   }
 
   interface FileShareInfo extends BaseShareInfo {
@@ -44,14 +46,30 @@
     }
   }
 
-  type ShareInfo = FileShareInfo | FolderShareInfo | PasteShareInfo
+  interface CollectionShareInfo extends BaseShareInfo {
+    type: 'collection'
+    collection: {
+      id: string
+      name: string
+      itemCount: number
+    }
+  }
+
+  type ShareInfo =
+    | FileShareInfo
+    | FolderShareInfo
+    | PasteShareInfo
+    | CollectionShareInfo
 
   let info: ShareInfo | null = $state(null)
 
   async function load() {
     const id = page.url.searchParams.get('id')
     if (!id) return goto('/')
+
     const res = await req.get(`/share/${id}`)
+    if (res.status === 404) return goto('/')
+
     info = res.data as ShareInfo
   }
 
@@ -76,6 +94,8 @@
         <SharedFolderView {info} />
       {:else if info.type === 'paste'}
         <SharedPasteView {info} />
+      {:else if info.type === 'collection'}
+        <SharedCollectionView {info} />
       {/if}
     {:else}
       <div class="load">

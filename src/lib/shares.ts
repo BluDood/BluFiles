@@ -193,6 +193,21 @@ export async function getShare(id: string) {
   return share
 }
 
+export async function incrementShareViews(id: string) {
+  const share = await prisma.share.update({
+    where: {
+      id
+    },
+    data: {
+      views: {
+        increment: 1
+      }
+    }
+  })
+
+  return share.views
+}
+
 export async function isFolderShared(folderId: string, shareId: string) {
   const share = await prisma.share.findFirst({
     where: {
@@ -247,4 +262,30 @@ export async function isFileInFolderSHared(fileId: string, shareId: string) {
     })
   }
   return false
+}
+
+export async function isFileInCollectionShared(
+  fileId: string,
+  shareId: string
+) {
+  const share = await prisma.share.findFirst({
+    where: {
+      id: shareId
+    }
+  })
+  if (!share || share.type !== 'collection') return false
+  const collection = await prisma.collection.findUnique({
+    where: {
+      id: share.collectionId!
+    },
+    include: {
+      files: {
+        where: {
+          id: fileId
+        }
+      }
+    }
+  })
+  if (!collection) return false
+  return collection.files.length > 0
 }

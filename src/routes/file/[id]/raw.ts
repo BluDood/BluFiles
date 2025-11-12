@@ -4,7 +4,11 @@ import { getRawFileSchema } from '#lib/schemas.js'
 import { getToken } from '#lib/tokens.js'
 import { read } from '#lib/filesystem.js'
 import { getFile } from '#lib/files.js'
-import { getShare, isFileInFolderSHared } from '#lib/shares.js'
+import {
+  getShare,
+  isFileInCollectionShared,
+  isFileInFolderSHared
+} from '#lib/shares.js'
 
 export async function get(req: Request, res: Response) {
   const { id } = req.params
@@ -30,6 +34,8 @@ export async function get(req: Request, res: Response) {
           if (file.id === share.fileId) userId = 'share'
         } else if (share.type === 'folder' && share.folderId) {
           if (await isFileInFolderSHared(file.id, shareId)) userId = 'share'
+        } else if (share.type === 'collection' && share.collectionId) {
+          if (await isFileInCollectionShared(id, shareId)) userId = 'share'
         }
       }
     }

@@ -10,6 +10,7 @@
       ownerId: string
       type: 'folder'
       views: number
+      createdAt: string
       folder: {
         id: string
         name: string
@@ -66,97 +67,161 @@
   onMount(load)
 </script>
 
-<div class="files">
-  {#if previewing}
-    <SharedFileView
-      id={previewing}
-      onclose={(r: boolean) => {
-        previewing = false
-        if (r) reload()
-      }}
-    />
-  {/if}
-  <div class="titlebar">
-    <div class="actions">
-      <!-- <button>
+<div class="folder">
+  <div class="shareInfo">
+    <h2>{shareInfo.folder.name}</h2>
+    <div class="details">
+      <span>Folder</span>
+      <span>{shareInfo.views} view{shareInfo.views === 1 ? '' : 's'}</span>
+      <span>{formatDate(shareInfo.createdAt)}</span>
+    </div>
+  </div>
+  <div class="files">
+    {#if previewing}
+      <SharedFileView
+        id={previewing}
+        onclose={(r: boolean) => {
+          previewing = false
+          if (r) reload()
+        }}
+      />
+    {/if}
+    <div class="titlebar">
+      <div class="actions">
+        <!-- <button>
           <span class="material-icons">arrow_back</span>
         </button>
         <button>
           <span class="material-icons">arrow_forward</span>
         </button> -->
-      <button
-        disabled={loading || info?.id === shareInfo.folder.id}
-        onclick={() => load(info?.parentId)}
-      >
-        <span class="material-icons">arrow_upward</span>
-      </button>
-      <button disabled={loading} onclick={reload}>
-        <span class="material-icons">refresh</span>
-      </button>
-      <button disabled={loading || !info?.id} onclick={() => load(null)}>
-        <span class="material-icons">home</span>
-      </button>
+        <button
+          disabled={loading || info?.id === shareInfo.folder.id}
+          onclick={() => load(info?.parentId)}
+        >
+          <span class="material-icons">arrow_upward</span>
+        </button>
+        <button disabled={loading} onclick={reload}>
+          <span class="material-icons">refresh</span>
+        </button>
+        <button disabled={loading || !info?.id} onclick={() => load(null)}>
+          <span class="material-icons">home</span>
+        </button>
+      </div>
+      <div class="current">{info?.name || ''}</div>
     </div>
-    <div class="current">{info?.name || ''}</div>
+    {#if loading}
+      <div class="loading">
+        <Loader />
+      </div>
+    {:else if info}
+      <div class="content">
+        {#if info.folders.length === 0 && info.files.length === 0}
+          <div class="empty">
+            No files or folders here. Press + to add some!
+          </div>
+        {:else}
+          {#each info.folders as folder}
+            <button
+              draggable="true"
+              onclick={() => load(folder.id)}
+              class="item"
+            >
+              <div class="icon">
+                <span class="material-icons">folder</span>
+              </div>
+              <p>{folder.name}</p>
+              <div class="right">
+                <div class="info">
+                  <span>{formatDate(folder.updatedAt)}</span>
+                </div>
+              </div>
+            </button>
+          {/each}
+          {#each info.files as file}
+            <button
+              draggable="true"
+              class="item"
+              onclick={() => (previewing = file.id)}
+            >
+              <div class="icon">
+                <span class="material-icons">
+                  {#if file.mime.startsWith('image')}
+                    image
+                  {:else if file.mime.startsWith('video')}
+                    movie
+                  {:else if file.mime.startsWith('audio')}
+                    music_note
+                  {:else if file.mime.startsWith('text')}
+                    description
+                  {:else}
+                    insert_drive_file
+                  {/if}
+                </span>
+              </div>
+              <p>{file.name}</p>
+              <div class="right">
+                <div class="info">
+                  <span>{formatDate(file.updatedAt)}</span>
+                  <span>{formatBytes(file.size)}</span>
+                </div>
+              </div>
+            </button>
+          {/each}
+        {/if}
+      </div>
+    {/if}
   </div>
-  {#if loading}
-    <div class="loading">
-      <Loader />
-    </div>
-  {:else if info}
-    <div class="content">
-      {#if info.folders.length === 0 && info.files.length === 0}
-        <div class="empty">No files or folders here. Press + to add some!</div>
-      {:else}
-        {#each info.folders as folder}
-          <button draggable="true" onclick={() => load(folder.id)} class="item">
-            <div class="icon">
-              <span class="material-icons">folder</span>
-            </div>
-            <p>{folder.name}</p>
-            <div class="right">
-              <div class="info">
-                <span>{formatDate(folder.updatedAt)}</span>
-              </div>
-            </div>
-          </button>
-        {/each}
-        {#each info.files as file}
-          <button
-            draggable="true"
-            class="item"
-            onclick={() => (previewing = file.id)}
-          >
-            <div class="icon">
-              <span class="material-icons">
-                {#if file.mime.startsWith('image')}
-                  image
-                {:else if file.mime.startsWith('video')}
-                  movie
-                {:else if file.mime.startsWith('audio')}
-                  music_note
-                {:else if file.mime.startsWith('text')}
-                  description
-                {:else}
-                  insert_drive_file
-                {/if}
-              </span>
-            </div>
-            <p>{file.name}</p>
-            <div class="right">
-              <div class="info">
-                <span>{formatDate(file.updatedAt)}</span>
-                <span>{formatBytes(file.size)}</span>
-              </div>
-            </div>
-          </button>
-        {/each}
-      {/if}
-    </div>
-  {/if}
 </div>
 
 <style>
+  .folder {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    height: 100%;
+    animation: appear 500ms ease;
+  }
+
+  .shareInfo {
+    background: #111;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+  }
+
+  .shareInfo h2 {
+    font-weight: 600;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+    flex: 1;
+  }
+
+  .shareInfo .details {
+    display: flex;
+    align-items: center;
+  }
+
+  .shareInfo .details span {
+    display: flex;
+    align-items: center;
+    color: #aaa;
+    font-size: 16px;
+  }
+
+  .shareInfo .details span:not(:last-child)::after {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #aaa;
+    margin: 0 5px;
+  }
+
   .files {
     width: 100%;
     height: 100%;
