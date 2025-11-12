@@ -65,10 +65,30 @@
       placeholder={popup.input.placeholder}
       bind:value={input}
       readonly={popup.input.readonly}
+      onkeydown={e => {
+        if (e.key === 'Enter') {
+          popup.callback({
+            type: popup.buttons[0]?.type || 'submit',
+            input
+          })
+        }
+      }}
     />
   {/if}
   {#if popup.select?.enabled}
-    <select class="input select" bind:value={input} bind:this={selectElement}>
+    <select
+      class="input select"
+      bind:value={input}
+      bind:this={selectElement}
+      onkeydown={e => {
+        if (e.key === 'Enter') {
+          popup.callback({
+            type: popup.buttons[0]?.type || 'submit',
+            input
+          })
+        }
+      }}
+    >
       <option value="" disabled selected hidden>
         {popup.select.placeholder}
       </option>
