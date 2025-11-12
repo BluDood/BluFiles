@@ -19,6 +19,8 @@
   let closing = $state(false)
   let loading = $state(true)
 
+  let shouldReload = $state(false)
+
   interface CollectionInfo {
     id: string
     name: string
@@ -46,10 +48,48 @@
 
   function close(reload = false) {
     closing = true
-    setTimeout(() => onclose(reload), 200)
+    setTimeout(() => onclose(shouldReload || reload), 200)
   }
 
-  async function removeFile(id: string) {}
+  async function removeFile(id: string) {
+    if (!info) return
+    const confirmed = await alert({
+      title: 'Remove File',
+      content: `Are you sure you want to remove the file "${
+        files.find(f => f.id === id)?.name
+      }" from this collection?`,
+      buttons: [
+        {
+          text: 'Remove',
+          color: 'red'
+        },
+        {
+          text: 'Cancel'
+        }
+      ]
+    })
+    if (!confirmed.type) return
+
+    const filtered = info.files.map(f => f.id).filter(fid => fid !== id)
+    const res = await req.patch(`collection/${info.id}`, {
+      fileIds: filtered
+    })
+    if (!res) return
+    if (res.status !== 204)
+      return await alert({
+        title: 'Error',
+        content: res.data.message
+      })
+
+    createMessage({
+      title: 'File removed!',
+      type: 'success'
+    })
+
+    shouldReload = true
+
+    load()
+  }
 
   async function share() {
     if (!info) return
@@ -263,6 +303,7 @@
                 <div class="itemActions">
                   <!-- svelte-ignore a11y_click_events_have_key_events -->
                   <span
+                    class="button"
                     role="button"
                     tabindex="0"
                     onclick={(e: Event) => {
@@ -459,14 +500,14 @@
     margin-left: 10px;
   }
 
-  .item .itemActions button {
+  .item .itemActions .button {
     all: unset;
     display: flex;
     align-items: center;
     cursor: pointer;
   }
 
-  .item .itemActions button[data-color='red'] {
+  .item .itemActions .button[data-color='red'] {
     color: red;
   }
 

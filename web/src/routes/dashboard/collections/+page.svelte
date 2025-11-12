@@ -48,6 +48,74 @@
     load()
   }
 
+  async function edit(id: string) {
+    if (!collections) return
+    const collection = collections.find(p => p.id === id)
+    if (!collection)
+      return await alert({
+        title: 'Error',
+        content: 'Collection not found'
+      })
+
+    const name = await prompt({
+      title: 'Edit Collection',
+      content: 'Please enter a new name for the collection',
+      placeholder: 'Enter a name...',
+      defaultValue: collection.name,
+      buttons: [
+        {
+          text: 'Continue'
+        },
+        {
+          text: 'Cancel'
+        }
+      ]
+    })
+    if (!name.type || !name.input) return
+
+    const res = await req.patch(`collection/${id}`, {
+      name: name.input
+    })
+    if (!res) return
+
+    if (res.status !== 204)
+      return await alert({
+        title: 'Error',
+        content: res.data.message
+      })
+
+    load()
+  }
+
+  async function del(id: string) {
+    const confirmed = await alert({
+      title: 'Delete Collection',
+      content:
+        'Are you sure you want to delete this collection? This will not delete its files.',
+      buttons: [
+        {
+          text: 'Delete',
+          color: 'red'
+        },
+        {
+          text: 'Cancel'
+        }
+      ]
+    })
+    if (!confirmed.type) return
+
+    const res = await req.delete(`collection/${id}`)
+    if (!res) return
+
+    if (res.status !== 204)
+      return await alert({
+        title: 'Error',
+        content: res.data.message
+      })
+
+    load()
+  }
+
   onMount(load)
 </script>
 
@@ -78,9 +146,38 @@
             onclick={() => (previewing = collection.id)}
           >
             <p>{collection.name}</p>
-            <div class="info">
-              <p>{collection.count} items</p>
-              <p>{formatDate(collection.createdAt)}</p>
+            <div class="right">
+              <div class="info">
+                <p>{collection.count} items</p>
+                <p>{formatDate(collection.createdAt)}</p>
+              </div>
+              <!-- svelte-ignore a11y_click_events_have_key_events -->
+              <div class="actions">
+                <span
+                  class="action"
+                  data-color="orange"
+                  tabindex="0"
+                  role="button"
+                  onclick={e => {
+                    e.stopPropagation()
+                    edit(collection.id)
+                  }}
+                >
+                  <span class="material-icons">edit</span>
+                </span>
+                <span
+                  class="action"
+                  data-color="red"
+                  tabindex="0"
+                  role="button"
+                  onclick={e => {
+                    e.stopPropagation()
+                    del(collection.id)
+                  }}
+                >
+                  <span class="material-icons">delete</span>
+                </span>
+              </div>
             </div>
           </button>
         {/each}
@@ -142,9 +239,19 @@
     white-space: nowrap;
   }
 
+  .collection .right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    margin-left: 20px;
+  }
+
   .collection .info {
     display: flex;
+    align-items: center;
     margin-left: 20px;
+    width: max-content;
   }
 
   .collection .info > p {
@@ -155,5 +262,36 @@
   .collection .info > p:not(:first-child)::before {
     content: '•';
     margin: 0 5px;
+  }
+
+  .collection .actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .collection .actions .action {
+    all: unset;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 200ms ease;
+    opacity: 0.8;
+  }
+
+  .collection .actions .action:hover {
+    opacity: 1;
+  }
+
+  .collection .actions .action[data-color='red'] {
+    color: red;
+  }
+
+  .collection .actions .action[data-color='orange'] {
+    color: orange;
+  }
+
+  .collection .actions .action span {
+    font-size: 20px;
   }
 </style>
