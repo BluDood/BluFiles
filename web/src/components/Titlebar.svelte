@@ -104,7 +104,7 @@
     transition: 200ms ease;
   }
 
-  .actions .menu .opener:hover {
+  .actions .menu .opener:is(:hover, :focus-visible) {
     background: #222;
   }
 
@@ -139,7 +139,7 @@
     color: red;
   }
 
-  .actions .menu .content .item:hover {
+  .actions .menu .content .item:is(:hover, :focus-visible) {
     background: #222;
   }
 

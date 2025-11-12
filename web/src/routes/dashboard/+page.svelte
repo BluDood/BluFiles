@@ -43,7 +43,7 @@
   <main>
     <h1>Welcome, {info.user.name}!</h1>
     <div class="info">
-      <button class="item">
+      <button class="item" disabled>
         <h2>Storage</h2>
         <p>
           {formatBytes(info.storage.used)}{info.storage.total !== -1
@@ -102,7 +102,7 @@
     cursor: pointer;
   }
 
-  .info .item:hover {
+  .info .item:is(:hover, :focus-visible) {
     background: #222;
   }
 
