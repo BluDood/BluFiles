@@ -5,6 +5,8 @@ import cors from 'cors'
 import { useToken } from '#lib/tokens.js'
 import path from 'path'
 import { logger } from '#lib/utils.js'
+import { getShare } from './shares.js'
+import { generateOpenGraphHtml } from './opengraph.js'
 
 async function auth(req: Request, res: Response, next: NextFunction) {
   const auth = req.headers.authorization
@@ -45,6 +47,30 @@ function parseMultipart(req: Request, res: Response, next: NextFunction) {
   next()
 }
 
+async function shareRoute(req: Request, res: Response) {
+  const userAgent = req.headers['user-agent'] || ''
+  const isCrawler = /discordbot|slackbot|twitterbot/i.test(userAgent)
+  if (!isCrawler) return res.redirect(`/shared?id=${req.params.id}`)
+
+  const { id } = req.params
+  const share = await getShare(id)
+
+  if (!share) return res.sendStatus(404)
+
+  if (share.file) {
+    const page = generateOpenGraphHtml({
+      title: share.file.name,
+      description: `Shared file: ${share.file.name} (${(
+        share.file.size / 1024
+      ).toFixed(2)} KB)`,
+      imageUrl: `http://localhost:1337/api/file/${share.fileId}/raw?shareId=${share.id}`,
+      url: `http://localhost:5173/shared?id=${share.id}`
+    })
+
+    return res.send(page)
+  }
+}
+
 export async function setupMiddlewares(app: Application) {
   app.use(cors())
   app.use(express.json())
@@ -55,6 +81,8 @@ export async function setupMiddlewares(app: Application) {
     '/api',
     await router({ directory: path.join(process.cwd(), 'dist/routes') })
   )
+
+  app.get('/s/:id', shareRoute)
 
   app.use(express.static(path.join(process.cwd(), 'web/build')))
 
