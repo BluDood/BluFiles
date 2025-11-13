@@ -26,7 +26,13 @@ export const getRawFileSchema = z.object({
 export const createFileSchema = z.object({
   name: z.string().min(1).max(128),
   folderId: z.string().optional(),
-  data: z.instanceof(Buffer)
+  data: z.instanceof(Buffer),
+  share: z.preprocess(val => {
+    if (val === undefined) return false
+    if (val === 'true') return true
+    if (val === 'false') return false
+    return Boolean(val)
+  }, z.boolean().optional())
 })
 
 export const updateFileSchema = z.object({
@@ -47,7 +53,13 @@ export const updateFolderSchema = z.object({
 export const createPasteSchema = z.object({
   name: z.string().min(1).max(128),
   content: z.string().min(1),
-  type: z.string()
+  type: z.string(),
+  share: z.preprocess(val => {
+    if (val === undefined) return false
+    if (val === 'true') return true
+    if (val === 'false') return false
+    return Boolean(val)
+  }, z.boolean().optional())
 })
 
 export const updatePasteSchema = z.object({

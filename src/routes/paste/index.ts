@@ -3,6 +3,7 @@ import { Request, Response } from 'express'
 import { createPaste, filterPaste, getPastes } from '#lib/paste.js'
 import { checkPasteCreationAllowed } from '#lib/config.js'
 import { createPasteSchema } from '#lib/schemas.js'
+import { createShare } from '#lib/shares.js'
 
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
@@ -19,7 +20,7 @@ export async function post(req: Request, res: Response) {
 
   const parsed = createPasteSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)
-  const { name, content, type } = parsed.data
+  const { name, content, type, share } = parsed.data
 
   const paste = await createPaste({
     name,
@@ -28,5 +29,23 @@ export async function post(req: Request, res: Response) {
     ownerId: req.user.id
   })
 
-  return res.json(filterPaste(paste, false))
+  if (share) {
+    const share = await createShare({
+      ownerId: req.user.id,
+      type: 'paste',
+      id: paste.id
+    })
+
+    return res.json(
+      filterPaste(
+        {
+          ...paste,
+          share
+        },
+        false
+      )
+    )
+  } else {
+    return res.json(filterPaste(paste, false))
+  }
 }
