@@ -4,6 +4,8 @@ import { countFiles, countFolders, getFiles } from '#lib/files.js'
 import { countPastes } from '#lib/paste.js'
 import { countUsers } from '#lib/users.js'
 import { getStorageUsage } from '#lib/filesystem.js'
+import { countCollections } from './collections.js'
+import { countShares } from './shares.js'
 
 interface Config {
   maxUsers: number
@@ -12,12 +14,16 @@ interface Config {
     maxFiles: number
     maxFolders: number
     maxPastes: number
+    maxCollections: number
+    maxShares: number
     maxStorage: number
   }
   user: {
     maxFiles: number
     maxFolders: number
     maxPastes: number
+    maxCollections: number
+    maxShares: number
     maxStorage: number
   }
 }
@@ -29,19 +35,25 @@ const defaultConfig: Config = {
     maxFiles: -1,
     maxFolders: -1,
     maxPastes: -1,
+    maxCollections: -1,
+    maxShares: -1,
     maxStorage: -1
   },
   user: {
     maxFiles: -1,
     maxFolders: -1,
     maxPastes: -1,
+    maxCollections: -1,
+    maxShares: -1,
     maxStorage: -1
   }
 }
 
-const configPath = path.resolve(path.join(process.cwd(), 'data/config.json'))
+const configPath = path.resolve(
+  path.join(process.cwd(), 'data/config.json')
+)
 
-export async function getConfig() {
+export async function getConfig(): Promise<Config> {
   try {
     const data = await fs.readFile(configPath, 'utf8')
     return {
@@ -59,10 +71,10 @@ export async function setConfig(data: Config) {
 
 await setConfig(await getConfig())
 
-export async function setConfigValue(key: string, value: unknown) {
+export async function setConfigValue(key: keyof Config, value: unknown) {
   const config = await getConfig()
   if (!Object.keys(config).includes(key)) return false
-  config[key] = value
+  config[key] = value as never
   await setConfig(config)
   return true
 }
@@ -81,13 +93,17 @@ export async function checkRegistrationAllowed() {
   return true
 }
 
-export async function checkFileCreationAllowed(userId: string, size: number) {
+export async function checkFileCreationAllowed(
+  userId: string,
+  size: number
+) {
   const config = await getConfig()
 
   const files = await countFiles(userId)
-  if (config.user.maxFiles !== -1 && files >= config.user.maxFiles) return false
+  if (config.user.maxFiles !== -1 && files >= config.user.maxFiles)
+    return false
 
-  const totalFiles = await countFiles(null)
+  const totalFiles = await countFiles()
   if (config.total.maxFiles !== -1 && totalFiles >= config.total.maxFiles)
     return false
 
@@ -116,8 +132,11 @@ export async function checkFolderCreationAllowed(userId: string) {
   if (config.user.maxFolders !== -1 && folders >= config.user.maxFolders)
     return false
 
-  const totalFolders = await countFolders(null)
-  if (config.total.maxFolders !== -1 && totalFolders >= config.total.maxFolders)
+  const totalFolders = await countFolders()
+  if (
+    config.total.maxFolders !== -1 &&
+    totalFolders >= config.total.maxFolders
+  )
     return false
 
   return true
@@ -130,9 +149,48 @@ export async function checkPasteCreationAllowed(userId: string) {
   if (config.user.maxPastes !== -1 && pastes >= config.user.maxPastes)
     return false
 
-  const totalPastes = await countPastes(null)
-  if (config.total.maxPastes !== -1 && totalPastes >= config.total.maxPastes)
+  const totalPastes = await countPastes()
+  if (
+    config.total.maxPastes !== -1 &&
+    totalPastes >= config.total.maxPastes
+  )
     return false
 
+  return true
+}
+
+export async function checkCollectionCreationAllowed(userId: string) {
+  const config = await getConfig()
+
+  const collections = await countCollections(userId)
+  if (
+    config.user.maxCollections !== -1 &&
+    collections >= config.user.maxCollections
+  )
+    return false
+
+  const totalCollections = await countCollections()
+  if (
+    config.total.maxCollections !== -1 &&
+    totalCollections >= config.total.maxCollections
+  )
+    return false
+
+  return true
+}
+
+export async function checkShareCreationAllowed(userId: string) {
+  const config = await getConfig()
+
+  const shares = await countShares(userId)
+  if (config.user.maxShares !== -1 && shares >= config.user.maxShares)
+    return false
+
+  const totalShares = await countShares()
+  if (
+    config.total.maxShares !== -1 &&
+    totalShares >= config.total.maxShares
+  )
+    return false
   return true
 }

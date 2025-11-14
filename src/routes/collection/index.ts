@@ -6,6 +6,7 @@ import {
   getCollections
 } from '#lib/collections.js'
 import { createCollectionSchema } from '#lib/schemas.js'
+import { checkCollectionCreationAllowed } from '#lib/config.js'
 
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
@@ -17,6 +18,8 @@ export async function get(req: Request, res: Response) {
 
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
+  if (!(await checkCollectionCreationAllowed(req.user.id)))
+    return res.sendStatus(403)
 
   const parsed = createCollectionSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)

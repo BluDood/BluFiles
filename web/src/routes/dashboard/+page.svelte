@@ -2,19 +2,37 @@
   import { onMount } from 'svelte'
   import { req, formatBytes } from '$lib/utils'
   import { alert } from '$lib/popups'
+  import Progress from '../../components/Progress.svelte'
 
   interface DashboardInfo {
     user: {
       name: string
-      email: string
+      id: string
     }
     storage: {
-      used: number
-      total: number
+      current: number
+      max: number
     }
-    files: number
-    folders: number
-    pastes: number
+    files: {
+      current: number
+      max: number
+    }
+    folders: {
+      current: number
+      max: number
+    }
+    pastes: {
+      current: number
+      max: number
+    }
+    collections: {
+      current: number
+      max: number
+    }
+    shares: {
+      current: number
+      max: number
+    }
   }
 
   let info: DashboardInfo | null = $state(null)
@@ -46,28 +64,75 @@
       <button class="item" disabled>
         <h2>Storage</h2>
         <p>
-          {formatBytes(info.storage.used)}{info.storage.total !== -1
-            ? ` / ${formatBytes(info.storage.total)}`
+          {formatBytes(info.storage.current)}{info.storage.max !== -1
+            ? ` / ${formatBytes(info.storage.max)}`
             : ''}
         </p>
-        {#if info.storage.total !== -1}
-          <progress max={info.storage.total} value={info.storage.used}
-          ></progress>
+        {#if info.storage.max !== -1}
+          <Progress max={info.storage.max} value={info.storage.current} />
         {/if}
       </button>
       <a class="item" href="/dashboard/files">
         <h2>Files</h2>
-        <p>{info.files}</p>
+        <p>
+          {info.files.current}{info.files.max !== -1
+            ? ` / ${info.files.max}`
+            : ''}
+        </p>
+        {#if info.files.max !== -1}
+          <Progress max={info.files.max} value={info.files.current} />
+        {/if}
         <div class="link material-icons">open_in_new</div>
       </a>
       <a class="item" href="/dashboard/files">
         <h2>Folders</h2>
-        <p>{info.folders}</p>
+        <p>
+          {info.folders.current}{info.folders.max !== -1
+            ? ` / ${info.folders.max}`
+            : ''}
+        </p>
+        {#if info.folders.max !== -1}
+          <Progress max={info.folders.max} value={info.folders.current} />
+        {/if}
         <div class="link material-icons">open_in_new</div>
       </a>
       <a class="item" href="/dashboard/pastes">
         <h2>Pastes</h2>
-        <p>{info.pastes}</p>
+        <p>
+          {info.pastes.current}{info.pastes.max !== -1
+            ? ` / ${info.pastes.max}`
+            : ''}
+        </p>
+        {#if info.pastes.max !== -1}
+          <Progress max={info.pastes.max} value={info.pastes.current} />
+        {/if}
+        <div class="link material-icons">open_in_new</div>
+      </a>
+      <a class="item" href="/dashboard/collections">
+        <h2>Collections</h2>
+        <p>
+          {info.collections.current}{info.collections.max !== -1
+            ? ` / ${info.collections.max}`
+            : ''}
+        </p>
+        {#if info.collections.max !== -1}
+          <Progress
+            max={info.collections.max}
+            value={info.collections.current}
+          />
+        {/if}
+        <div class="link material-icons">open_in_new</div>
+      </a>
+      <a class="item" href="/dashboard/shares">
+        <h2>Shared Items</h2>
+        <p>
+          {info.shares.current}{info.shares.max !== -1
+            ? ` / ${info.shares.max}`
+            : ''}
+        </p>
+        {#if info.shares.max !== -1}
+          <Progress max={info.shares.max} value={info.shares.current} />
+        {/if}
         <div class="link material-icons">open_in_new</div>
       </a>
     </div>
@@ -102,6 +167,10 @@
     cursor: pointer;
   }
 
+  .info .item:has(:global(.progress)) p {
+    margin-bottom: 5px;
+  }
+
   .info .item:is(:hover, :focus-visible) {
     background: #222;
   }
@@ -109,10 +178,6 @@
   .info .item:not(:has(.link)) {
     background: #111;
     cursor: default;
-  }
-
-  .info .item progress {
-    width: 100%;
   }
 
   .info .item .link {

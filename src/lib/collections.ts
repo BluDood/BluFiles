@@ -55,6 +55,15 @@ export async function getCollections(userId: string) {
   return collections
 }
 
+export async function countCollections(ownerId?: string) {
+  const count = await prisma.collection.count({
+    where: {
+      ownerId
+    }
+  })
+  return count
+}
+
 export async function createCollection({
   name,
   ownerId

@@ -74,9 +74,9 @@ export const filterFolder = (
   return folder as FilteredFolder
 }
 
-export async function countFolders(ownerId: string | null) {
+export async function countFolders(ownerId?: string) {
   return prisma.folder.count({
-    where: ownerId ? { ownerId } : undefined
+    where: { ownerId }
   })
 }
 
@@ -179,9 +179,9 @@ export async function updateFolder(
   return folder
 }
 
-export async function countFiles(ownerId: string | null) {
+export async function countFiles(ownerId?: string) {
   return prisma.file.count({
-    where: ownerId ? { ownerId } : undefined
+    where: { ownerId }
   })
 }
 

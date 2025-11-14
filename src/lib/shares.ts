@@ -160,6 +160,15 @@ export async function getShares(userId: string) {
   return shares
 }
 
+export async function countShares(ownerId?: string) {
+  const count = await prisma.share.count({
+    where: {
+      ownerId
+    }
+  })
+  return count
+}
+
 export async function createShare({
   ownerId,
   type,

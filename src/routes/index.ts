@@ -1,23 +1,45 @@
 import { Request, Response } from 'express'
 
-import { countFiles, countFolders } from '#lib/files.js'
+import { countFiles, countFolders, getFiles } from '#lib/files.js'
 import { getStorageUsage } from '#lib/filesystem.js'
 import { countPastes } from '#lib/paste.js'
 import { getConfig } from '#lib/config.js'
+import { countCollections } from '#lib/collections.js'
+import { countShares } from '#lib/shares.js'
 
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)
   const config = await getConfig()
 
+  const fileIds = (await getFiles(req.user.id, true)).map(f => f.id)
+  const storageUsage = await getStorageUsage(fileIds)
+
   res.json({
     storage: {
-      total: config.total.maxStorage,
-      used: await getStorageUsage()
+      current: storageUsage,
+      max: config.user.maxStorage
     },
-    files: await countFiles(req.user.id),
-    folders: await countFolders(req.user.id),
-    pastes: await countPastes(req.user.id),
+    files: {
+      current: await countFiles(req.user.id),
+      max: config.user.maxFiles
+    },
+    folders: {
+      current: await countFolders(req.user.id),
+      max: config.user.maxFolders
+    },
+    pastes: {
+      current: await countPastes(req.user.id),
+      max: config.user.maxPastes
+    },
+    collections: {
+      current: await countCollections(req.user.id),
+      max: config.user.maxCollections
+    },
+    shares: {
+      current: await countShares(req.user.id),
+      max: config.user.maxShares
+    },
     user: {
       name: req.user.username,
       id: req.user.id

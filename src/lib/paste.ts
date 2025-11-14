@@ -34,9 +34,9 @@ export const filterPaste = (
   return paste
 }
 
-export async function countPastes(ownerId: string | null) {
+export async function countPastes(ownerId?: string) {
   return await prisma.paste.count({
-    where: ownerId ? { ownerId } : undefined
+    where: { ownerId }
   })
 }
 
