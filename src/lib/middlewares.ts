@@ -1,4 +1,9 @@
-import express, { Request, Response, NextFunction, Application } from 'express'
+import express, {
+  Request,
+  Response,
+  NextFunction,
+  Application
+} from 'express'
 import { router } from 'express-file-routing'
 import mp from 'parse-multipart-data'
 import cors from 'cors'
@@ -6,7 +11,7 @@ import { useToken } from '#lib/tokens.js'
 import path from 'path'
 import { logger } from '#lib/utils.js'
 import { getShare } from './shares.js'
-import { generateOpenGraphHtml } from './opengraph.js'
+import { generateFileMetaPage } from './opengraph.js'
 
 async function auth(req: Request, res: Response, next: NextFunction) {
   const auth = req.headers.authorization
@@ -48,27 +53,26 @@ function parseMultipart(req: Request, res: Response, next: NextFunction) {
 }
 
 async function shareRoute(req: Request, res: Response) {
+  const { id } = req.params
+
   const userAgent = req.headers['user-agent'] || ''
   const isCrawler = /discordbot|slackbot|twitterbot/i.test(userAgent)
-  if (!isCrawler) return res.redirect(`/shared?id=${req.params.id}`)
+  if (!isCrawler) return res.redirect(`/shared?id=${id}`)
 
-  const { id } = req.params
   const share = await getShare(id)
-
   if (!share) return res.sendStatus(404)
 
-  if (share.file) {
-    const page = generateOpenGraphHtml({
-      title: share.file.name,
-      description: `Shared file: ${share.file.name} (${(
-        share.file.size / 1024
-      ).toFixed(2)} KB)`,
-      imageUrl: `http://localhost:1337/api/file/${share.fileId}/raw?shareId=${share.id}`,
-      url: `http://localhost:5173/shared?id=${share.id}`
-    })
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol
+  const host = req.headers['x-forwarded-host'] || req.headers.host
 
-    return res.send(page)
-  }
+  const page = generateFileMetaPage(
+    share.id,
+    share.type,
+    share[share.type]!,
+    `${protocol}://${host}`
+  )
+
+  return res.send(page)
 }
 
 export async function setupMiddlewares(app: Application) {
@@ -90,8 +94,10 @@ export async function setupMiddlewares(app: Application) {
     res.status(404).send()
   })
 
-  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    logger.error(`Error: ${err.message}`, 'Express')
-    res.status(500).send()
-  })
+  app.use(
+    (err: Error, req: Request, res: Response, next: NextFunction) => {
+      logger.error(`Error: ${err.message}`, 'Express')
+      res.status(500).send()
+    }
+  )
 }
