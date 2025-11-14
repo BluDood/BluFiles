@@ -5,6 +5,7 @@
   import { prompt, alert, select } from '$lib/popups'
   import FileView from '../../../components/FileView.svelte'
   import Loader from '../../../components/Loader.svelte'
+  import { SHARE_URL } from '$lib/constants.js'
 
   interface FolderInfo {
     id: string
@@ -368,9 +369,7 @@
       })
 
       if (res.type === 'submit') {
-        await navigator.clipboard.writeText(
-          `${location.origin}/shared?id=${info.shareId}`
-        )
+        await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
         createMessage({
           title: 'Link copied!',
           type: 'success',
@@ -438,9 +437,7 @@
           content: shareRes.data.message
         })
       info.shareId = shareRes.data.id
-      await navigator.clipboard.writeText(
-        `${location.origin}/shared?id=${info.shareId}`
-      )
+      await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
       createMessage({
         title: 'Link created and copied!',
         type: 'success',

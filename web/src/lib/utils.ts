@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { browser } from '$app/environment'
 import bowser from 'bowser'
+import { API_URL } from './constants.js'
 
 export function formatBytes(bytes: number) {
   if (bytes === 0) return '0 Bytes'
@@ -29,7 +30,7 @@ export function formatDate(timestamp: number | string) {
 }
 
 export const req = axios.create({
-  baseURL: 'http://localhost:1337/api',
+  baseURL: API_URL!,
   validateStatus: () => true
 })
 

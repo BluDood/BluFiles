@@ -167,7 +167,15 @@
     min-width: 300px;
     min-height: 300px;
     max-width: 80vw;
-    max-height: 80vh;
+    max-height: 50vh;
+  }
+
+  .preview img {
+    border-radius: 8px;
+    min-width: 300px;
+    min-height: 300px;
+    max-width: 80vw;
+    max-height: 50vh;
   }
 
   .info {

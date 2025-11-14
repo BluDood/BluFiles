@@ -5,6 +5,7 @@
   import { createMessage } from '$lib/messages'
   import FileView from './FileView.svelte'
   import Loader from './Loader.svelte'
+  import { SHARE_URL } from '$lib/constants.js'
 
   let {
     id,
@@ -115,9 +116,7 @@
       })
 
       if (res.type === 'submit') {
-        await navigator.clipboard.writeText(
-          `${location.origin}/shared?id=${info.shareId}`
-        )
+        await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
         createMessage({
           title: 'Link copied!',
           type: 'success',
@@ -184,9 +183,7 @@
           content: shareRes.data.message
         })
       info.shareId = shareRes.data.id
-      await navigator.clipboard.writeText(
-        `${location.origin}/shared?id=${info.shareId}`
-      )
+      await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
       createMessage({
         title: 'Link created and copied!',
         type: 'success',
@@ -321,7 +318,10 @@
         </div>
       {/if}
       <div class="actions">
-        <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
+        <button
+          onclick={share}
+          data-color={info.shareId ? 'blue' : 'gray'}
+        >
           <span class="material-icons">share</span>
         </button>
         <button onclick={delCollection} data-color="red">

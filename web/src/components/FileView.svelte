@@ -4,6 +4,7 @@
   import { alert } from '$lib/popups'
   import Loader from './Loader.svelte'
   import { createMessage } from '$lib/messages.js'
+  import { SHARE_URL } from '$lib/constants.js'
 
   // export let onclose
   // export let id
@@ -88,9 +89,7 @@
       })
 
       if (res.type === 'submit') {
-        await navigator.clipboard.writeText(
-          `${location.origin}/shared?id=${info.shareId}`
-        )
+        await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
         await createMessage({
           title: 'Link copied!',
           type: 'success',
@@ -157,9 +156,7 @@
           content: shareRes.data.message
         })
       info.shareId = shareRes.data.id
-      await navigator.clipboard.writeText(
-        `${location.origin}/shared?id=${info.shareId}`
-      )
+      await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
       createMessage({
         title: 'Link created and copied!',
         type: 'success',
@@ -290,7 +287,10 @@
         <div class="unsupported">Unsupported file type</div>
       {/if}
       <div class="actions">
-        <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
+        <button
+          onclick={share}
+          data-color={info.shareId ? 'blue' : 'gray'}
+        >
           <span class="material-icons">share</span>
         </button>
         <button onclick={download} data-color="green">
