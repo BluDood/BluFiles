@@ -6,6 +6,10 @@ interface FilteredShare {
   type: 'file' | 'folder' | 'collection' | 'paste'
   createdAt: Date
   views: number
+  owner?: {
+    id: string
+    username: string
+  }
   file?: {
     id: string
     name: string
@@ -41,8 +45,16 @@ export const filterShare = (
           name: string
           _count?: { files: number; folders: number }
         }
-        collection?: { id: string; name: string; _count?: { files: number } }
+        collection?: {
+          id: string
+          name: string
+          _count?: { files: number }
+        }
         paste?: { id: string; name: string; type: string; content: string }
+        owner?: {
+          id: string
+          username: string
+        }
       })
 ) => {
   if (!s) return null
@@ -52,6 +64,13 @@ export const filterShare = (
     type: s.type,
     createdAt: s.createdAt,
     views: s.views
+  }
+
+  if ('owner' in s && s.owner) {
+    share['owner'] = {
+      id: s.owner.id,
+      username: s.owner.username
+    }
   }
 
   if (s.type === 'file' && 'file' in s && s.file) {
@@ -68,7 +87,11 @@ export const filterShare = (
       fileCount: s.folder._count?.files || 0,
       folderCount: s.folder._count?.folders || 0
     }
-  } else if (s.type === 'collection' && 'collection' in s && s.collection) {
+  } else if (
+    s.type === 'collection' &&
+    'collection' in s &&
+    s.collection
+  ) {
     share.collection = {
       id: s.collection.id,
       name: s.collection.name,
@@ -186,7 +209,13 @@ export async function getShare(id: string) {
         }
       },
       collection: true,
-      paste: true
+      paste: true,
+      owner: {
+        select: {
+          id: true,
+          username: true
+        }
+      }
     }
   })
 
@@ -233,7 +262,10 @@ export async function isFolderShared(folderId: string, shareId: string) {
   return false
 }
 
-export async function isFileInFolderSHared(fileId: string, shareId: string) {
+export async function isFileInFolderSHared(
+  fileId: string,
+  shareId: string
+) {
   const share = await prisma.share.findFirst({
     where: {
       id: shareId

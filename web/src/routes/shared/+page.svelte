@@ -15,6 +15,10 @@
     type: 'file' | 'folder' | 'collection' | 'paste'
     views: number
     createdAt: string
+    owner: {
+      id: string
+      username: string
+    }
   }
 
   interface FileShareInfo extends BaseShareInfo {
@@ -83,7 +87,9 @@
       <div class="text">BluFiles <span class="thin"> Sharing </span></div>
     </div>
     {#if info}
-      <div class="owner">BluDood has shared a {info.type} with you</div>
+      <div class="owner">
+        {info.owner.username} has shared a {info.type} with you
+      </div>
     {/if}
   </div>
   <div class="content">
