@@ -33,6 +33,11 @@
       path: '/dashboard/tokens'
     },
     {
+      name: 'Usage',
+      icon: 'bar_chart',
+      path: '/dashboard/usage'
+    },
+    {
       name: 'Profile',
       icon: 'person',
       path: '/dashboard/profile'

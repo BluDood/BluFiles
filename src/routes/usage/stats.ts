@@ -39,10 +39,6 @@ export async function get(req: Request, res: Response) {
     shares: {
       current: await countShares(req.user.id),
       max: config.user.maxShares
-    },
-    user: {
-      name: req.user.username,
-      id: req.user.id
     }
   })
 }
