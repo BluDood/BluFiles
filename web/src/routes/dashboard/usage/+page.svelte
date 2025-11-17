@@ -175,7 +175,7 @@
         {/if}
         <div class="link material-icons">open_in_new</div>
       </a>
-      <a class="item" href="/dashboard/shares">
+      <a class="item" href="/dashboard/sharing">
         <h2>Shared Items</h2>
         <p>
           {info.shares.current}{info.shares.max !== -1
