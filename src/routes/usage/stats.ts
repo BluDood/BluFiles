@@ -1,8 +1,7 @@
 import { Request, Response } from 'express'
 
-import { countFiles, countFolders, getFiles } from '#lib/files.js'
+import { countFiles, countFolders, getStorageUsage } from '#lib/files.js'
 import { countCollections } from '#lib/collections.js'
-import { getStorageUsage } from '#lib/filesystem.js'
 import { countShares } from '#lib/shares.js'
 import { countPastes } from '#lib/paste.js'
 import { getConfig } from '#lib/config.js'
@@ -12,12 +11,9 @@ export async function get(req: Request, res: Response) {
   if (req.user.token.type !== 'user') return res.sendStatus(418)
   const config = await getConfig()
 
-  const fileIds = (await getFiles(req.user.id, true)).map(f => f.id)
-  const storageUsage = await getStorageUsage(fileIds)
-
   res.json({
     storage: {
-      current: storageUsage,
+      current: await getStorageUsage(req.user.id),
       max: config.user.maxStorage
     },
     files: {
