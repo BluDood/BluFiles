@@ -77,7 +77,7 @@ export const createTokenSchema = z.object({
 })
 
 export const deleteTokenSchema = z.object({
-  id
+  id: z.enum(['all', 'except']).or(id)
 })
 
 export const createCollectionSchema = z.object({

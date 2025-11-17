@@ -1,6 +1,8 @@
 import prisma from '#lib/prisma.js'
 
 import { hashPassword, verifyPassword } from '#lib/utils.js'
+import { getFiles } from './files.js'
+import { remove } from './filesystem.js'
 
 export async function countUsers() {
   return await prisma.user.count()
@@ -74,6 +76,10 @@ export async function updateUser({
 }
 
 export async function deleteUser(id: string) {
+  // delete files from filesystem
+  const files = await getFiles(id, true)
+  files.map(async file => await remove(file.id))
+
   const user = await prisma.user.delete({
     where: {
       id

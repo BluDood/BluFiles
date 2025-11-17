@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from '$app/navigation'
+
   import { userStore } from '$lib/stores'
   import { alert } from '$lib/popups'
   import { req } from '$lib/utils'
@@ -23,7 +25,7 @@
 
     const res = await req.delete('me')
 
-    if (res.status === 200) {
+    if (res.status === 204) {
       await alert({
         title: 'Account Deleted',
         content: 'Your account has been deleted. You will be redirected.'
@@ -62,13 +64,22 @@
 
     if (!confirmed.type) return
 
-    const res = await req.delete('me/tokens')
+    const res = await req.delete('me/tokens', {
+      data: {
+        id: confirmed.type === 'except' ? 'except' : 'all'
+      }
+    })
 
-    if (res.status === 200) {
+    if (res.status === 204) {
       await alert({
         title: 'Tokens Deleted',
-        content: 'All your tokens have been deleted.'
+        content: `All your tokens have been deleted. ${confirmed.type === 'except' ? 'Your device is still logged in.' : ''}`
       })
+
+      if (confirmed.type !== 'except') {
+        userStore.set(null)
+        goto('/')
+      }
     } else {
       await alert({
         title: 'Error',
@@ -97,7 +108,7 @@
 
     const res = await req.delete('me/files')
 
-    if (res.status === 200) {
+    if (res.status === 204) {
       await alert({
         title: 'Files and Folders Deleted',
         content: 'All your files and folders have been deleted.'

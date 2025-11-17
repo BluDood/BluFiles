@@ -251,6 +251,18 @@ export async function deleteFile(id: string) {
   return file
 }
 
+export async function deleteUserFilesFolders(ownerId: string) {
+  const files = await getFiles(ownerId, true)
+
+  for (const file of files) {
+    await deleteFile(file.id)
+  }
+
+  await prisma.folder.deleteMany({
+    where: { ownerId }
+  })
+}
+
 export async function updateFile(
   id: string,
   {

@@ -101,19 +101,13 @@ export async function deleteToken({
     })
 }
 
-export async function deleteTokens({
-  userId,
-  keep
-}: {
-  userId: string
-  keep: string[]
-}) {
+export async function deleteTokens(userId: string, keep: string[] = []) {
   return await prisma.token.deleteMany({
     where: {
       userId,
       NOT: {
         hash: {
-          in: keep.map(k => hash(k))
+          in: keep
         }
       }
     }

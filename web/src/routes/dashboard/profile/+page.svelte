@@ -13,7 +13,7 @@
     profileLoading = true
     const res = await req.patch('me', { username: newUsername })
 
-    if (res.status === 200) {
+    if (res.status === 204) {
       userStore.update(user => {
         if (user) user.username = newUsername
         return user
@@ -100,6 +100,11 @@
     flex-direction: column;
     gap: 1px;
     user-select: text;
+  }
+
+  .profile .info p {
+    color: #aaa;
+    font-size: 14px;
   }
 
   .profile .inline-field {

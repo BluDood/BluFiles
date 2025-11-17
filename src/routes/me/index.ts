@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { updateUser } from '#lib/users.js'
+import { deleteUser, updateUser } from '#lib/users.js'
 
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
@@ -24,6 +24,15 @@ export async function patcH(req: Request, res: Response) {
   if (!username) return res.sendStatus(400)
 
   await updateUser({ id, username })
+
+  res.sendStatus(204)
+}
+
+export async function del(req: Request, res: Response) {
+  if (!req.user) return res.sendStatus(401)
+  if (req.user.token.type !== 'user') return res.sendStatus(418)
+
+  await deleteUser(req.user.id)
 
   res.sendStatus(204)
 }

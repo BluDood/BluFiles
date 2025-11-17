@@ -3,6 +3,7 @@ import { Request, Response } from 'express'
 import {
   createToken,
   deleteToken,
+  deleteTokens,
   filterToken,
   getToken,
   getTokens
@@ -61,11 +62,21 @@ export async function del(req: Request, res: Response) {
   if (!parsed.success) return res.sendStatus(400)
   const { id } = parsed.data
 
-  const token = await getToken({ id })
-  if (!token) return res.sendStatus(404)
-  if (token.userId !== req.user.id) return res.sendStatus(404)
+  if (id === 'all') {
+    await deleteTokens(req.user.id)
 
-  await deleteToken({ id })
+    res.sendStatus(204)
+  } else if (id === 'except') {
+    await deleteTokens(req.user.id, [req.user.token.hash])
 
-  res.sendStatus(204)
+    res.sendStatus(204)
+  } else {
+    const token = await getToken({ id })
+    if (!token) return res.sendStatus(404)
+    if (token.userId !== req.user.id) return res.sendStatus(404)
+
+    await deleteToken({ id })
+
+    res.sendStatus(204)
+  }
 }
