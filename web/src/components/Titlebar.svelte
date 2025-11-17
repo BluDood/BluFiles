@@ -37,7 +37,7 @@
           <span class="material-icons">person</span>
           <div>
             <span class="name">{$userStore?.username}</span>
-            <span class="id">{$userStore?.id}</span>
+            <!-- <span class="id">{$userStore?.id}</span> -->
           </div>
         </a>
         <button data-color="red" on:click={logout} class="item">
