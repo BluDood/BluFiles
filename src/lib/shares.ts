@@ -87,11 +87,7 @@ export const filterShare = (
       fileCount: s.folder._count?.files || 0,
       folderCount: s.folder._count?.folders || 0
     }
-  } else if (
-    s.type === 'collection' &&
-    'collection' in s &&
-    s.collection
-  ) {
+  } else if (s.type === 'collection' && 'collection' in s && s.collection) {
     share.collection = {
       id: s.collection.id,
       name: s.collection.name,
@@ -271,10 +267,7 @@ export async function isFolderShared(folderId: string, shareId: string) {
   return false
 }
 
-export async function isFileInFolderSHared(
-  fileId: string,
-  shareId: string
-) {
+export async function isFileInFolderSHared(fileId: string, shareId: string) {
   const share = await prisma.share.findFirst({
     where: {
       id: shareId

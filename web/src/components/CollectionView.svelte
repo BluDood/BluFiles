@@ -2,9 +2,9 @@
   import { onMount } from 'svelte'
 
   import { formatDate, formatBytes, req } from '$lib/utils'
-  import { prompt, alert, select } from '$lib/popups'
   import { createMessage } from '$lib/messages'
   import { SHARE_URL } from '$lib/constants.js'
+  import { alert } from '$lib/popups'
 
   import FileView from './FileView.svelte'
   import Loader from './Loader.svelte'

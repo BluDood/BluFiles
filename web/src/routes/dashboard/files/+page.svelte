@@ -52,7 +52,7 @@
     const input = document.createElement('input')
     input.type = 'file'
 
-    input.onchange = e => {
+    input.onchange = () => {
       const files = (input as HTMLInputElement).files
       if (!files || files.length === 0) return
       const file = files[0]

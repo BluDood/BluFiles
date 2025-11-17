@@ -91,8 +91,11 @@ export async function setupMiddlewares(app: Application) {
     res.status(404).send()
   })
 
-  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    logger.error(`Error: ${err.message}`, 'Express')
-    res.status(500).send()
-  })
+  app.use(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (err: Error, req: Request, res: Response, next: NextFunction) => {
+      logger.error(`Error: ${err.message}`, 'Express')
+      res.status(500).send()
+    }
+  )
 }

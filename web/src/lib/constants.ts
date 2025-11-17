@@ -6,10 +6,6 @@ export const BASE_URL = browser
     : location.host
   : null
 
-export const API_URL = browser
-  ? `${location.protocol}//${BASE_URL}/api`
-  : null
+export const API_URL = browser ? `${location.protocol}//${BASE_URL}/api` : null
 
-export const SHARE_URL = browser
-  ? `${location.protocol}//${BASE_URL}/s`
-  : null
+export const SHARE_URL = browser ? `${location.protocol}//${BASE_URL}/s` : null

@@ -72,7 +72,7 @@ export function generateFileMetaPage(
       )
     }
   } else if (type === 'folder') {
-    const folder = content as Folder
+    // const folder = content as Folder
 
     metaTags.push(
       generateTag('twitter:card', 'summary'),
@@ -83,7 +83,7 @@ export function generateFileMetaPage(
       )
     )
   } else if (type === 'collection') {
-    const collection = content as Collection
+    // const collection = content as Collection
 
     metaTags.push(
       generateTag('twitter:card', 'summary'),
@@ -94,7 +94,7 @@ export function generateFileMetaPage(
       )
     )
   } else if (type === 'paste') {
-    const paste = content as Paste
+    // const paste = content as Paste
 
     metaTags.push(
       generateTag('twitter:card', 'summary'),

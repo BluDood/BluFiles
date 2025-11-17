@@ -1,0 +1,11 @@
+/data
+/dist
+/generated
+/node_modules
+
+/web/.svelte-kit
+/web/build
+/web/node_modules
+
+*.html
+*.json

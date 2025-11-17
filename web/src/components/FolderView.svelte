@@ -55,23 +55,10 @@
   }
   let info: FolderInfo | null = $state(null)
 
-  interface File {
-    id: string
-    name: string
-    size: number
-    mime: string
-    createdAt: string
-    updatedAt: string
-  }
-
-  let files: File[] = $state([])
-
   function close(reload = false) {
     closing = true
     setTimeout(() => onclose(reload), 200)
   }
-
-  async function removeFile() {}
 
   async function share() {
     if (!info) return
@@ -227,7 +214,7 @@
   {#if dialog.open}
     {#if dialog.type === 'file'}
       <FileView
-        onclose={c => {
+        onclose={() => {
           dialog = {
             open: false,
             type: null,
@@ -239,7 +226,7 @@
       />
     {:else if dialog.type === 'folder'}
       <FolderView
-        onclose={c => {
+        onclose={() => {
           dialog = {
             open: false,
             type: null,
