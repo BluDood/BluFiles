@@ -1,8 +1,5 @@
-node_modules
-.env
-package-lock.json
-data
-.svelte-kit
-dist
-generated
-build
+/node_modules
+/dist
+/generated
+/data
+/.env
