@@ -1,19 +1,21 @@
 <script lang="ts">
-  import { userStore } from '$lib/stores'
   import { onMount } from 'svelte'
+
+  import { userStore } from '$lib/stores'
   import { req } from '$lib/utils'
 
   let newUsername = $state('')
   let profileLoading = $state(false)
 
   async function save() {
+    if (!newUsername || !$userStore) return
     if (newUsername === $userStore.username) return
     profileLoading = true
     const res = await req.patch('me', { username: newUsername })
 
     if (res.status === 200) {
       userStore.update(user => {
-        user.username = newUsername
+        if (user) user.username = newUsername
         return user
       })
     }
@@ -23,7 +25,7 @@
 
   onMount(() => {
     userStore.subscribe(user => {
-      newUsername = user?.username
+      if (user) newUsername = user.username
     })
   })
 </script>

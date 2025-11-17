@@ -1,11 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+
   import { formatDate, formatBytes, req } from '$lib/utils'
   import { prompt, alert, select } from '$lib/popups'
   import { createMessage } from '$lib/messages'
+  import { SHARE_URL } from '$lib/constants.js'
+
   import FileView from './FileView.svelte'
   import Loader from './Loader.svelte'
-  import { SHARE_URL } from '$lib/constants.js'
 
   let {
     id,
@@ -318,10 +320,7 @@
         </div>
       {/if}
       <div class="actions">
-        <button
-          onclick={share}
-          data-color={info.shareId ? 'blue' : 'gray'}
-        >
+        <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
           <span class="material-icons">share</span>
         </button>
         <button onclick={delCollection} data-color="red">
@@ -429,10 +428,6 @@
 
   .actions button[data-color='red'] {
     color: red;
-  }
-
-  .actions button[data-color='green'] {
-    color: #00c800;
   }
 
   .actions button[data-color='gray'] {

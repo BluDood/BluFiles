@@ -1,6 +1,7 @@
 import axios from 'axios'
-import { browser } from '$app/environment'
 import bowser from 'bowser'
+
+import { browser } from '$app/environment'
 import { API_URL } from './constants.js'
 
 export function formatBytes(bytes: number) {

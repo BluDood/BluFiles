@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { createMessage } from '$lib/messages.js'
   import { alert, prompt, select } from '$lib/popups'
+  import { createMessage } from '$lib/messages.js'
 
   let type = $state('')
   let input = $state('')

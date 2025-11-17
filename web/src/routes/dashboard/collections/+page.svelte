@@ -1,11 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
+  import { createMessage } from '$lib/messages.js'
   import { formatDate, req } from '$lib/utils'
   import { prompt, alert } from '$lib/popups'
-  import CollectionView from '../../../components/CollectionView.svelte'
-  import Loader from '../../../components/Loader.svelte'
-  import { createMessage } from '$lib/messages.js'
+
+  import CollectionView from '$components/CollectionView.svelte'
+  import Loader from '$components/Loader.svelte'
 
   let previewing: string | false = $state(false)
 

@@ -1,8 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import SharedFileView from './SharedFilePopup.svelte'
+
   import { formatBytes, formatDate, req } from '$lib/utils.js'
-  import Loader from '../../components/Loader.svelte'
+
+  import SharedFileView from './SharedFilePopup.svelte'
+  import Loader from '$components/Loader.svelte'
 
   interface Props {
     info: {
@@ -263,45 +265,6 @@
   .titlebar .actions button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-  }
-
-  .titlebar .actions .menuWrapper {
-    position: relative;
-  }
-
-  .titlebar .actions .menuWrapper .menu {
-    position: absolute;
-    background: #111;
-    top: 40px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    width: max-content;
-    padding: 5px;
-    gap: 2px;
-    opacity: 0;
-    pointer-events: none;
-    transition: 200ms ease;
-  }
-
-  .titlebar .actions .menuWrapper:focus-within .menu {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .titlebar .actions .menuWrapper .menu button {
-    all: unset;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-    transition: 200ms ease;
-    padding: 5px;
-    border-radius: 6px;
-  }
-
-  .titlebar .actions .menuWrapper .menu button:hover {
-    background: #222;
   }
 
   .current {

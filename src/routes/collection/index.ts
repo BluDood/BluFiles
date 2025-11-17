@@ -5,6 +5,7 @@ import {
   filterCollection,
   getCollections
 } from '#lib/collections.js'
+
 import { createCollectionSchema } from '#lib/schemas.js'
 import { checkCollectionCreationAllowed } from '#lib/config.js'
 

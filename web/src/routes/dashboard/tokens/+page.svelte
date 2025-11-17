@@ -1,9 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+
   import { formatDate, req, formatUA } from '$lib/utils'
-  import { prompt, alert } from '$lib/popups'
-  import Loader from '../../../components/Loader.svelte'
   import { createMessage } from '$lib/messages.js'
+  import { prompt, alert } from '$lib/popups'
+
+  import Loader from '$components/Loader.svelte'
 
   interface Token {
     id: string

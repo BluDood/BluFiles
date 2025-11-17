@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { req } from '$lib/utils.js'
   import { onMount } from 'svelte'
-  import Loader from '../components/Loader.svelte'
+
+  import { req } from '$lib/utils.js'
+
+  import Loader from '$components/Loader.svelte'
 
   interface User {
     id: string
@@ -109,9 +111,5 @@
 
   .buttons .button[data-color='blue'] {
     --button-color: #0064ff;
-  }
-
-  .buttons .button[data-color='red'] {
-    --button-color: #ff0000;
   }
 </style>

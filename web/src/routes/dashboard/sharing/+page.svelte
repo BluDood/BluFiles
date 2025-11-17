@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { formatBytes } from '$lib/utils'
   import { onMount } from 'svelte'
-  import Loader from '../../../components/Loader.svelte'
+
+  import { formatBytes } from '$lib/utils'
   import { req } from '$lib/utils'
-  import FileView from '../../../components/FileView.svelte'
-  import CollectionView from '../../../components/CollectionView.svelte'
-  import FolderView from '../../../components/FolderView.svelte'
-  import PasteView from '../../../components/PasteView.svelte'
+
+  import CollectionView from '$components/CollectionView.svelte'
+  import FolderView from '$components/FolderView.svelte'
+  import PasteView from '$components/PasteView.svelte'
+  import FileView from '$components/FileView.svelte'
+  import Loader from '$components/Loader.svelte'
 
   interface Dialog {
     open: boolean

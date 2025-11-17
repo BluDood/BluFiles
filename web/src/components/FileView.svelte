@@ -1,13 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+
   import { formatBytes, formatDate, req } from '$lib/utils'
-  import { alert } from '$lib/popups'
-  import Loader from './Loader.svelte'
   import { createMessage } from '$lib/messages.js'
   import { SHARE_URL } from '$lib/constants.js'
+  import { alert } from '$lib/popups'
 
-  // export let onclose
-  // export let id
+  import Loader from './Loader.svelte'
 
   let {
     id,
@@ -287,10 +286,7 @@
         <div class="unsupported">Unsupported file type</div>
       {/if}
       <div class="actions">
-        <button
-          onclick={share}
-          data-color={info.shareId ? 'blue' : 'gray'}
-        >
+        <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
           <span class="material-icons">share</span>
         </button>
         <button onclick={download} data-color="green">

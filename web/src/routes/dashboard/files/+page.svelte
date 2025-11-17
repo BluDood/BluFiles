@@ -1,11 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+
   import { formatBytes, formatDate, req } from '$lib/utils'
-  import { createMessage } from '$lib/messages'
   import { prompt, alert, select } from '$lib/popups'
-  import FileView from '../../../components/FileView.svelte'
-  import Loader from '../../../components/Loader.svelte'
+  import { createMessage } from '$lib/messages'
   import { SHARE_URL } from '$lib/constants.js'
+
+  import FileView from '$components/FileView.svelte'
+  import Loader from '$components/Loader.svelte'
 
   interface FolderInfo {
     id: string

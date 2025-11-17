@@ -1,12 +1,13 @@
 import { Request, Response } from 'express'
 
-import { deleteFile, filterFile, getFile, updateFile } from '#lib/files.js'
-import { genericShareSchema, updateFileSchema } from '#lib/schemas.js'
 import {
   getShare,
   isFileInCollectionShared,
   isFileInFolderSHared
 } from '#lib/shares.js'
+
+import { deleteFile, filterFile, getFile, updateFile } from '#lib/files.js'
+import { genericShareSchema, updateFileSchema } from '#lib/schemas.js'
 
 export async function get(req: Request, res: Response) {
   const { id } = req.params

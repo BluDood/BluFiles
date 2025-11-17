@@ -1,8 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+
   import { req, formatBytes } from '$lib/utils'
   import { alert } from '$lib/popups'
-  import Progress from '../../components/Progress.svelte'
+
+  import Progress from '$components/Progress.svelte'
 
   interface DashboardInfo {
     user: {

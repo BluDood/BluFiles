@@ -1,5 +1,6 @@
-import { hashPassword, verifyPassword } from '#lib/utils.js'
 import prisma from '#lib/prisma.js'
+
+import { hashPassword, verifyPassword } from '#lib/utils.js'
 
 export async function countUsers() {
   return await prisma.user.count()

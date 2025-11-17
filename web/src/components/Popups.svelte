@@ -1,5 +1,6 @@
 <script lang="ts">
   import { popups, closeAll } from '$lib/popups'
+
   import Popup from './Popup.svelte'
 </script>
 

@@ -1,11 +1,11 @@
 import { Request, Response } from 'express'
 
 import { countFiles, countFolders, getFiles } from '#lib/files.js'
+import { countCollections } from '#lib/collections.js'
 import { getStorageUsage } from '#lib/filesystem.js'
+import { countShares } from '#lib/shares.js'
 import { countPastes } from '#lib/paste.js'
 import { getConfig } from '#lib/config.js'
-import { countCollections } from '#lib/collections.js'
-import { countShares } from '#lib/shares.js'
 
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)

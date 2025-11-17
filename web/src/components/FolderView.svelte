@@ -1,15 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+
   import { formatDate, formatBytes, req } from '$lib/utils'
-  import { prompt, alert, select } from '$lib/popups'
+  import { alert } from '$lib/popups'
   import { createMessage } from '$lib/messages'
-  import FileView from './FileView.svelte'
-  import FolderView from './FolderView.svelte'
-  import Loader from './Loader.svelte'
   import { SHARE_URL } from '$lib/constants.js'
 
-  // export let id
-  // export let onclose
+  import FolderView from './FolderView.svelte'
+  import FileView from './FileView.svelte'
+  import Loader from './Loader.svelte'
 
   let {
     id,
@@ -324,10 +323,7 @@
         </div>
       {/if}
       <div class="actions">
-        <button
-          onclick={share}
-          data-color={info.shareId ? 'blue' : 'gray'}
-        >
+        <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
           <span class="material-icons">share</span>
         </button>
         <button onclick={delFolder} data-color="red">
@@ -437,10 +433,6 @@
     color: red;
   }
 
-  .actions button[data-color='green'] {
-    color: #00c800;
-  }
-
   .actions button[data-color='gray'] {
     color: gray;
   }
@@ -497,24 +489,6 @@
   .item .info > p:not(:first-child)::before {
     content: '•';
     margin: 0 5px;
-  }
-
-  .item .itemActions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-left: 10px;
-  }
-
-  .item .itemActions button {
-    all: unset;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-
-  .item .itemActions button[data-color='red'] {
-    color: red;
   }
 
   .none {

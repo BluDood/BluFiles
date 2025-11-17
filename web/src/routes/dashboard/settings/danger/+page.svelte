@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { userStore } from '$lib/stores'
   import { alert } from '$lib/popups'
   import { req } from '$lib/utils'
-  import { userStore } from '$lib/stores'
 
   async function deleteAccount() {
     const confirmed = await alert({

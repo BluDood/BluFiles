@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { formatBytes, formatDate, req } from '$lib/utils.js'
-  import { onMount } from 'svelte'
+  import { formatDate } from '$lib/utils.js'
 
   interface Props {
     info: {

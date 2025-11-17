@@ -1,5 +1,6 @@
-import { getType, hashFile, remove, write } from '#lib/filesystem.js'
 import prisma, { File, Folder } from '#lib/prisma.js'
+
+import { getType, hashFile, remove, write } from '#lib/filesystem.js'
 
 interface FilteredFile {
   id: string

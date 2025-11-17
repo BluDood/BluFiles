@@ -1,14 +1,15 @@
 import { Request, Response } from 'express'
 
-import { getRawFileSchema } from '#lib/schemas.js'
-import { getToken } from '#lib/tokens.js'
-import { read } from '#lib/filesystem.js'
-import { getFile } from '#lib/files.js'
 import {
   getShare,
   isFileInCollectionShared,
   isFileInFolderSHared
 } from '#lib/shares.js'
+
+import { getRawFileSchema } from '#lib/schemas.js'
+import { getToken } from '#lib/tokens.js'
+import { read } from '#lib/filesystem.js'
+import { getFile } from '#lib/files.js'
 
 export async function get(req: Request, res: Response) {
   const { id } = req.params

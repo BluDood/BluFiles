@@ -1,13 +1,16 @@
 <script lang="ts">
-  import { formatBytes, formatDate, req } from '$lib/utils.js'
   import { onMount } from 'svelte'
+
+  import { goto } from '$app/navigation'
   import { page } from '$app/state'
-  import Loader from '../../components/Loader.svelte'
-  import SharedFileView from './SharedFileView.svelte'
+
+  import { req } from '$lib/utils.js'
+
+  import SharedCollectionView from './SharedCollectionView.svelte'
   import SharedFolderView from './SharedFolderView.svelte'
   import SharedPasteView from './SharedPasteView.svelte'
-  import { goto } from '$app/navigation'
-  import SharedCollectionView from './SharedCollectionView.svelte'
+  import SharedFileView from './SharedFileView.svelte'
+  import Loader from '$components/Loader.svelte'
 
   interface BaseShareInfo {
     id: string

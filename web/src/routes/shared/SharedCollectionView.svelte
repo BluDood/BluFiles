@@ -1,8 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import SharedFileView from './SharedFilePopup.svelte'
+
   import { formatBytes, formatDate, req } from '$lib/utils.js'
-  import Loader from '../../components/Loader.svelte'
+
+  import SharedFileView from './SharedFilePopup.svelte'
+  import Loader from '$components/Loader.svelte'
 
   interface Props {
     info: {

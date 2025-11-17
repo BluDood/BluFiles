@@ -1,11 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+
   import { userStore } from '$lib/stores'
   import { req } from '$lib/utils'
-  import Titlebar from '../../components/Titlebar.svelte'
-  import Sidebar from '../../components/Sidebar.svelte'
-  import Popups from '../../components/Popups.svelte'
-  import Messages from '../../components/Messages.svelte'
+
+  import Messages from '$components/Messages.svelte'
+  import Titlebar from '$components/Titlebar.svelte'
+  import Sidebar from '$components/Sidebar.svelte'
+  import Popups from '$components/Popups.svelte'
 
   onMount(async () => {
     const res = await req.get('/me')

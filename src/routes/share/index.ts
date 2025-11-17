@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
 
 import { createShare, filterShare, getShares } from '#lib/shares.js'
-import { createShareSchema } from '#lib/schemas.js'
 import { checkShareCreationAllowed } from '#lib/config.js'
+import { createShareSchema } from '#lib/schemas.js'
 
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)

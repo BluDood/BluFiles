@@ -1,15 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { formatDate, formatBytes, req } from '$lib/utils'
-  import { prompt, alert, select } from '$lib/popups'
-  import { createMessage } from '$lib/messages'
-  import FileView from './SharedFilePopup.svelte'
-  import FolderView from './SharedFolderPopup.svelte'
-  import Loader from '../../components/Loader.svelte'
+
   import { page } from '$app/state'
 
-  // export let id
-  // export let onclose
+  import { formatDate, formatBytes, req } from '$lib/utils'
+
+  import Loader from '$components/Loader.svelte'
+  import FolderView from './SharedFolderPopup.svelte'
+  import FileView from './SharedFilePopup.svelte'
 
   let {
     id,
@@ -197,7 +195,6 @@
           {/each}
         </div>
       {/if}
-      <div class="actions"></div>
     </div>
   {/if}
 </div>
@@ -284,35 +281,6 @@
     margin: 0 5px;
   }
 
-  .actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .actions button {
-    all: unset;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-
-  .actions button[data-color='red'] {
-    color: red;
-  }
-
-  .actions button[data-color='green'] {
-    color: #00c800;
-  }
-
-  .actions button[data-color='gray'] {
-    color: gray;
-  }
-
-  .actions button[data-color='blue'] {
-    color: #0064ff;
-  }
-
   .items {
     display: flex;
     flex-direction: column;
@@ -361,24 +329,6 @@
   .item .info > p:not(:first-child)::before {
     content: '•';
     margin: 0 5px;
-  }
-
-  .item .itemActions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-left: 10px;
-  }
-
-  .item .itemActions button {
-    all: unset;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-  }
-
-  .item .itemActions button[data-color='red'] {
-    color: red;
   }
 
   .none {

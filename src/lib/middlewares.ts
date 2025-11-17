@@ -1,17 +1,14 @@
-import express, {
-  Request,
-  Response,
-  NextFunction,
-  Application
-} from 'express'
+import express, { Request, Response, NextFunction, Application } from 'express'
+
 import { router } from 'express-file-routing'
 import mp from 'parse-multipart-data'
 import cors from 'cors'
-import { useToken } from '#lib/tokens.js'
 import path from 'path'
-import { logger } from '#lib/utils.js'
-import { getShare } from './shares.js'
+
 import { generateFileMetaPage } from './opengraph.js'
+import { useToken } from '#lib/tokens.js'
+import { getShare } from './shares.js'
+import { logger } from '#lib/utils.js'
 
 async function auth(req: Request, res: Response, next: NextFunction) {
   const auth = req.headers.authorization
@@ -94,10 +91,8 @@ export async function setupMiddlewares(app: Application) {
     res.status(404).send()
   })
 
-  app.use(
-    (err: Error, req: Request, res: Response, next: NextFunction) => {
-      logger.error(`Error: ${err.message}`, 'Express')
-      res.status(500).send()
-    }
-  )
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    logger.error(`Error: ${err.message}`, 'Express')
+    res.status(500).send()
+  })
 }

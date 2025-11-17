@@ -1,5 +1,6 @@
-import { hash, random } from '#lib/utils.js'
 import prisma, { Token, TokenType } from '#lib/prisma.js'
+
+import { hash, random } from '#lib/utils.js'
 
 interface FilteredToken {
   id: string

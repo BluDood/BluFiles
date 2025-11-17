@@ -1,10 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+
+  import { createMessage } from '$lib/messages.js'
   import { formatDate, req } from '$lib/utils'
   import { prompt, alert } from '$lib/popups'
-  import PasteView from '../../../components/PasteView.svelte'
-  import Loader from '../../../components/Loader.svelte'
-  import { createMessage } from '$lib/messages.js'
+
+  import PasteView from '$components/PasteView.svelte'
+  import Loader from '$components/Loader.svelte'
 
   interface Paste {
     id: string

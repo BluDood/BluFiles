@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { page } from '$app/state'
-  import { formatBytes, formatDate, req } from '$lib/utils.js'
   import { onMount } from 'svelte'
-  import Loader from '../../components/Loader.svelte'
+
+  import { formatBytes, formatDate, req } from '$lib/utils.js'
+
+  import Loader from '$components/Loader.svelte'
 
   interface Props {
     info: {
@@ -245,9 +246,5 @@
 
   .buttons button[data-color='blue'] {
     --button-color: #0064ff;
-  }
-
-  .buttons button[data-color='red'] {
-    --button-color: #ff0000;
   }
 </style>

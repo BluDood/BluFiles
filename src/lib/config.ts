@@ -1,10 +1,11 @@
 import path from 'path'
 import fs from 'fs/promises'
+
 import { countFiles, countFolders, getFiles } from '#lib/files.js'
-import { countPastes } from '#lib/paste.js'
-import { countUsers } from '#lib/users.js'
 import { getStorageUsage } from '#lib/filesystem.js'
 import { countCollections } from './collections.js'
+import { countPastes } from '#lib/paste.js'
+import { countUsers } from '#lib/users.js'
 import { countShares } from './shares.js'
 
 interface Config {
@@ -49,9 +50,7 @@ const defaultConfig: Config = {
   }
 }
 
-const configPath = path.resolve(
-  path.join(process.cwd(), 'data/config.json')
-)
+const configPath = path.resolve(path.join(process.cwd(), 'data/config.json'))
 
 export async function getConfig(): Promise<Config> {
   try {
@@ -93,15 +92,11 @@ export async function checkRegistrationAllowed() {
   return true
 }
 
-export async function checkFileCreationAllowed(
-  userId: string,
-  size: number
-) {
+export async function checkFileCreationAllowed(userId: string, size: number) {
   const config = await getConfig()
 
   const files = await countFiles(userId)
-  if (config.user.maxFiles !== -1 && files >= config.user.maxFiles)
-    return false
+  if (config.user.maxFiles !== -1 && files >= config.user.maxFiles) return false
 
   const totalFiles = await countFiles()
   if (config.total.maxFiles !== -1 && totalFiles >= config.total.maxFiles)
@@ -133,10 +128,7 @@ export async function checkFolderCreationAllowed(userId: string) {
     return false
 
   const totalFolders = await countFolders()
-  if (
-    config.total.maxFolders !== -1 &&
-    totalFolders >= config.total.maxFolders
-  )
+  if (config.total.maxFolders !== -1 && totalFolders >= config.total.maxFolders)
     return false
 
   return true
@@ -150,10 +142,7 @@ export async function checkPasteCreationAllowed(userId: string) {
     return false
 
   const totalPastes = await countPastes()
-  if (
-    config.total.maxPastes !== -1 &&
-    totalPastes >= config.total.maxPastes
-  )
+  if (config.total.maxPastes !== -1 && totalPastes >= config.total.maxPastes)
     return false
 
   return true
@@ -187,10 +176,7 @@ export async function checkShareCreationAllowed(userId: string) {
     return false
 
   const totalShares = await countShares()
-  if (
-    config.total.maxShares !== -1 &&
-    totalShares >= config.total.maxShares
-  )
+  if (config.total.maxShares !== -1 && totalShares >= config.total.maxShares)
     return false
   return true
 }

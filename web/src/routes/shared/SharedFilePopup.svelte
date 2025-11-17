@@ -1,11 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { formatBytes, formatDate, req } from '$lib/utils'
-  import Loader from '../../components/Loader.svelte'
+
   import { page } from '$app/state'
 
-  // export let onclose
-  // export let id
+  import { formatBytes, formatDate, req } from '$lib/utils'
+
+  import Loader from '$components/Loader.svelte'
 
   let {
     id,
@@ -329,19 +329,7 @@
     cursor: pointer;
   }
 
-  .fileview .actions button[data-color='gray'] {
-    color: gray;
-  }
-
-  .fileview .actions button[data-color='red'] {
-    color: red;
-  }
-
   .fileview .actions button[data-color='green'] {
     color: #00c800;
-  }
-
-  .fileview .actions button[data-color='blue'] {
-    color: #0064ff;
   }
 </style>
