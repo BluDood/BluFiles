@@ -14,6 +14,15 @@ export const registerSchema = z.object({
   password
 })
 
+export const updateUserSchema = z.object({
+  username
+})
+
+export const updatePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: password
+})
+
 export const genericShareSchema = z.object({
   shareId: z.string().optional()
 })
