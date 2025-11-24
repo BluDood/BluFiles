@@ -120,6 +120,105 @@
       })
     }
   }
+
+  async function deleteAllPastes() {
+    const confirmed = await alert({
+      title: 'Delete All Pastes',
+      content:
+        'Are you sure you want to delete all your pastes? This action is irreversible.',
+      buttons: [
+        {
+          text: 'Delete',
+          color: 'red'
+        },
+        {
+          text: 'Cancel'
+        }
+      ]
+    })
+
+    if (!confirmed.type) return
+
+    const res = await req.delete('me/pastes')
+
+    if (res.status === 204) {
+      await alert({
+        title: 'Pastes Deleted',
+        content: 'All your pastes have been deleted.'
+      })
+    } else {
+      await alert({
+        title: 'Error',
+        content: 'An error occurred while deleting your pastes.'
+      })
+    }
+  }
+
+  async function deleteAllCollections() {
+    const confirmed = await alert({
+      title: 'Delete All Collections',
+      content:
+        'Are you sure you want to delete all your collections? This action is irreversible.',
+      buttons: [
+        {
+          text: 'Delete',
+          color: 'red'
+        },
+        {
+          text: 'Cancel'
+        }
+      ]
+    })
+
+    if (!confirmed.type) return
+
+    const res = await req.delete('me/collections')
+
+    if (res.status === 204) {
+      await alert({
+        title: 'Collections Deleted',
+        content: 'All your collections have been deleted.'
+      })
+    } else {
+      await alert({
+        title: 'Error',
+        content: 'An error occurred while deleting your collections.'
+      })
+    }
+  }
+
+  async function deleteAllShares() {
+    const confirmed = await alert({
+      title: 'Revoke All Shares',
+      content:
+        'Are you sure you want to revoke all your shares? This action is irreversible.',
+      buttons: [
+        {
+          text: 'Delete',
+          color: 'red'
+        },
+        {
+          text: 'Cancel'
+        }
+      ]
+    })
+
+    if (!confirmed.type) return
+
+    const res = await req.delete('me/shares')
+
+    if (res.status === 204) {
+      await alert({
+        title: 'Shares Revoked',
+        content: 'All your shares have been revoked.'
+      })
+    } else {
+      await alert({
+        title: 'Error',
+        content: 'An error occurred while revoking your shares.'
+      })
+    }
+  }
 </script>
 
 <main>
@@ -129,6 +228,9 @@
       <button onclick={deleteAccount}>Delete Account</button>
       <button onclick={deleteAllTokens}>Revoke All Tokens</button>
       <button onclick={deleteAllFiles}> Delete All Files and Folders </button>
+      <button onclick={deleteAllPastes}> Delete All Pastes </button>
+      <button onclick={deleteAllCollections}> Delete All Collections </button>
+      <button onclick={deleteAllShares}> Revoke All Shares </button>
     </div>
   </div>
 </main>

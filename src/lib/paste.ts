@@ -88,6 +88,12 @@ export async function deletePaste(id: string) {
   return paste
 }
 
+export async function deleteUserPastes(ownerId: string) {
+  await prisma.paste.deleteMany({
+    where: { ownerId }
+  })
+}
+
 export async function updatePaste(id: string, data: Partial<Paste>) {
   const paste = await prisma.paste.update({
     where: { id },

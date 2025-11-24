@@ -91,6 +91,14 @@ export async function deleteCollection(id: string) {
   return collection
 }
 
+export async function deleteUserCollections(ownerId: string) {
+  await prisma.collection.deleteMany({
+    where: {
+      ownerId
+    }
+  })
+}
+
 export async function updateCollection(
   id: string,
   { name, fileIds }: { name?: string; fileIds?: string[] }

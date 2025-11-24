@@ -196,6 +196,14 @@ export async function deleteShare(id: string) {
   return share
 }
 
+export async function deleteUserShares(ownerId: string) {
+  await prisma.share.deleteMany({
+    where: {
+      ownerId
+    }
+  })
+}
+
 export async function getShare(id: string) {
   const share = await prisma.share.findUnique({
     where: {
