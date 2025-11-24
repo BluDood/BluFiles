@@ -818,7 +818,6 @@
 
   .titlebar .actions .menuWrapper {
     position: relative;
-    z-index: 10;
   }
 
   .titlebar .actions .menuWrapper .menu {
@@ -839,6 +838,7 @@
   .titlebar .actions .menuWrapper:focus-within .menu {
     opacity: 1;
     pointer-events: all;
+    z-index: 10;
   }
 
   .titlebar .actions .menuWrapper .menu button {
