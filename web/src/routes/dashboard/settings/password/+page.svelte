@@ -1,64 +1,100 @@
 <script lang="ts">
+  import { createMessage } from '$lib/messages.js'
   import { req } from '$lib/utils'
+
+  import Loader from '$components/Loader.svelte'
 
   let currentPassword = $state('')
   let newPassword = $state('')
   let confirmPassword = $state('')
-  let passLoading = $state(false)
+
+  let loading = $state(false)
 
   async function changePassword() {
     if (newPassword.length < 8)
-      return alert('Password must be at least 8 characters long')
-    if (newPassword !== confirmPassword) return alert('Passwords do not match')
+      return createMessage({
+        type: 'error',
+        title: 'Invalid Password',
+        content: 'Password must be at least 8 characters'
+      })
+    if (newPassword !== confirmPassword)
+      return createMessage({
+        type: 'error',
+        title: 'Invalid Password',
+        content: 'Passwords do not match'
+      })
 
-    passLoading = true
+    loading = true
+    const res = await req.patch(
+      'me/password',
+      {
+        currentPassword,
+        newPassword
+      },
+      {
+        no401Redirect: true
+      }
+    )
 
-    const res = await req.patch('me/password', {
-      currentPassword,
-      newPassword
-    })
+    loading = false
 
-    if (res.status === 200) {
-      currentPassword = ''
-      newPassword = ''
-      confirmPassword = ''
+    if (res.status !== 204) {
+      const messages: Record<number, string> = {
+        409: 'New password must be different.',
+        401: 'Your current password is incorrect.',
+        400: 'Your password is invalid.'
+      }
+
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: messages[res.status] || 'Please try again later.'
+      })
     }
 
-    passLoading = false
+    currentPassword = ''
+    newPassword = ''
+    confirmPassword = ''
+
+    createMessage({
+      title: 'Password Updated!',
+      type: 'success',
+      content: 'Your password has been successfully updated.'
+    })
   }
 </script>
 
 <main>
   <div class="section pass">
     <h2>Change Password</h2>
-    <input
-      type="password"
-      bind:value={currentPassword}
-      placeholder="Current Password"
-    />
-    <input
-      type="password"
-      bind:value={newPassword}
-      placeholder="New Password"
-    />
-    <input
-      type="password"
-      bind:value={confirmPassword}
-      placeholder="Confirm Password"
-    />
+    <div class="inputs">
+      <input
+        type="password"
+        bind:value={currentPassword}
+        disabled={loading}
+        placeholder="Current Password"
+      />
+      <input
+        type="password"
+        bind:value={newPassword}
+        disabled={loading}
+        placeholder="New Password"
+      />
+      <input
+        type="password"
+        bind:value={confirmPassword}
+        disabled={loading}
+        placeholder="Confirm Password"
+      />
+      <div class="load" data-loading={loading}>
+        <Loader />
+      </div>
+    </div>
     <button
       onclick={changePassword}
-      disabled={passLoading ||
-        !currentPassword ||
-        !newPassword ||
-        !confirmPassword ||
-        newPassword !== confirmPassword}
+      disabled={loading || !currentPassword || !newPassword || !confirmPassword}
     >
-      {#if passLoading}
-        <span class="material-icons load"> sync </span>
-      {:else}
-        Change Password
-      {/if}
+      Change Password
     </button>
   </div>
 </main>
@@ -77,15 +113,41 @@
   .pass {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 10px;
+  }
+
+  .inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    max-width: 400px;
+  }
+
+  .load {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: 200ms ease;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+  }
+
+  .load[data-loading='true'] {
+    opacity: 1;
+    pointer-events: all;
   }
 
   .pass input {
     all: unset;
     padding: 10px;
-    max-width: 400px;
-    width: calc(100% - 20px);
     border-radius: 5px;
     background: #222;
     font-size: 16px;
@@ -105,8 +167,8 @@
     display: flex;
     justify-content: center;
     padding: 10px;
-    max-width: 400px;
-    width: calc(100% - 20px);
+    max-width: 380px;
+    flex: 1;
     text-align: center;
     border-radius: 5px;
     background: #0064ff;

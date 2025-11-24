@@ -34,6 +34,7 @@
     display: grid;
     grid-template-rows: auto 1fr;
     height: 100vh;
+    animation: appear 500ms ease;
   }
 
   .main {

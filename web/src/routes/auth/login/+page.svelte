@@ -5,6 +5,8 @@
 
   import { req } from '$lib/utils'
 
+  import Loader from '$components/Loader.svelte'
+
   let loading = $state(false)
   let error: string | null = $state(null)
   let username: string = $state('')
@@ -66,20 +68,25 @@
         </p>
       {/if}
     </div>
-    <input
-      class="input"
-      disabled={loading}
-      bind:value={username}
-      type="text"
-      placeholder="Username"
-    />
-    <input
-      class="input"
-      disabled={loading}
-      bind:value={password}
-      type="password"
-      placeholder="Password"
-    />
+    <div class="inputs">
+      <input
+        class="input"
+        disabled={loading}
+        bind:value={username}
+        type="text"
+        placeholder="Username"
+      />
+      <input
+        class="input"
+        disabled={loading}
+        bind:value={password}
+        type="password"
+        placeholder="Password"
+      />
+      <div class="load" data-loading={loading}>
+        <Loader />
+      </div>
+    </div>
     <button
       disabled={loading || !username || !password}
       onclick={login}
@@ -108,16 +115,45 @@
   .form {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 10px;
     animation: appear 500ms ease;
     width: 300px;
+    position: relative;
+  }
+
+  .inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    flex: 1;
+  }
+
+  .load {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: 200ms ease;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+  }
+
+  .load[data-loading='true'] {
+    opacity: 1;
+    pointer-events: all;
   }
 
   .input {
     all: unset;
     padding: 10px;
-    width: 100%;
+    flex: 1;
     border-radius: 5px;
     background: #222;
     transition: 200ms ease;
@@ -136,8 +172,7 @@
     display: flex;
     justify-content: center;
     padding: 10px;
-    max-width: 400px;
-    width: 100%;
+    flex: 1;
     text-align: center;
     border-radius: 5px;
     background: #0064ff;

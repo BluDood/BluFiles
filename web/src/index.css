@@ -9,6 +9,7 @@ body {
   color: #fff;
   font-family: 'Inter Variable', sans-serif;
   user-select: none;
+  overflow: hidden;
 }
 
 .material-icons {
