@@ -95,12 +95,17 @@
         loading = false
         if (!res) return
 
-        if (res.status !== 200)
+        if (res.status !== 200) {
+          const messages: Record<number, string> = {
+            403: 'You have reached your file limit.'
+          }
+
           return createMessage({
             type: 'error',
             title: 'An error has occurred',
-            content: 'Please try again later.'
+            content: messages[res.status] || 'Please try again later.'
           })
+        }
 
         createMessage({
           title: 'File Uploaded',
@@ -140,12 +145,17 @@
     })
     if (!res) return
 
-    if (res.status !== 200)
+    if (res.status !== 200) {
+      const messages: Record<number, string> = {
+        403: 'You have reached your folder limit.'
+      }
+
       return createMessage({
         type: 'error',
         title: 'An error has occurred',
-        content: 'Please try again later.'
+        content: messages[res.status] || 'Please try again later.'
       })
+    }
 
     createMessage({
       title: 'Folder Created',
@@ -429,18 +439,23 @@
       })
 
       if (res.type !== 'submit') return
-      const shareRes = await req.post(`share`, {
+      const shareRes = await req.post('share', {
         type,
         id: info.id
       })
 
       if (!shareRes) return
-      if (shareRes.status !== 200)
+      if (shareRes.status !== 200) {
+        const messages: Record<number, string> = {
+          403: 'You have reached your share limit.'
+        }
+
         return createMessage({
           type: 'error',
           title: 'An error has occurred',
-          content: 'Please try again later.'
+          content: messages[shareRes.status] || 'Please try again later.'
         })
+      }
       info.shareId = shareRes.data.id
       await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
       createMessage({

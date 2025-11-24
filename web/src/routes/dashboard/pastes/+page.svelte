@@ -65,12 +65,17 @@
     })
     if (!res) return
 
-    if (res.status !== 200)
+    if (res.status !== 200) {
+      const messages: Record<number, string> = {
+        403: 'You have reached your paste limit.'
+      }
+
       return createMessage({
         type: 'error',
         title: 'An error has occurred',
-        content: 'Please try again later.'
+        content: messages[res.status] || 'Please try again later.'
       })
+    }
 
     createMessage({
       title: 'Paste Created',

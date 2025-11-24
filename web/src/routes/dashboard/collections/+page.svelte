@@ -47,6 +47,18 @@
     })
     if (!res) return
 
+    if (res.status !== 200) {
+      const messages: Record<number, string> = {
+        403: 'You have reached your collection limit.'
+      }
+
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: messages[res.status] || 'Please try again later.'
+      })
+    }
+
     createMessage({
       title: 'Collection Created',
       type: 'success',
