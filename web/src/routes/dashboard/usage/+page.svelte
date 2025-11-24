@@ -38,6 +38,10 @@
       current: number
       max: number
     }
+    tokens: {
+      current: number
+      max: number
+    }
   }
 
   interface File {
@@ -185,6 +189,18 @@
         </p>
         {#if info.shares.max !== -1}
           <Progress max={info.shares.max} value={info.shares.current} />
+        {/if}
+        <div class="link material-icons">open_in_new</div>
+      </a>
+      <a class="item" href="/dashboard/tokens">
+        <h2>Tokens</h2>
+        <p>
+          {info.tokens.current}{info.tokens.max !== -1
+            ? ` / ${info.tokens.max}`
+            : ''}
+        </p>
+        {#if info.tokens.max !== -1}
+          <Progress max={info.tokens.max} value={info.tokens.current} />
         {/if}
         <div class="link material-icons">open_in_new</div>
       </a>

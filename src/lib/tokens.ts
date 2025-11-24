@@ -80,6 +80,15 @@ export async function getTokens(userId: string) {
   })
 }
 
+export async function countTokens(userId: string, uploader = false) {
+  return await prisma.token.count({
+    where: {
+      userId,
+      type: uploader ? 'uploader' : undefined
+    }
+  })
+}
+
 export async function deleteToken({
   id,
   token

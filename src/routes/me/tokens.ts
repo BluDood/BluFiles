@@ -10,6 +10,7 @@ import {
 } from '#lib/tokens.js'
 
 import { createTokenSchema, deleteTokenSchema } from '#lib/schemas.js'
+import { checkTokenCreationAllowed } from '#lib/config.js'
 
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
@@ -40,6 +41,8 @@ export async function get(req: Request, res: Response) {
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)
+  if (!(await checkTokenCreationAllowed(req.user.id)))
+    return res.sendStatus(403)
 
   const parsed = createTokenSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)

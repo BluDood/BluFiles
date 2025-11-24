@@ -7,6 +7,7 @@ import { countCollections } from './collections.js'
 import { countPastes } from '#lib/paste.js'
 import { countUsers } from '#lib/users.js'
 import { countShares } from './shares.js'
+import { countTokens } from './tokens.js'
 
 interface Config {
   maxUsers: number
@@ -25,6 +26,7 @@ interface Config {
     maxPastes: number
     maxCollections: number
     maxShares: number
+    maxTokens: number
     maxStorage: number
   }
 }
@@ -46,6 +48,7 @@ const defaultConfig: Config = {
     maxPastes: -1,
     maxCollections: -1,
     maxShares: -1,
+    maxTokens: -1,
     maxStorage: -1
   }
 }
@@ -178,5 +181,15 @@ export async function checkShareCreationAllowed(userId: string) {
   const totalShares = await countShares()
   if (config.total.maxShares !== -1 && totalShares >= config.total.maxShares)
     return false
+  return true
+}
+
+export async function checkTokenCreationAllowed(userId: string) {
+  const config = await getConfig()
+
+  const tokens = await countTokens(userId, true)
+  if (config.user.maxTokens !== -1 && tokens >= config.user.maxTokens)
+    return false
+
   return true
 }
