@@ -7,6 +7,7 @@
 
   import Progress from '$components/Progress.svelte'
   import FileView from '$components/FileView.svelte'
+  import Loader from '$components/Loader.svelte'
 
   interface DashboardInfo {
     user: {
@@ -109,9 +110,9 @@
   })
 </script>
 
-{#if info}
-  <main>
-    <h2>Usage</h2>
+<main>
+  <h2>Usage</h2>
+  {#if info}
     <div class="stats">
       <button class="item" disabled>
         <h2>Storage</h2>
@@ -188,73 +189,85 @@
         <div class="link material-icons">open_in_new</div>
       </a>
     </div>
-    <h2>Largest files</h2>
-    {#if previewing}
-      <FileView
-        id={previewing}
-        onclose={(r: boolean) => {
-          previewing = false
-          if (r) {
-            loadStats()
-            loadFiles()
-          }
-        }}
-      />
-    {/if}
-    <div class="files">
-      {#each files as file}
-        <button
-          draggable="true"
-          class="item"
-          onclick={() => (previewing = file.id)}
-          ondragstart={e => {
-            if (!e.dataTransfer) return
-            e.dataTransfer.setData('id', file.id)
-            e.dataTransfer.setData('type', 'file')
+  {:else}
+    <div class="load">
+      <Loader />
+    </div>
+  {/if}
+  {#if files}
+    {#if files.length !== 0}
+      <h2>Largest files</h2>
+      {#if previewing}
+        <FileView
+          id={previewing}
+          onclose={(r: boolean) => {
+            previewing = false
+            if (r) {
+              loadStats()
+              loadFiles()
+            }
           }}
-        >
-          <div class="icon">
-            <span class="material-icons">
-              {#if file.mime.startsWith('image')}
-                image
-              {:else if file.mime.startsWith('video')}
-                movie
-              {:else if file.mime.startsWith('audio')}
-                music_note
-              {:else if file.mime.startsWith('text')}
-                description
-              {:else}
-                insert_drive_file
-              {/if}
-            </span>
-          </div>
-          <p>{file.name}</p>
-          <div class="right">
-            <div class="info">
-              <span>{formatDate(file.updatedAt)}</span>
-              <span>{formatBytes(file.size)}</span>
-            </div>
-            <!-- svelte-ignore a11y_click_events_have_key_events -->
-            <div class="actions">
-              <span
-                class="action"
-                data-color="red"
-                tabindex="0"
-                role="button"
-                onclick={e => {
-                  e.stopPropagation()
-                  delFile(file.id, file.name)
-                }}
-              >
-                <span class="material-icons">delete</span>
+        />
+      {/if}
+      <div class="files">
+        {#each files as file}
+          <button
+            draggable="true"
+            class="item"
+            onclick={() => (previewing = file.id)}
+            ondragstart={e => {
+              if (!e.dataTransfer) return
+              e.dataTransfer.setData('id', file.id)
+              e.dataTransfer.setData('type', 'file')
+            }}
+          >
+            <div class="icon">
+              <span class="material-icons">
+                {#if file.mime.startsWith('image')}
+                  image
+                {:else if file.mime.startsWith('video')}
+                  movie
+                {:else if file.mime.startsWith('audio')}
+                  music_note
+                {:else if file.mime.startsWith('text')}
+                  description
+                {:else}
+                  insert_drive_file
+                {/if}
               </span>
             </div>
-          </div>
-        </button>
-      {/each}
+            <p>{file.name}</p>
+            <div class="right">
+              <div class="info">
+                <span>{formatDate(file.updatedAt)}</span>
+                <span>{formatBytes(file.size)}</span>
+              </div>
+              <!-- svelte-ignore a11y_click_events_have_key_events -->
+              <div class="actions">
+                <span
+                  class="action"
+                  data-color="red"
+                  tabindex="0"
+                  role="button"
+                  onclick={e => {
+                    e.stopPropagation()
+                    delFile(file.id, file.name)
+                  }}
+                >
+                  <span class="material-icons">delete</span>
+                </span>
+              </div>
+            </div>
+          </button>
+        {/each}
+      </div>
+    {/if}
+  {:else}
+    <div class="load">
+      <Loader />
     </div>
-  </main>
-{/if}
+  {/if}
+</main>
 
 <style>
   main {
@@ -264,10 +277,21 @@
     animation: appear 500ms ease;
   }
 
+  main > h2 {
+    animation: appear 500ms ease;
+  }
+
+  .load {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
   .stats {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
+    animation: appear 500ms ease;
   }
 
   .stats .item {

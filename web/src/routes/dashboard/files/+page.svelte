@@ -29,12 +29,11 @@
     }[]
   }
 
-  let loading = $state(false)
+  let loading = $state(true)
   let info: FolderInfo | null = $state(null)
   let previewing: string | false = $state(false)
 
   async function load(id: string | null = null) {
-    info = null
     loading = true
 
     const res = await req.get(`folder/${id || ''}`)
@@ -91,7 +90,9 @@
         if (!filename.type || !filename.input) return
         form.append('name', filename.input as string)
 
+        loading = true
         const res = await req.post('file', form)
+        loading = false
         if (!res) return
 
         if (res.status !== 200)
@@ -398,9 +399,10 @@
         if (!delRes) return
 
         if (delRes.status !== 204)
-          return await alert({
-            title: 'Error',
-            content: delRes.data.message
+          return createMessage({
+            type: 'error',
+            title: 'An error has occurred',
+            content: 'Please try again later.'
           })
 
         info.shareId = null
@@ -434,9 +436,10 @@
 
       if (!shareRes) return
       if (shareRes.status !== 200)
-        return await alert({
-          title: 'Error',
-          content: shareRes.data.message
+        return createMessage({
+          type: 'error',
+          title: 'An error has occurred',
+          content: 'Please try again later.'
         })
       info.shareId = shareRes.data.id
       await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
@@ -572,18 +575,17 @@
       </div>
       <div class="current">{info?.name || ''}</div>
     </div>
-    {#if loading}
-      <div class="loading">
+    <div class="content">
+      <div class="loading" data-loading={loading}>
         <Loader />
       </div>
-    {:else if info}
-      <div class="content">
+      {#if info}
         {#if info.folders.length === 0 && info.files.length === 0}
           <div class="empty">
             No files or folders here. Press + to add some!
           </div>
         {:else}
-          {#each info.folders as folder}
+          {#each info.folders as folder (folder.id)}
             <button
               draggable="true"
               onclick={() => load(folder.id)}
@@ -656,7 +658,7 @@
               </div>
             </button>
           {/each}
-          {#each info.files as file}
+          {#each info.files as file (file.id)}
             <button
               draggable="true"
               class="item"
@@ -743,8 +745,8 @@
             </button>
           {/each}
         {/if}
-      </div>
-    {/if}
+      {/if}
+    </div>
   </div>
 </main>
 
@@ -800,6 +802,7 @@
 
   .titlebar .actions .menuWrapper {
     position: relative;
+    z-index: 10;
   }
 
   .titlebar .actions .menuWrapper .menu {
@@ -848,19 +851,34 @@
     user-select: text;
   }
 
-  .loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    animation: fade 500ms ease;
-  }
-
   .content {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    animation: appear 500ms ease;
+    position: relative;
+    height: 100%;
+  }
+
+  .loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    pointer-events: none;
+    transition: 200ms ease;
+  }
+
+  .loading[data-loading='true'] {
+    opacity: 1;
+    pointer-events: all;
   }
 
   .content .empty {
@@ -868,6 +886,7 @@
     justify-content: center;
     color: #aaa;
     margin-top: 20px;
+    animation: appear 500ms ease;
   }
 
   .content::-webkit-scrollbar-track {
@@ -884,6 +903,7 @@
     cursor: pointer;
     transition: 200ms ease;
     border-radius: 5px;
+    animation: appear 500ms ease;
   }
 
   .content .item p {
@@ -944,9 +964,6 @@
     align-items: center;
     cursor: pointer;
     transition: 200ms ease;
-  }
-
-  .content .item .actions .action:hover {
   }
 
   .content .item .actions .action[data-color='gray'] {

@@ -223,6 +223,10 @@
     gap: 15px;
   }
 
+  .loader {
+    margin: auto;
+  }
+
   .section {
     background: #111;
     border-radius: 10px;
@@ -230,6 +234,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    animation: appear 500ms ease;
   }
 
   .list {

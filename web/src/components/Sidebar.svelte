@@ -3,11 +3,6 @@
 
   const items = [
     {
-      name: 'Dashboard',
-      icon: 'home',
-      path: '/dashboard'
-    },
-    {
       name: 'Files',
       icon: 'folder',
       path: '/dashboard/files'
@@ -56,12 +51,19 @@
 </script>
 
 <div class="sidebar">
-  <!-- <button class="item"> <span class="material-icons">menu</span></button> -->
+  <a
+    href="/dashboard"
+    class="item"
+    data-active={page.url.pathname === '/dashboard'}
+  >
+    <span class="material-icons">home</span>
+    <span class="popup">Dashboard</span>
+  </a>
   {#each items as item}
     <a
       href={item.path}
       class="item"
-      data-active={page.url.pathname === item.path}
+      data-active={page.url.pathname.startsWith(item.path)}
     >
       <span class="material-icons">{item.icon}</span>
       <span class="popup">{item.name}</span>

@@ -111,9 +111,10 @@
         if (!delRes) return
 
         if (delRes.status !== 204)
-          return await alert({
-            title: 'Error',
-            content: delRes.data.message
+          return createMessage({
+            type: 'error',
+            title: 'An error has occurred',
+            content: 'Please try again later.'
           })
 
         info.shareId = null
@@ -146,9 +147,10 @@
 
       if (!shareRes) return
       if (shareRes.status !== 200)
-        return await alert({
-          title: 'Error',
-          content: shareRes.data.message
+        return createMessage({
+          type: 'error',
+          title: 'An error has occurred',
+          content: 'Please try again later.'
         })
       info.shareId = shareRes.data.id
       await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)

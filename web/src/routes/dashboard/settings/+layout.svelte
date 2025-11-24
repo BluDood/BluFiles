@@ -17,7 +17,7 @@
   <h2>Settings</h2>
   <div class="tabs">
     {#each tabs as tab}
-      <a href={tab.path} class:active={tab.path === page.url.pathname}>
+      <a href={tab.path} class:active={page.url.pathname.startsWith(tab.path)}>
         {tab.name}
       </a>
     {/each}
@@ -43,7 +43,11 @@
     transition: 200ms ease;
   }
 
-  .tabs a.active {
+  .tabs a:hover {
     border-color: #333;
+  }
+
+  .tabs a.active {
+    border-color: #0064ff;
   }
 </style>

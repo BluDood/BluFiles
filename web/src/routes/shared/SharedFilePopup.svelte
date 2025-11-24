@@ -218,6 +218,10 @@
     min-width: 250px;
   }
 
+  .fileview .v-align {
+    gap: 20px;
+  }
+
   .fileview h1 {
     font-size: 28px;
     word-break: break-all;

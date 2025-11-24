@@ -60,9 +60,10 @@
     if (!collections) return
     const collection = collections.find(p => p.id === id)
     if (!collection)
-      return await alert({
-        title: 'Error',
-        content: 'Collection not found'
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: 'Please try again later.'
       })
 
     const name = await prompt({
@@ -87,9 +88,10 @@
     if (!res) return
 
     if (res.status !== 204)
-      return await alert({
-        title: 'Error',
-        content: res.data.message
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: 'Please try again later.'
       })
 
     createMessage({
@@ -122,9 +124,10 @@
     if (!res) return
 
     if (res.status !== 204)
-      return await alert({
-        title: 'Error',
-        content: res.data.message
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: 'Please try again later.'
       })
 
     createMessage({

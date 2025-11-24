@@ -66,9 +66,10 @@
     if (!res) return
 
     if (res.status !== 200)
-      return await alert({
-        title: 'Error',
-        content: res.data.message
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: 'Please try again later.'
       })
 
     createMessage({
@@ -100,9 +101,10 @@
     if (!res) return
 
     if (res.status !== 204)
-      return await alert({
-        title: 'Error',
-        content: res.data.message
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: 'Please try again later.'
       })
 
     createMessage({
@@ -118,9 +120,10 @@
     if (!pastes) return
     const paste = pastes.find(p => p.id === id)
     if (!paste)
-      return await alert({
-        title: 'Error',
-        content: 'Paste not found'
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: 'Please try again later.'
       })
 
     const name = await prompt({
@@ -145,9 +148,10 @@
     if (!res) return
 
     if (res.status !== 204)
-      return await alert({
-        title: 'Error',
-        content: res.data.message
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: 'Please try again later.'
       })
 
     createMessage({

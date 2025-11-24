@@ -52,9 +52,10 @@
     if (!res) return
 
     if (res.status !== 200)
-      return await alert({
+      return createMessage({
+        type: 'error',
         title: 'An error has occurred',
-        content: res.data.message
+        content: 'Please try again later.'
       })
 
     await prompt({
@@ -99,9 +100,10 @@
     if (!res) return
 
     if (res.status !== 204)
-      return await alert({
+      return createMessage({
+        type: 'error',
         title: 'An error has occurred',
-        content: res.data.message
+        content: 'Please try again later.'
       })
 
     createMessage({

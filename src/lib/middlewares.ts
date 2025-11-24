@@ -73,6 +73,10 @@ async function shareRoute(req: Request, res: Response) {
 }
 
 export async function setupMiddlewares(app: Application) {
+  app.use(async (req: Request, res: Response, next: NextFunction) => {
+    // await new Promise(resolve => setTimeout(resolve, 500))
+    next()
+  })
   app.use(cors())
   app.use(express.json())
   app.use(express.raw({ type: 'multipart/form-data', limit: '100mb' }))

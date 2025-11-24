@@ -249,20 +249,26 @@
   .buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
     margin-top: 10px;
+    gap: 10px;
   }
 
   .buttons button {
     all: unset;
-    display: flex;
-    justify-content: center;
-    padding: 10px 20px;
-    text-align: center;
-    border-radius: 5px;
-    background: red;
-    font-size: 16px;
-    transition: 200ms ease;
     cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: #f00;
+    transition: 200ms ease;
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .buttons button:hover {
+    opacity: 0.8;
+  }
+
+  .buttons button:focus {
+    outline-color: #f00;
   }
 </style>

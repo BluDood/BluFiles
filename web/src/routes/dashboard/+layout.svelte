@@ -21,7 +21,9 @@
   <Titlebar />
   <div class="main">
     <Sidebar />
-    <div class="slot"><slot /></div>
+    <div class="slot">
+      <slot />
+    </div>
   </div>
 </div>
 <Popups />
@@ -41,8 +43,8 @@
   }
 
   .slot {
-    overflow: auto;
-    max-height: 100%;
+    overflow-y: scroll;
+    height: calc(100vh - 50px);
   }
 
   .slot:not(:has(:first-child[data-no-padding='true'])) {
