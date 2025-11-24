@@ -11,20 +11,20 @@
   }
 
   let user: User | null = $state(null)
-  let loading = $state(true)
+  let loading = $state(false)
 
   onMount(async () => {
     const token = localStorage.getItem('token')
 
     if (token) {
+      loading = true
       const res = await req.get('/', {
         no401Redirect: true
       })
 
       if (res.status === 200) user = res.data.user
+      loading = false
     }
-
-    loading = false
   })
 </script>
 

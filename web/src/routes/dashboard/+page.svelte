@@ -1,5 +1,7 @@
 <script lang="ts">
   import { userStore } from '$lib/stores.js'
+
+  import Loader from '$components/Loader.svelte'
 </script>
 
 {#if $userStore}
@@ -28,6 +30,10 @@
       </a>
     </div>
   </main>
+{:else}
+  <div class="loader">
+    <Loader />
+  </div>
 {/if}
 
 <style>
@@ -64,5 +70,12 @@
 
   .links a:focus {
     outline-color: #555;
+  }
+
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
   }
 </style>

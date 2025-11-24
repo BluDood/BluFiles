@@ -4,6 +4,8 @@
   import { userStore } from '$lib/stores'
   import { req } from '$lib/utils'
 
+  import Loader from '$components/Loader.svelte'
+
   let newUsername = $state('')
   let profileLoading = $state(false)
 
@@ -54,6 +56,10 @@
       </div>
     </div>
   </main>
+{:else}
+  <div class="loader">
+    <Loader />
+  </div>
 {/if}
 
 <style>
@@ -127,5 +133,12 @@
 
   .load {
     animation: spin 1s linear infinite reverse;
+  }
+
+  .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
   }
 </style>
