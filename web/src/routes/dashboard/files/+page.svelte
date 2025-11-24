@@ -771,6 +771,7 @@
     flex-direction: column;
     gap: 10px;
     height: 100%;
+    overflow: hidden;
   }
 
   .files {

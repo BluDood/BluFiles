@@ -66,25 +66,25 @@
         </p>
       {/if}
     </div>
-    <div class="field">
-      <span>Username</span>
-      <input
-        disabled={loading}
-        bind:value={username}
-        type="text"
-        placeholder=" "
-      />
-    </div>
-    <div class="field">
-      <span>Password</span>
-      <input
-        disabled={loading}
-        bind:value={password}
-        type="password"
-        placeholder=" "
-      />
-    </div>
-    <button disabled={loading} onclick={login} class="submit">Login</button>
+    <input
+      class="input"
+      disabled={loading}
+      bind:value={username}
+      type="text"
+      placeholder="Username"
+    />
+    <input
+      class="input"
+      disabled={loading}
+      bind:value={password}
+      type="password"
+      placeholder="Password"
+    />
+    <button
+      disabled={loading || !username || !password}
+      onclick={login}
+      class="submit">Login</button
+    >
   </div>
 </div>
 
@@ -111,75 +111,48 @@
     align-items: center;
     gap: 10px;
     animation: appear 500ms ease;
-  }
-
-  .field {
-    position: relative;
-    display: flex;
     width: 300px;
   }
 
-  .field input {
+  .input {
+    all: unset;
+    padding: 10px;
     width: 100%;
-    background: transparent;
-    border: none;
-    border: 1px solid #444;
-    padding: 15px;
-    border-radius: 10px;
-    outline: none;
-    color: white;
-    transition: 200ms ease;
-    font-size: 16px;
+    border-radius: 5px;
+    background: #222;
     transition: 200ms ease;
   }
 
-  .field input:is(:focus, :not(:placeholder-shown)) {
-    border-color: #0064ff;
+  .input:hover {
+    background: #282828;
   }
 
-  .field span {
-    position: absolute;
-    top: 50%;
-    left: 15px;
-    transform: translateY(-50%);
-    transition: 200ms ease;
-    background: #000;
-    padding: 0 5px;
-    color: #666;
-    pointer-events: none;
-    border-radius: 9999px;
-    z-index: 10;
-  }
-
-  .field:has(input:is(:focus, :not(:placeholder-shown))) span {
-    font-size: 14px;
-    transform: translateY(0);
-    top: -8px;
-    color: #0064ff;
-  }
-
-  .field input:disabled {
-    opacity: 0.5;
+  .input:focus {
+    background: #333;
   }
 
   .submit {
     all: unset;
-    background: #0064ff;
-    border-radius: 8px;
-    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    max-width: 400px;
     width: 100%;
     text-align: center;
-    opacity: 0.8;
+    border-radius: 5px;
+    background: #0064ff;
+    font-size: 16px;
     transition: 200ms ease;
     cursor: pointer;
-    transition: 200ms ease;
   }
 
   .submit:hover {
-    opacity: 1;
+    background: #0050e6;
   }
 
   .submit:disabled {
+    background: #0064ff;
     opacity: 0.5;
+    cursor: not-allowed;
   }
 </style>

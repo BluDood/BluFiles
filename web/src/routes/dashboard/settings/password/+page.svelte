@@ -120,6 +120,7 @@
   }
 
   .pass button:disabled {
+    background: #0064ff;
     opacity: 0.5;
     cursor: not-allowed;
   }

@@ -203,8 +203,13 @@
     transition: 200ms ease;
   }
 
+  .input:hover {
+    background: #282828;
+  }
+
   .input:focus {
     outline-color: #0064ff;
+    background: #333;
   }
 
   .input:not(select):read-only:focus {
@@ -212,7 +217,8 @@
   }
 
   .select {
-    background-image: linear-gradient(45deg, transparent 50%, white 50%),
+    background-image:
+      linear-gradient(45deg, transparent 50%, white 50%),
       linear-gradient(135deg, white 50%, transparent 50%);
     background-position:
       calc(100% - 20px) calc(14px),
