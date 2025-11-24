@@ -1,6 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state'
 
+  import { userStore } from '$lib/stores.js'
+
   const items = [
     {
       name: 'Files',
@@ -46,6 +48,12 @@
       name: 'Debug',
       icon: 'bug_report',
       path: '/dashboard/debug'
+    },
+    {
+      name: 'Admin',
+      icon: 'admin_panel_settings',
+      path: '/dashboard/admin',
+      admin: true
     }
   ]
 </script>
@@ -60,14 +68,16 @@
     <span class="popup">Dashboard</span>
   </a>
   {#each items as item}
-    <a
-      href={item.path}
-      class="item"
-      data-active={page.url.pathname.startsWith(item.path)}
-    >
-      <span class="material-icons">{item.icon}</span>
-      <span class="popup">{item.name}</span>
-    </a>
+    {#if !(item.admin && $userStore?.type !== 'admin')}
+      <a
+        href={item.path}
+        class="item"
+        data-active={page.url.pathname.startsWith(item.path)}
+      >
+        <span class="material-icons">{item.icon}</span>
+        <span class="popup">{item.name}</span>
+      </a>
+    {/if}
   {/each}
 </div>
 
