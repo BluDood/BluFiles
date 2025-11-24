@@ -71,20 +71,21 @@ export async function setConfig(data: Config) {
   await fs.writeFile(configPath, JSON.stringify(data, null, 2))
 }
 
-await setConfig(await getConfig())
-
-export async function setConfigValue(key: keyof Config, value: unknown) {
+export async function updateConfig(update: Partial<Config>) {
   const config = await getConfig()
-  if (!Object.keys(config).includes(key)) return false
-  config[key] = value as never
-  await setConfig(config)
-  return true
+
+  await setConfig({
+    ...config,
+    ...update
+  })
 }
+
+await setConfig(await getConfig())
 
 export async function checkRegistrationAllowed() {
   const config = await getConfig()
 
-  if ([true, 'true'].includes(config.disableRegistration)) return false
+  if (config.disableRegistration === true) return false
 
   const users = await countUsers()
   if (config.disableRegistration === 'afterFirstUser' && users >= 1)
