@@ -590,10 +590,10 @@
       </div>
       <div class="current">{info?.name || ''}</div>
     </div>
+    <div class="loading" data-loading={loading}>
+      <Loader />
+    </div>
     <div class="content">
-      <div class="loading" data-loading={loading}>
-        <Loader />
-      </div>
       {#if info}
         {#if info.folders.length === 0 && info.files.length === 0}
           <div class="empty">
@@ -877,10 +877,10 @@
 
   .loading {
     position: absolute;
-    top: 0;
+    top: 44px;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: calc(100% - 44px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -890,6 +890,7 @@
     opacity: 0;
     pointer-events: none;
     transition: 200ms ease;
+    z-index: 5;
   }
 
   .loading[data-loading='true'] {
