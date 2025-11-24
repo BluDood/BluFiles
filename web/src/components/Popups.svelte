@@ -31,7 +31,7 @@
     align-items: center;
     opacity: 0;
     pointer-events: none;
-    transition: 200ms ease;
+    transition: opacity 200ms ease;
     z-index: 10;
   }
 

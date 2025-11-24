@@ -121,9 +121,10 @@
     background: #111;
     padding: 15px;
     border-radius: 5px;
-    width: 100%;
+    width: calc(100% - 40px);
     max-width: 400px;
     transition: 200ms ease;
+    transition-property: transform, opacity;
   }
 
   .popup[data-closing='true'] {

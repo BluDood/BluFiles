@@ -60,12 +60,14 @@
     pointer-events: all;
     background: #111;
     width: 350px;
+    max-width: calc(100vw - 20px);
     display: flex;
     align-items: center;
     padding: 10px;
     border-radius: 8px;
     gap: 10px;
     transition: 500ms ease;
+    transition-property: transform, padding, height;
     height: 44px;
   }
 
