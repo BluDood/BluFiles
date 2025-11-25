@@ -4,8 +4,11 @@ services:
     restart: unless-stopped
     ports:
       - 1337:1337
+    volumes:
+      - ./data:/data
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/files
+      - STORAGE_DIR=/data
   postgres:
     image: postgres
     environment:
