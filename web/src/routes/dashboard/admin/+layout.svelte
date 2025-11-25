@@ -1,4 +1,6 @@
 <script lang="ts">
+  let { children } = $props()
+
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
 
@@ -34,7 +36,7 @@
       </a>
     {/each}
   </div>
-  <slot />
+  {@render children()}
 </main>
 
 <style>

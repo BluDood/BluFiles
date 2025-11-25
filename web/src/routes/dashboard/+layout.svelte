@@ -1,4 +1,6 @@
 <script lang="ts">
+  let { children } = $props()
+
   import { onMount } from 'svelte'
 
   import { userStore } from '$lib/stores'
@@ -22,7 +24,7 @@
   <div class="main">
     <Sidebar />
     <div class="slot">
-      <slot />
+      {@render children()}
     </div>
   </div>
 </div>

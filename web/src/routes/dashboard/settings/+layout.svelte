@@ -1,4 +1,6 @@
 <script lang="ts">
+  let { children } = $props()
+
   import { page } from '$app/state'
 
   const tabs = [
@@ -22,7 +24,7 @@
       </a>
     {/each}
   </div>
-  <slot />
+  {@render children()}
 </main>
 
 <style>
