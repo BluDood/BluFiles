@@ -152,9 +152,4 @@
     display: flex;
     flex-direction: column;
   }
-
-  .actions .menu .content .user > div .id {
-    font-size: 14px;
-    color: var(--text-sec);
-  }
 </style>

@@ -361,20 +361,12 @@
     transition: 200ms ease;
   }
 
-  .user .actions .action[data-color='gray'] {
-    color: var(--text-ter);
-  }
-
   .user .actions .action[data-color='blue'] {
     color: var(--accent);
   }
 
   .user .actions .action[data-color='red'] {
     color: var(--red);
-  }
-
-  .user .actions .action[data-color='orange'] {
-    color: var(--orange);
   }
 
   .user .actions .action span {

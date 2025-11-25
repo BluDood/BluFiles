@@ -353,13 +353,6 @@
     animation: appear 500ms ease;
   }
 
-  .files .empty {
-    display: flex;
-    justify-content: center;
-    color: var(--text-sec);
-    margin-top: 20px;
-  }
-
   .files::-webkit-scrollbar-track {
     background: var(--background-sec);
   }
@@ -436,23 +429,8 @@
     transition: 200ms ease;
   }
 
-  .files .item .actions .action:hover {
-  }
-
-  .files .item .actions .action[data-color='gray'] {
-    color: var(--text-ter);
-  }
-
-  .files .item .actions .action[data-color='blue'] {
-    color: var(--accent);
-  }
-
   .files .item .actions .action[data-color='red'] {
     color: var(--red);
-  }
-
-  .files .item .actions .action[data-color='orange'] {
-    color: var(--orange);
   }
 
   .files .item .actions .action span {

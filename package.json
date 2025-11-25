@@ -8,6 +8,7 @@
     "build": "tsc",
     "dev": "tsc-watch --onSuccess \"node .\"",
     "lint": "eslint .",
+    "check": "tsc --noEmit",
     "format": "prettier --write ."
   },
   "keywords": [],
