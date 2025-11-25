@@ -21,8 +21,8 @@
     --width: 48px;
     --height: 24px;
     --slider-padding: 4px;
-    --background: var(--foreground);
-    --foreground: var(--accent);
+    --unchecked: var(--foreground);
+    --checked: var(--accent);
 
     position: relative;
     display: inline-block;
@@ -43,7 +43,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--background);
+    background-color: var(--unchecked);
     transition: 200ms ease;
     border-radius: 9999px;
     outline: 1px solid transparent;
@@ -63,7 +63,7 @@
   }
 
   .switch input:checked + .slider {
-    background-color: var(--foreground);
+    background-color: var(--checked);
   }
 
   .switch input:checked + .slider:before {
@@ -71,6 +71,6 @@
   }
 
   .switch input:focus-visible + .slider {
-    outline-color: var(--foreground);
+    outline-color: var(--checked);
   }
 </style>
