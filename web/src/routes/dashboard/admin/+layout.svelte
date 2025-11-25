@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { goto } from '$app/navigation'
   import { page } from '$app/state'
+
+  import { userStore } from '$lib/stores.js'
 
   const tabs = [
     {
@@ -7,7 +10,7 @@
       path: '/dashboard/admin/users'
     },
     {
-      name: 'Usage',
+      name: 'Total Usage',
       path: '/dashboard/admin/usage'
     },
     {
@@ -15,6 +18,11 @@
       path: '/dashboard/admin/config'
     }
   ]
+
+  $effect(() => {
+    if (!$userStore) return
+    if ($userStore.type !== 'admin') goto('/dashboard')
+  })
 </script>
 
 <main>

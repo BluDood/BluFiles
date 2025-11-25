@@ -1,8 +1,30 @@
-import prisma from '#lib/prisma.js'
+import prisma, { User } from '#lib/prisma.js'
 
 import { hashPassword, verifyPassword } from '#lib/utils.js'
 import { getFiles } from './files.js'
 import { remove } from './filesystem.js'
+
+interface FilteredAdminUser {
+  id: string
+  username: string
+  type: 'user' | 'admin'
+  usage?: number
+}
+
+export const filterAdminUser = (
+  f: User | (User & { usage: number })
+): FilteredAdminUser | null => {
+  if (!f) return null
+  const user: FilteredAdminUser = {
+    id: f.id,
+    username: f.username,
+    type: f.type
+  }
+
+  if ('usage' in f && f.usage !== undefined) user.usage = f.usage
+
+  return user
+}
 
 export async function countUsers() {
   return await prisma.user.count()
@@ -51,11 +73,13 @@ export async function getUser(id: string) {
 export async function updateUser({
   id,
   username,
-  password
+  password,
+  type
 }: {
   id: string
   username?: string
   password?: string
+  type?: 'user' | 'admin'
 }) {
   const update: any = {}
   if (username) update.username = username
@@ -64,6 +88,7 @@ export async function updateUser({
     update.salt = salt
     update.hash = hash
   }
+  if (type) update.type = type
 
   const user = await prisma.user.update({
     where: {

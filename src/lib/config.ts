@@ -96,6 +96,15 @@ export async function checkRegistrationAllowed() {
   return true
 }
 
+export async function checkUserCreationAllowed() {
+  const config = await getConfig()
+
+  const users = await countUsers()
+  if (config.maxUsers !== -1 && users >= config.maxUsers) return false
+
+  return true
+}
+
 export async function checkFileCreationAllowed(userId: string, size: number) {
   const config = await getConfig()
 

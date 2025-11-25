@@ -102,3 +102,34 @@ export const createShareSchema = z.object({
   type: z.enum(['file', 'folder', 'collection', 'paste']),
   id
 })
+
+export const updateConfigSchema = z.object({
+  maxUsers: z.number().min(-1),
+  disableRegistration: z.boolean().or(z.literal('afterFirstUser')),
+  total: z.object({
+    maxFiles: z.number().min(-1),
+    maxFolders: z.number().min(-1),
+    maxPastes: z.number().min(-1),
+    maxCollections: z.number().min(-1),
+    maxShares: z.number().min(-1),
+    maxStorage: z.number().min(-1)
+  }),
+  user: z.object({
+    maxFiles: z.number().min(-1),
+    maxFolders: z.number().min(-1),
+    maxPastes: z.number().min(-1),
+    maxCollections: z.number().min(-1),
+    maxShares: z.number().min(-1),
+    maxTokens: z.number().min(-1),
+    maxStorage: z.number().min(-1)
+  })
+})
+
+export const createUserSchema = z.object({
+  username,
+  password
+})
+
+export const updateAdminUserSchema = z.object({
+  type: z.enum(['user', 'admin']).optional()
+})
