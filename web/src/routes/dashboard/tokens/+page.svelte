@@ -184,7 +184,7 @@
   }
 
   .v-align button {
-    color: #0064ff;
+    color: var(--accent);
   }
 
   .loader {
@@ -194,7 +194,7 @@
   .tokenList {
     display: flex;
     flex-direction: column;
-    background: #111;
+    background: var(--background-sec);
     padding: 10px;
     border-radius: 10px;
     animation: appear 500ms ease;
@@ -227,7 +227,7 @@
   .token .name .current {
     display: inline-block;
     font-size: 14px;
-    color: rgb(0, 255, 50);
+    color: var(--green);
   }
 
   .token .info {
@@ -238,7 +238,7 @@
 
   .token .info > p {
     font-size: 14px;
-    color: #aaa;
+    color: var(--text-sec);
   }
 
   .token .info > p:not(:first-child)::before {
@@ -257,6 +257,6 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: #0064ff;
+    color: var(--accent);
   }
 </style>

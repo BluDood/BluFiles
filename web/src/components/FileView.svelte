@@ -339,7 +339,7 @@
   }
 
   .fileview {
-    background: #111;
+    background: var(--background-sec);
     padding: 10px;
     border-radius: 10px;
     display: flex;
@@ -381,7 +381,7 @@
   .fileview .details span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 14px;
   }
 
@@ -391,7 +391,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 
@@ -400,7 +400,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    background: #222;
+    background: var(--background-ter);
     border-radius: 5px;
     margin: 10px 0;
     min-height: 100px;
@@ -411,7 +411,7 @@
     flex: 1;
     width: 100%;
     height: 100%;
-    background: #222;
+    background: var(--background-ter);
     border-radius: 5px;
     margin: 10px 0;
     padding: 10px;
@@ -423,7 +423,7 @@
     flex: 1;
     width: 100%;
     height: 100%;
-    background: #222;
+    background: var(--background-ter);
     border-radius: 5px;
     margin: 10px 0;
     max-height: 300px;
@@ -433,7 +433,7 @@
     flex: 1;
     width: 100%;
     height: 100%;
-    background: #222;
+    background: var(--background-ter);
     border-radius: 5px;
     margin: 10px 0;
     max-height: 300px;
@@ -443,14 +443,14 @@
     flex: 1;
     width: 100%;
     height: 100%;
-    background: #222;
+    background: var(--background-ter);
     border-radius: 5px;
     margin: 10px 0;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 10px 0;
-    color: #ccc;
+    color: var(--text-sec);
   }
 
   .fileview .actions {
@@ -467,18 +467,18 @@
   }
 
   .fileview .actions button[data-color='gray'] {
-    color: gray;
+    color: var(--text-ter);
   }
 
   .fileview .actions button[data-color='red'] {
-    color: red;
+    color: var(--red);
   }
 
   .fileview .actions button[data-color='green'] {
-    color: #00c800;
+    color: var(--green);
   }
 
   .fileview .actions button[data-color='blue'] {
-    color: #0064ff;
+    color: var(--accent);
   }
 </style>

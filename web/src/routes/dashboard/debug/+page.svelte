@@ -131,7 +131,7 @@
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 5px;
-    background: #222;
+    background: var(--background-ter);
     transition: 200ms ease;
     outline: 1px solid transparent;
     outline-offset: 2px;
@@ -142,7 +142,7 @@
   }
 
   .buttons button:focus {
-    outline-color: #666;
+    outline-color: var(--outline);
   }
 
   .result {

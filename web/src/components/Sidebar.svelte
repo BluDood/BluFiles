@@ -85,7 +85,7 @@
   .sidebar {
     width: 50px;
     height: 100%;
-    background: #111;
+    background: var(--background-sec);
     display: flex;
     flex-direction: column;
     padding: 5px;
@@ -105,14 +105,14 @@
   }
 
   .item:is([data-active='true'], :hover, :focus-visible) {
-    background: #252525;
+    background: var(--hover-sec);
   }
 
   .item .popup {
     position: absolute;
     top: 8px;
     left: calc(100% + 20px);
-    background: #252525;
+    background: var(--hover-sec);
     padding: 3px 5px;
     border-radius: 5px;
     opacity: 0;

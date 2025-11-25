@@ -118,7 +118,7 @@
   .popup {
     animation: appear 200ms ease;
     position: absolute;
-    background: #111;
+    background: var(--background-sec);
     padding: 15px;
     border-radius: 5px;
     width: calc(100% - 40px);
@@ -152,8 +152,8 @@
   }
 
   .header button:focus {
-    color: red;
-    outline-color: red;
+    color: var(--red);
+    outline-color: var(--red);
   }
 
   .buttons {
@@ -168,7 +168,7 @@
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 5px;
-    background: var(--button-color, #333);
+    background: var(--button-color, var(--foreground));
     transition: 200ms ease;
     outline: 1px solid transparent;
     outline-offset: 2px;
@@ -179,15 +179,15 @@
   }
 
   .buttons button:focus {
-    outline-color: var(--button-color, #666);
+    outline-color: var(--button-color, var(--outline));
   }
 
   .buttons button[data-color='blue'] {
-    --button-color: #0064ff;
+    --button-color: var(--accent);
   }
 
   .buttons button[data-color='red'] {
-    --button-color: #ff0000;
+    --button-color: var(--red);
   }
 
   .input {
@@ -195,8 +195,8 @@
     box-sizing: border-box;
     padding: 5px 10px;
     border-radius: 5px;
-    background: #222;
-    color: #fff;
+    background: var(--background-ter);
+    color: var(--text);
     margin-top: 10px;
     width: 100%;
     outline: 1px solid transparent;
@@ -205,16 +205,16 @@
   }
 
   .input:hover {
-    background: #282828;
+    background-color: var(--hover);
   }
 
   .input:focus {
-    outline-color: #0064ff;
-    background: #333;
+    outline-color: var(--accent);
+    background-color: var(--hover);
   }
 
   .input:not(select):read-only:focus {
-    outline-color: #666;
+    outline-color: var(--outline);
   }
 
   .select {

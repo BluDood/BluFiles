@@ -44,7 +44,7 @@
   }
 
   .shareInfo {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 20px;
     width: 100%;
@@ -52,7 +52,7 @@
 
   .shareInfo h2 {
     font-weight: 600;
-    color: #fff;
+    color: var(--text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -68,7 +68,7 @@
   .shareInfo .details span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 16px;
   }
 
@@ -78,13 +78,13 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 
   textarea {
     all: unset;
-    background: #222;
+    background: var(--background-ter);
     padding: 10px;
     border-radius: 5px;
     font-size: 16px;

@@ -149,12 +149,12 @@
 
   .header .title .text .thin {
     font-weight: normal;
-    color: #aaa;
+    color: var(--text-sec);
   }
 
   .header .owner {
     font-size: 18px;
-    color: #ccc;
+    color: var(--text-sec);
     animation: appear 500ms ease;
   }
 

@@ -151,11 +151,11 @@
     top: 0;
     right: 0;
     margin: 15px;
-    --button-color: #0064ff;
+    --button-color: var(--accent);
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 5px;
-    background: var(--button-color, #333);
+    background: var(--button-color, var(--foreground));
     transition: 200ms ease;
     outline: 1px solid transparent;
     outline-offset: 2px;
@@ -167,11 +167,11 @@
   }
 
   .link:focus {
-    outline-color: var(--button-color, #666);
+    outline-color: var(--button-color, var(--outline));
   }
 
   .section {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 15px;
     display: flex;
@@ -195,7 +195,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    background: #222;
+    background: var(--background-ter);
     padding: 15px;
     border-radius: 10px;
     position: relative;
@@ -208,11 +208,11 @@
   }
 
   .stats .item:is(:hover, :focus-visible) {
-    background: #333;
+    background: var(--foreground);
   }
 
   .stats .item:not(:has(.link)) {
-    background: #222;
+    background: var(--background-ter);
     cursor: default;
   }
 </style>

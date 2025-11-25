@@ -105,7 +105,7 @@
   }
 
   .section {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 15px;
   }
@@ -149,17 +149,17 @@
     all: unset;
     padding: 10px;
     border-radius: 5px;
-    background: #222;
+    background: var(--background-ter);
     font-size: 16px;
     transition: 200ms ease;
   }
 
   .pass input:hover {
-    background: #282828;
+    background: var(--hover);
   }
 
   .pass input:focus {
-    background: #333;
+    background: var(--foreground);
   }
 
   .pass button {
@@ -171,18 +171,18 @@
     flex: 1;
     text-align: center;
     border-radius: 5px;
-    background: #0064ff;
+    background: var(--accent);
     font-size: 16px;
     transition: 200ms ease;
     cursor: pointer;
   }
 
   .pass button:hover {
-    background: #0050e6;
+    background: var(--hover-accent);
   }
 
   .pass button:disabled {
-    background: #0064ff;
+    background: var(--accent);
     opacity: 0.5;
     cursor: not-allowed;
   }

@@ -228,7 +228,7 @@
   }
 
   .section {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 15px;
     display: flex;
@@ -257,11 +257,11 @@
   }
 
   .item:hover {
-    background: #222;
+    background: var(--background-ter);
   }
 
   .item .icon {
-    color: #fff;
+    color: var(--text);
     font-size: 30px;
   }
 
@@ -275,7 +275,7 @@
   .item .info .name {
     font-size: 18px;
     font-weight: 600;
-    color: #fff;
+    color: var(--text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -284,6 +284,6 @@
 
   .item .info .metadata {
     font-size: 14px;
-    color: #aaa;
+    color: var(--text-sec);
   }
 </style>

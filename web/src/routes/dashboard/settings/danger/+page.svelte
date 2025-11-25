@@ -241,7 +241,7 @@
   }
 
   .section {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 15px;
   }
@@ -258,7 +258,7 @@
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 5px;
-    background: #f00;
+    background: var(--red);
     transition: 200ms ease;
     outline: 1px solid transparent;
     outline-offset: 2px;
@@ -269,6 +269,6 @@
   }
 
   .buttons button:focus {
-    outline-color: #f00;
+    outline-color: var(--red);
   }
 </style>

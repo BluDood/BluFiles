@@ -377,7 +377,7 @@
   }
 
   .section {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 15px;
     display: flex;
@@ -401,11 +401,11 @@
     top: 0;
     right: 0;
     margin: 15px;
-    --button-color: #0064ff;
+    --button-color: var(--accent);
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 5px;
-    background: var(--button-color, #333);
+    background: var(--button-color, var(--foreground));
     transition: 200ms ease;
     outline: 1px solid transparent;
     outline-offset: 2px;
@@ -417,7 +417,7 @@
   }
 
   .save:focus {
-    outline-color: var(--button-color, #666);
+    outline-color: var(--button-color, var(--outline));
   }
 
   .double-group {
@@ -455,8 +455,8 @@
     box-sizing: border-box;
     padding: 5px 10px;
     border-radius: 5px;
-    background-color: #222;
-    color: #fff;
+    background-color: var(--background-ter);
+    color: var(--text);
     width: 100%;
     outline: 1px solid transparent;
     outline-offset: 2px;
@@ -465,17 +465,16 @@
   }
 
   .field .input:hover {
-    background-color: #282828;
+    background-color: var(--hover);
   }
 
   .field .input:focus {
-    outline-color: #0064ff;
-    background-color: #333;
+    outline-color: var(--accent);
+    background-color: var(--foreground);
   }
 
   .field .input:disabled {
-    background-color: #181818;
-    color: #777;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 

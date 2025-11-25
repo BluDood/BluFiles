@@ -288,7 +288,7 @@
         <div class="items">
           {#each files as file}
             <button onclick={() => (previewing = file.id)} class="item">
-              <p class="title">
+              <div class="title">
                 <span class="material-icons">
                   {#if file.mime.startsWith('image')}
                     image
@@ -302,8 +302,10 @@
                     insert_drive_file
                   {/if}
                 </span>
-                {file.name}
-              </p>
+                <p class="name">
+                  {file.name}
+                </p>
+              </div>
               <div class="info">
                 <p>{file.size}</p>
                 <p>{file.updatedAt}</p>
@@ -370,7 +372,7 @@
   }
 
   .collection {
-    background: #111;
+    background: var(--background-sec);
     padding: 10px;
     border-radius: 10px;
     display: flex;
@@ -407,7 +409,7 @@
   .details span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 14px;
   }
 
@@ -417,7 +419,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 
@@ -435,21 +437,21 @@
   }
 
   .actions button[data-color='red'] {
-    color: red;
+    color: var(--red);
   }
 
   .actions button[data-color='gray'] {
-    color: gray;
+    color: var(--text-ter);
   }
 
   .actions button[data-color='blue'] {
-    color: #0064ff;
+    color: var(--accent);
   }
 
   .items {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;
     margin: 10px 0;
   }
 
@@ -461,24 +463,26 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     min-width: 400px;
     gap: 30px;
   }
 
   .item:hover {
-    background: #222;
-  }
-
-  .item > p {
-    font-size: 18px;
-    font-weight: bold;
+    background: var(--background-ter);
   }
 
   .item .title {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .item .title .name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .item .info {
@@ -488,7 +492,7 @@
 
   .item .info > p {
     font-size: 14px;
-    color: #aaa;
+    color: var(--text-sec);
   }
 
   .item .info > p:not(:first-child)::before {
@@ -511,13 +515,13 @@
   }
 
   .item .itemActions .button[data-color='red'] {
-    color: red;
+    color: var(--red);
   }
 
   .none {
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 14px;
     text-align: center;
-    margin: 10px;
+    margin: 20px;
   }
 </style>

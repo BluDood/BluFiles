@@ -21,8 +21,8 @@
     --width: 48px;
     --height: 24px;
     --slider-padding: 4px;
-    --background: #333;
-    --foreground: #0064ff;
+    --background: var(--foreground);
+    --foreground: var(--accent);
 
     position: relative;
     display: inline-block;

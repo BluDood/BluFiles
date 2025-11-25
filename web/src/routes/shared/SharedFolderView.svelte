@@ -186,7 +186,7 @@
   }
 
   .shareInfo {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 20px;
     width: 100%;
@@ -194,7 +194,7 @@
 
   .shareInfo h2 {
     font-weight: 600;
-    color: #fff;
+    color: var(--text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -210,7 +210,7 @@
   .shareInfo .details span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 16px;
   }
 
@@ -220,7 +220,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 
@@ -230,7 +230,8 @@
     display: flex;
     flex-direction: column;
     animation: appear 500ms ease;
-    border: 1px solid #222;
+    border: 1px solid var(--border);
+    overflow: hidden;
     border-radius: 10px;
   }
 
@@ -238,7 +239,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #111;
+    background: var(--background-sec);
     padding: 5px 10px;
   }
 
@@ -259,7 +260,7 @@
   }
 
   .titlebar .actions button:hover {
-    background: #222;
+    background: var(--background-ter);
   }
 
   .titlebar .actions button:disabled {
@@ -270,7 +271,7 @@
   .current {
     display: flex;
     align-items: center;
-    background: #000;
+    background: var(--background);
     flex: 1;
     padding: 0 10px;
     border-radius: 5px;
@@ -296,12 +297,12 @@
   .content .empty {
     display: flex;
     justify-content: center;
-    color: #aaa;
+    color: var(--text-sec);
     margin-top: 20px;
   }
 
   .content::-webkit-scrollbar-track {
-    background: #111;
+    background: var(--background-sec);
   }
 
   .content .item {
@@ -324,7 +325,7 @@
   }
 
   .content .item:not(:has(.actions button:hover)):hover {
-    background: #111;
+    background: var(--background-sec);
   }
 
   .content .item .icon {
@@ -348,7 +349,7 @@
   .content .item .info span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 14px;
   }
 
@@ -358,7 +359,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 </style>

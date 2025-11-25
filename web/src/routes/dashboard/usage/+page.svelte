@@ -316,7 +316,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    background: #111;
+    background: var(--background-sec);
     padding: 15px;
     border-radius: 10px;
     position: relative;
@@ -329,11 +329,11 @@
   }
 
   .stats .item:is(:hover, :focus-visible) {
-    background: #222;
+    background: var(--background-ter);
   }
 
   .stats .item:not(:has(.link)) {
-    background: #111;
+    background: var(--background-sec);
     cursor: default;
   }
 
@@ -356,12 +356,12 @@
   .files .empty {
     display: flex;
     justify-content: center;
-    color: #aaa;
+    color: var(--text-sec);
     margin-top: 20px;
   }
 
   .files::-webkit-scrollbar-track {
-    background: #111;
+    background: var(--background-sec);
   }
 
   .files .item {
@@ -384,7 +384,7 @@
   }
 
   .files .item:not(:has(.actions button:hover)):hover {
-    background: #111;
+    background: var(--background-sec);
   }
 
   .files .item .icon {
@@ -408,7 +408,7 @@
   .files .item .info span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 14px;
   }
 
@@ -418,7 +418,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 
@@ -440,19 +440,19 @@
   }
 
   .files .item .actions .action[data-color='gray'] {
-    color: gray;
+    color: var(--text-ter);
   }
 
   .files .item .actions .action[data-color='blue'] {
-    color: #0064ff;
+    color: var(--accent);
   }
 
   .files .item .actions .action[data-color='red'] {
-    color: red;
+    color: var(--red);
   }
 
   .files .item .actions .action[data-color='orange'] {
-    color: orange;
+    color: var(--orange);
   }
 
   .files .item .actions .action span {

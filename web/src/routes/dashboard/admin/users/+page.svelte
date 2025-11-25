@@ -250,7 +250,7 @@
   }
 
   .section {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 15px;
     display: flex;
@@ -266,11 +266,11 @@
     top: 0;
     right: 0;
     margin: 15px;
-    --button-color: #0064ff;
+    --button-color: var(--accent);
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 5px;
-    background: var(--button-color, #333);
+    background: var(--button-color, var(--foreground));
     transition: 200ms ease;
     outline: 1px solid transparent;
     outline-offset: 2px;
@@ -282,7 +282,7 @@
   }
 
   .add:focus {
-    outline-color: var(--button-color, #666);
+    outline-color: var(--button-color, var(--outline));
   }
 
   .list {
@@ -293,7 +293,7 @@
 
   .user {
     padding: 10px;
-    background: #222;
+    background: var(--background-ter);
     border-radius: 5px;
     display: flex;
     align-items: center;
@@ -313,7 +313,7 @@
 
   .user .info .material-icons {
     font-size: 16px;
-    color: #0064ff;
+    color: var(--accent);
   }
 
   .user .right {
@@ -333,7 +333,7 @@
   .user .info span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 14px;
   }
 
@@ -343,7 +343,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 
@@ -362,19 +362,19 @@
   }
 
   .user .actions .action[data-color='gray'] {
-    color: gray;
+    color: var(--text-ter);
   }
 
   .user .actions .action[data-color='blue'] {
-    color: #0064ff;
+    color: var(--accent);
   }
 
   .user .actions .action[data-color='red'] {
-    color: red;
+    color: var(--red);
   }
 
   .user .actions .action[data-color='orange'] {
-    color: orange;
+    color: var(--orange);
   }
 
   .user .actions .action span {

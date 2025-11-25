@@ -238,13 +238,13 @@
   }
 
   .v-align button {
-    color: #0064ff;
+    color: var(--accent);
   }
 
   .collectionList {
     display: flex;
     flex-direction: column;
-    background: #111;
+    background: var(--background-sec);
     padding: 10px;
     border-radius: 10px;
     animation: appear 500ms ease;
@@ -262,7 +262,7 @@
   }
 
   .collection:hover {
-    background: #222;
+    background: var(--background-ter);
   }
 
   .collection > p {
@@ -291,7 +291,7 @@
 
   .collection .info > p {
     font-size: 14px;
-    color: #aaa;
+    color: var(--text-sec);
   }
 
   .collection .info > p:not(:first-child)::before {
@@ -319,11 +319,11 @@
   }
 
   .collection .actions .action[data-color='red'] {
-    color: red;
+    color: var(--red);
   }
 
   .collection .actions .action[data-color='orange'] {
-    color: orange;
+    color: var(--orange);
   }
 
   .collection .actions .action span {

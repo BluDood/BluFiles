@@ -180,7 +180,7 @@
   }
 
   .info {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 20px;
     width: 100%;
@@ -188,7 +188,7 @@
 
   .info h2 {
     font-weight: 600;
-    color: #fff;
+    color: var(--text);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -204,7 +204,7 @@
   .info .details span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 16px;
   }
 
@@ -214,7 +214,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 
@@ -230,7 +230,7 @@
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 5px;
-    background: var(--button-color, #333);
+    background: var(--button-color, var(--foreground));
     transition: 200ms ease;
     outline: 1px solid transparent;
     outline-offset: 2px;
@@ -241,10 +241,10 @@
   }
 
   .buttons button:focus {
-    outline-color: var(--button-color, #666);
+    outline-color: var(--button-color, var(--outline));
   }
 
   .buttons button[data-color='blue'] {
-    --button-color: #0064ff;
+    --button-color: var(--accent);
   }
 </style>

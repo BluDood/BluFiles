@@ -40,16 +40,16 @@
   .tabs a {
     display: block;
     padding: 5px 15px;
-    color: #fff;
+    color: var(--text);
     border-bottom: 1px solid transparent;
     transition: 200ms ease;
   }
 
   .tabs a:hover {
-    border-color: #333;
+    border-color: var(--border-sec);
   }
 
   .tabs a.active {
-    border-color: #0064ff;
+    border-color: var(--accent);
   }
 </style>

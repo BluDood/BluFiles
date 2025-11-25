@@ -53,7 +53,7 @@
   .titlebar {
     height: 50px;
     width: 100%;
-    background: #111;
+    background: var(--background-sec);
     display: flex;
     justify-content: space-between;
     padding: 0 10px;
@@ -65,12 +65,6 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    transition: 200ms ease;
-  }
-
-  .title:hover,
-  .title:focus {
-    color: #bbb;
   }
 
   .title img {
@@ -81,6 +75,11 @@
   .title .text {
     font-size: 22px;
     font-weight: bold;
+    transition: 200ms ease;
+  }
+
+  .title:is(:hover, :focus) .text {
+    opacity: 0.8;
   }
 
   .actions {
@@ -105,14 +104,14 @@
   }
 
   .actions .menu .opener:is(:hover, :focus-visible) {
-    background: #222;
+    background: var(--background-ter);
   }
 
   .actions .menu .content {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 10px);
     right: 0;
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 5px;
     opacity: 0;
@@ -136,17 +135,17 @@
   }
 
   .actions .menu .content .item[data-color='red'] {
-    color: red;
+    color: var(--red);
   }
 
   .actions .menu .content .item:is(:hover, :focus-visible) {
-    background: #222;
+    background: var(--background-ter);
   }
 
   .actions .menu:focus-within .content {
     opacity: 1;
     pointer-events: all;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
 
   .actions .menu .content .user > div {
@@ -156,6 +155,6 @@
 
   .actions .menu .content .user > div .id {
     font-size: 14px;
-    color: #aaa;
+    color: var(--text-sec);
   }
 </style>

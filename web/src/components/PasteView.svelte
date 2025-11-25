@@ -290,7 +290,7 @@
   }
 
   .pasteview {
-    background: #111;
+    background: var(--background-sec);
     padding: 10px;
     border-radius: 10px;
     display: flex;
@@ -326,7 +326,7 @@
   .pasteview .details span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 14px;
   }
 
@@ -336,13 +336,13 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 
   .pasteview textarea {
     all: unset;
-    background: #222;
+    background: var(--background-ter);
     padding: 10px;
     border-radius: 5px;
     margin: 10px 0;
@@ -367,22 +367,22 @@
   }
 
   .pasteview .actions button[data-color='gray'] {
-    color: gray;
+    color: var(--text-ter);
   }
 
   .pasteview .actions button[data-color='red'] {
-    color: red;
+    color: var(--red);
   }
 
   .pasteview .actions button[data-color='green'] {
-    color: #00c800;
+    color: var(--green);
   }
 
   .pasteview .actions button[data-color='blue'] {
-    color: #0064ff;
+    color: var(--accent);
   }
 
   .pasteview .actions button[data-color='orange'] {
-    color: orange;
+    color: var(--orange);
   }
 </style>

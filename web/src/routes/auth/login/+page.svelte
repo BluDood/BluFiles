@@ -61,7 +61,7 @@
     <div class="text">
       <h2>Welcome to BluFiles!</h2>
       {#if error}
-        <p style="color: red;">{error}</p>
+        <p class="error">{error}</p>
       {:else}
         <p>
           Please sign in below. <a href="/auth/register">No account?</a>
@@ -155,16 +155,16 @@
     padding: 10px;
     flex: 1;
     border-radius: 5px;
-    background: #222;
+    background: var(--background-ter);
     transition: 200ms ease;
   }
 
   .input:hover {
-    background: #282828;
+    background: var(--hover);
   }
 
   .input:focus {
-    background: #333;
+    background: var(--foreground);
   }
 
   .submit {
@@ -175,19 +175,23 @@
     flex: 1;
     text-align: center;
     border-radius: 5px;
-    background: #0064ff;
+    background: var(--accent);
     font-size: 16px;
     transition: 200ms ease;
     cursor: pointer;
   }
 
   .submit:hover {
-    background: #0050e6;
+    background: var(--hover-accent);
   }
 
   .submit:disabled {
-    background: #0064ff;
+    background: var(--accent);
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .error {
+    color: var(--red);
   }
 </style>

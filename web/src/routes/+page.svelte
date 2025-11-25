@@ -95,7 +95,7 @@
     cursor: pointer;
     padding: 5px 10px;
     border-radius: 5px;
-    background: var(--button-color, #333);
+    background: var(--button-color, var(--foreground));
     transition: 200ms ease;
     outline: 1px solid transparent;
     outline-offset: 2px;
@@ -106,10 +106,10 @@
   }
 
   .buttons .button:focus {
-    outline-color: var(--button-color, #666);
+    outline-color: var(--button-color, var(--outline));
   }
 
   .buttons .button[data-color='blue'] {
-    --button-color: #0064ff;
+    --button-color: var(--accent);
   }
 </style>

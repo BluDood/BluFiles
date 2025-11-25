@@ -17,14 +17,14 @@
   .progress {
     width: 100%;
     height: 8px;
-    background: #333;
+    background: var(--foreground);
     border-radius: 9999px;
     overflow: hidden;
   }
 
   .bar {
     height: 100%;
-    background: #0064ff;
+    background: var(--accent);
     transition: width 300ms ease;
     border-radius: 9999px;
   }

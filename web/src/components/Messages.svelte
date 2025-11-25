@@ -58,7 +58,7 @@
   .message {
     animation: slideIn 500ms ease;
     pointer-events: all;
-    background: #111;
+    background: var(--background-sec);
     width: 350px;
     max-width: calc(100vw - 20px);
     display: flex;
@@ -81,20 +81,20 @@
     padding: 0;
   }
 
-  .message[data-type='success'] {
-    background: #31b331;
+  .message[data-type='info'] {
+    background: var(--accent);
   }
 
-  .message[data-type='info'] {
-    background: #0064ff;
+  .message[data-type='success'] {
+    background: var(--success);
   }
 
   .message[data-type='warning'] {
-    background: rgb(255, 100, 0);
+    background: var(--warning);
   }
 
   .message[data-type='error'] {
-    background: hsl(0, 70%, 55%);
+    background: var(--error);
   }
 
   .content {

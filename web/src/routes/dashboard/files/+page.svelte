@@ -787,7 +787,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #111;
+    background: var(--background-sec);
     padding: 5px 10px;
   }
 
@@ -808,7 +808,7 @@
   }
 
   .titlebar .actions button:hover {
-    background: #222;
+    background: var(--background-ter);
   }
 
   .titlebar .actions button:disabled {
@@ -822,7 +822,7 @@
 
   .titlebar .actions .menuWrapper .menu {
     position: absolute;
-    background: #111;
+    background: var(--background-sec);
     top: 40px;
     border-radius: 10px;
     display: flex;
@@ -853,13 +853,13 @@
   }
 
   .titlebar .actions .menuWrapper .menu button:hover {
-    background: #222;
+    background: var(--background-ter);
   }
 
   .current {
     display: flex;
     align-items: center;
-    background: #000;
+    background: var(--background);
     flex: 1;
     padding: 0 10px;
     border-radius: 5px;
@@ -901,13 +901,13 @@
   .content .empty {
     display: flex;
     justify-content: center;
-    color: #aaa;
+    color: var(--text-sec);
     margin-top: 20px;
     animation: appear 500ms ease;
   }
 
   .content::-webkit-scrollbar-track {
-    background: #111;
+    background: var(--background-sec);
   }
 
   .content .item {
@@ -931,7 +931,7 @@
   }
 
   .content .item:not(:has(.actions button:hover)):hover {
-    background: #111;
+    background: var(--background-sec);
   }
 
   .content .item .icon {
@@ -955,7 +955,7 @@
   .content .item .info span {
     display: flex;
     align-items: center;
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 14px;
   }
 
@@ -965,7 +965,7 @@
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #aaa;
+    background: var(--text-sec);
     margin: 0 5px;
   }
 
@@ -984,19 +984,19 @@
   }
 
   .content .item .actions .action[data-color='gray'] {
-    color: gray;
+    color: var(--text-ter);
   }
 
   .content .item .actions .action[data-color='blue'] {
-    color: #0064ff;
+    color: var(--accent);
   }
 
   .content .item .actions .action[data-color='red'] {
-    color: red;
+    color: var(--red);
   }
 
   .content .item .actions .action[data-color='orange'] {
-    color: orange;
+    color: var(--orange);
   }
 
   .content .item .actions .action span {

@@ -71,7 +71,7 @@
   }
 
   .v-align button {
-    color: #0064ff;
+    color: var(--accent);
     transition: 200ms ease;
   }
 
@@ -81,7 +81,7 @@
   }
 
   .section {
-    background: #111;
+    background: var(--background-sec);
     border-radius: 10px;
     padding: 15px;
   }
@@ -109,7 +109,7 @@
   }
 
   .profile .info p {
-    color: #aaa;
+    color: var(--text-sec);
     font-size: 14px;
   }
 
@@ -117,18 +117,18 @@
     all: unset;
     font-size: 22px;
     font-weight: 600;
-    border-bottom: 2px solid #222;
+    border-bottom: 2px solid var(--border);
     transition: 200ms ease;
     width: 100%;
     max-width: 250px;
   }
 
   .profile .inline-field:hover {
-    border-color: #444;
+    border-color: var(--border-sec);
   }
 
   .profile .inline-field:focus {
-    border-color: #0064ff;
+    border-color: var(--accent);
   }
 
   .load {

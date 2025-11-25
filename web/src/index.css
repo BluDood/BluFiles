@@ -4,9 +4,39 @@
   padding: 0;
 }
 
+:root {
+  --background: #000;
+  --background-sec: #111;
+  --background-ter: #222;
+
+  --hover: #2a2a2a;
+  --hover-sec: #252525;
+  --hover-accent: #0050e6;
+
+  --foreground: #333;
+  --foreground-sec: #444;
+
+  --border: #222;
+  --border-sec: #333;
+  --outline: #666;
+
+  --text: #fff;
+  --text-sec: #aaa;
+  --text-ter: #777;
+
+  --accent: #0064ff;
+  --error: #ff3b3b;
+  --warning: #ff6400;
+  --success: #2faa2f;
+
+  --red: #f00;
+  --green: #00cc44;
+  --orange: #ffa500;
+}
+
 body {
-  background: #000;
-  color: #fff;
+  background: var(--background);
+  color: var(--text);
   font-family: 'Inter Variable', sans-serif;
   user-select: none;
   overflow: hidden;
@@ -51,7 +81,7 @@ body {
 }
 
 a {
-  color: #0064ff;
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -61,12 +91,12 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #333;
+  background: var(--foreground);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: var(--background);
 }
 
 @keyframes appear {
