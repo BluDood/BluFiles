@@ -53,7 +53,10 @@ const defaultConfig: Config = {
   }
 }
 
-const configPath = path.resolve(path.join(process.cwd(), 'data/config.json'))
+const configPath = path.resolve(
+  process.env.STORAGE_DIR || 'data',
+  'config.json'
+)
 
 export async function getConfig(): Promise<Config> {
   try {

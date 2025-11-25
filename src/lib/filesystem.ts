@@ -3,7 +3,7 @@ import fs from 'fs/promises'
 import crypto from 'crypto'
 import path from 'path'
 
-const basePath = path.resolve('data/storage')
+const basePath = path.resolve(process.env.STORAGE_DIR || 'data', 'storage')
 
 export async function exists(id: string) {
   try {
