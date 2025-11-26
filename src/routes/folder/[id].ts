@@ -8,7 +8,7 @@ import {
 } from '#lib/files.js'
 
 import { genericShareSchema, updateFolderSchema } from '#lib/schemas.js'
-import { getShare, isFolderShared } from '#lib/shares.js'
+import { isValidShare } from '#lib/shares.js'
 
 export async function get(req: Request, res: Response) {
   const parsed = genericShareSchema.safeParse(req.query)
@@ -18,16 +18,7 @@ export async function get(req: Request, res: Response) {
   const { id } = req.params
   if (!id) return res.sendStatus(400)
 
-  let validShare = false
-  if (shareId) {
-    const share = await getShare(shareId)
-
-    if (share && share.type === 'folder' && share.folderId) {
-      if (await isFolderShared(id, shareId)) {
-        validShare = true
-      }
-    }
-  }
+  const validShare = await isValidShare(shareId, 'folder', id)
 
   if (!req.user && !validShare) return res.sendStatus(401)
 

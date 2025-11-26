@@ -1,13 +1,8 @@
 import { Request, Response } from 'express'
 
-import {
-  getShare,
-  isFileInCollectionShared,
-  isFileInFolderShared
-} from '#lib/shares.js'
-
 import { deleteFile, filterFile, getFile, updateFile } from '#lib/files.js'
 import { genericShareSchema, updateFileSchema } from '#lib/schemas.js'
+import { isValidShare } from '#lib/shares.js'
 
 export async function get(req: Request, res: Response) {
   const { id } = req.params
@@ -17,17 +12,7 @@ export async function get(req: Request, res: Response) {
   if (!parsed.success) return res.sendStatus(400)
   const { shareId } = parsed.data
 
-  let validShare = false
-  if (shareId) {
-    const share = await getShare(shareId)
-    if (share) {
-      if (share.type === 'folder' && share.folderId) {
-        if (await isFileInFolderShared(id, shareId)) validShare = true
-      } else if (share.type === 'collection' && share.collectionId) {
-        if (await isFileInCollectionShared(id, shareId)) validShare = true
-      }
-    }
-  }
+  const validShare = await isValidShare(shareId, 'file', id)
   if (!req.user && !validShare) return res.sendStatus(401)
 
   const file = await getFile(id)

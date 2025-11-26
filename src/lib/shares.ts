@@ -1,4 +1,4 @@
-import prisma, { Share } from '#lib/prisma.js'
+import prisma, { Share, ShareType } from '#lib/prisma.js'
 
 interface FilteredShare {
   id: string
@@ -330,4 +330,33 @@ export async function isFileInCollectionShared(
   })
   if (!collection) return false
   return collection.files.length > 0
+}
+
+export async function isValidShare(
+  shareId: string | undefined,
+  type: ShareType,
+  id: string
+) {
+  if (!shareId) return false
+  const share = await prisma.share.findUnique({
+    where: {
+      id: shareId
+    }
+  })
+  if (!share) return false
+
+  if (type === 'file') {
+    if (share.type === 'file' && share.fileId === id) return true
+    if (share.type === 'folder' && share.folderId)
+      if (await isFileInFolderShared(id, shareId)) return true
+    if (share.type === 'collection' && share.collectionId)
+      if (await isFileInCollectionShared(id, shareId)) return true
+  }
+  if (type === 'folder' && share.folderId) {
+    if (await isFolderShared(id, shareId)) return true
+  }
+  if (type === 'collection' && share.collectionId === id) return true
+  if (type === 'paste' && share.pasteId === id) return true
+
+  return false
 }
