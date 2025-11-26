@@ -7,6 +7,7 @@
   import { alert } from '$lib/popups'
 
   import Loader from './Loader.svelte'
+  import Monaco from './Monaco.svelte'
 
   let {
     id,
@@ -32,6 +33,13 @@
   let data: Blob | null = $state(null)
   let type: string | null = $state(null)
   let dataURL: string | null = $state(null)
+  let rawData: string = $state('')
+  let extension: string = $derived.by(() => {
+    if (!info) return ''
+    const parts = info.name.split('.')
+    if (parts.length < 2) return ''
+    return parts.pop()!.toLowerCase()
+  })
 
   const types = [
     {
@@ -248,6 +256,12 @@
       if (foundType.downloadBlob) {
         const url = await convert()
         dataURL = url as string
+      } else {
+        const reader = new FileReader()
+        reader.onload = () => {
+          rawData = reader.result as string
+        }
+        reader.readAsText(data!)
       }
     }
     loading = false
@@ -282,7 +296,9 @@
       {#if type === 'image'}
         <img src={dataURL} alt="" />
       {:else if type === 'text'}
-        <pre>{data}</pre>
+        <div class="monaco">
+          <Monaco bind:value={rawData} language={extension} readonly={true} />
+        </div>
       {:else if type === 'video'}
         <!-- svelte-ignore a11y_media_has_caption -->
         <video src={dataURL} controls></video>
@@ -407,16 +423,17 @@
     max-height: 300px;
   }
 
-  .fileview pre {
-    flex: 1;
-    width: 100%;
-    height: 100%;
-    background: var(--background-ter);
-    border-radius: 5px;
+  .fileview .monaco {
     margin: 10px 0;
-    padding: 10px;
-    overflow: auto;
-    max-height: 300px;
+    overflow: hidden;
+    border-radius: 10px;
+    resize: both;
+    width: 800px;
+    height: 400px;
+    min-width: 350px;
+    min-height: 100px;
+    max-width: 100%;
+    max-height: calc(100vh - 180px);
   }
 
   .fileview video {

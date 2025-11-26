@@ -222,7 +222,7 @@ export async function createFile({
   data: Buffer
 }) {
   const fileHash = await hashFile(data)
-  const mime = (await getType(data))?.mime || 'unknown'
+  const mime = await getType(data)
   const size = data.byteLength
 
   const file = await prisma.file.create({

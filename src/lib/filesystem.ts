@@ -34,9 +34,25 @@ export async function hashFile(buffer: Buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex')
 }
 
+function isFilePlainText(buffer: Buffer) {
+  const tolerance = 0.95
+  const textChars = buffer.filter(byte => {
+    return (
+      (byte >= 32 && byte <= 126) || // printable ASCII
+      byte === 9 || // tab
+      byte === 10 || // line feed
+      byte === 13 // carriage return
+    )
+  }).length
+
+  return textChars / buffer.length >= tolerance
+}
+
 export async function getType(buffer: Buffer) {
   const type = await fileType(buffer)
-  return type
+  if (type) return type.mime
+  if (isFilePlainText(buffer)) return 'text/plain'
+  return 'unknown'
 }
 
 export async function getStorageStats() {
