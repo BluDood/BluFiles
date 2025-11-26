@@ -42,9 +42,8 @@
     display: flex;
     flex-direction: column-reverse;
     gap: 10px;
-    z-index: 15;
     height: 100vh;
-    z-index: 1000;
+    z-index: 10;
     overflow: hidden;
     overflow-y: auto;
     scrollbar-width: none;

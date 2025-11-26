@@ -343,7 +343,7 @@
     justify-content: center;
     align-items: center;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 1;
+    z-index: 5;
     transition: 200ms ease;
     animation: opacity 200ms ease;
   }

@@ -838,7 +838,7 @@
   .titlebar .actions .menuWrapper:focus-within .menu {
     opacity: 1;
     pointer-events: all;
-    z-index: 10;
+    z-index: 2;
   }
 
   .titlebar .actions .menuWrapper .menu button {
@@ -890,7 +890,7 @@
     opacity: 0;
     pointer-events: none;
     transition: 200ms ease;
-    z-index: 5;
+    z-index: 1;
   }
 
   .loading[data-loading='true'] {

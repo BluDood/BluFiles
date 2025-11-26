@@ -89,7 +89,7 @@
 
   .actions .menu {
     position: relative;
-    z-index: 999;
+    z-index: 2;
   }
 
   .actions .menu .opener {

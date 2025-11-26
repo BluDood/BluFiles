@@ -116,7 +116,7 @@
     padding: 3px 5px;
     border-radius: 5px;
     opacity: 0;
-    z-index: 999;
+    z-index: 1;
     pointer-events: none;
     font-size: 14px;
     font-weight: 600;

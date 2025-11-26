@@ -158,7 +158,7 @@
     justify-content: center;
     opacity: 0;
     background: #000;
-    z-index: 10;
+    z-index: 1;
     pointer-events: none;
     transition: 500ms ease;
   }

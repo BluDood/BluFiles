@@ -511,7 +511,7 @@
     transition: 200ms ease;
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(5px);
-    z-index: 100;
+    z-index: 1;
   }
 
   .load[data-loading='true'] {
