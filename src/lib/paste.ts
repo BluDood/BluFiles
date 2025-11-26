@@ -1,3 +1,4 @@
+import { tryDetectLanguage } from '#lib/utils.js'
 import prisma, { Paste } from '#lib/prisma.js'
 
 interface FilteredPaste {
@@ -60,6 +61,10 @@ export async function createPaste({
   content: string
   type: string
 }) {
+  if (type === 'auto') {
+    type = (await tryDetectLanguage(content)) || 'text'
+  }
+
   const paste = await prisma.paste.create({
     data: {
       name,
@@ -94,10 +99,36 @@ export async function deleteUserPastes(ownerId: string) {
   })
 }
 
-export async function updatePaste(id: string, data: Partial<Paste>) {
+export async function updatePaste(
+  id: string,
+  {
+    name,
+    content,
+    type
+  }: {
+    name?: string
+    content?: string
+    type?: string
+  }
+) {
+  if (type === 'auto') {
+    if (!content) {
+      const existingPaste = await getPaste(id)
+      content = existingPaste?.content || ''
+    }
+    type = (await tryDetectLanguage(content)) || 'text'
+  }
+
   const paste = await prisma.paste.update({
     where: { id },
-    data
+    data: {
+      name,
+      content,
+      type
+    },
+    include: {
+      share: true
+    }
   })
 
   return paste

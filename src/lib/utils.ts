@@ -1,3 +1,4 @@
+import language from '@vscode/vscode-languagedetection'
 import fs from 'fs/promises'
 import crypto from 'crypto'
 
@@ -76,3 +77,12 @@ class Logger {
 }
 
 export const logger = new Logger()
+
+export async function tryDetectLanguage(content: string) {
+  const modelOperations = new language.ModelOperations()
+
+  const result = await modelOperations.runModel(content)
+
+  if (result.length === 0) return null
+  return result[0].languageId
+}

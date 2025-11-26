@@ -26,9 +26,9 @@ export async function patch(req: Request, res: Response) {
   if (!paste) return res.sendStatus(404)
   if (paste.ownerId !== req.user.id) return res.sendStatus(404)
 
-  await updatePaste(id, parsed.data)
+  const updated = await updatePaste(id, parsed.data)
 
-  return res.sendStatus(204)
+  return res.json(filterPaste(updated, false))
 }
 
 export async function del(req: Request, res: Response) {

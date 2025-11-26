@@ -61,7 +61,7 @@ export const updateFolderSchema = z.object({
 
 export const createPasteSchema = z.object({
   name: z.string().min(1).max(128),
-  content: z.string().min(1),
+  content: z.string(),
   type: z.string(),
   share: z.preprocess(val => {
     if (val === undefined) return false
@@ -73,7 +73,7 @@ export const createPasteSchema = z.object({
 
 export const updatePasteSchema = z.object({
   name: z.string().min(1).max(128).optional(),
-  content: z.string().min(1).optional(),
+  content: z.string().optional(),
   type: z.string().optional()
 })
 

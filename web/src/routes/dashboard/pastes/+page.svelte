@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
+  import { formatDate, req, resolveLanguage } from '$lib/utils'
   import { createMessage } from '$lib/messages.js'
-  import { formatDate, req } from '$lib/utils'
   import { prompt, alert } from '$lib/popups'
 
   import PasteView from '$components/PasteView.svelte'
@@ -18,6 +18,7 @@
 
   let pastes: Paste[] | null = $state(null)
   let previewing: string | false = $state(false)
+  let startEditing: boolean = $state(false)
 
   async function load() {
     pastes = null
@@ -43,24 +44,9 @@
     })
     if (!name.type || !name.input) return
 
-    const content = await prompt({
-      title: 'Create Paste',
-      content: 'Please enter the content for the new paste',
-      placeholder: 'Enter content...',
-      buttons: [
-        {
-          text: 'Create'
-        },
-        {
-          text: 'Cancel'
-        }
-      ]
-    })
-    if (!content.type || !content.input) return
-
     const res = await req.post('paste', {
       name: name.input,
-      content: content.input,
+      content: '',
       type: 'text'
     })
     if (!res) return
@@ -82,6 +68,13 @@
       type: 'success',
       content: 'The paste has been created.'
     })
+
+    startEditing = true
+    previewing = res.data.id
+
+    setTimeout(() => {
+      startEditing = false
+    }, 100)
 
     load()
   }
@@ -184,6 +177,7 @@
         if (c === true) load()
         previewing = false
       }}
+      {startEditing}
       id={previewing}
     />
   {/if}
@@ -202,7 +196,7 @@
             <div class="right">
               <div class="info">
                 <p>{formatDate(paste.updatedAt)}</p>
-                <p>{paste.type}</p>
+                <p>{resolveLanguage(paste.type)?.name || 'Unknown'}</p>
               </div>
               <!-- svelte-ignore a11y_click_events_have_key_events -->
               <div class="actions">

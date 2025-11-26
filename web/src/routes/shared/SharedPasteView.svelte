@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { formatDate } from '$lib/utils.js'
+  import { formatDate, resolveLanguage } from '$lib/utils.js'
+
+  import Monaco from '$components/Monaco.svelte'
 
   interface Props {
     info: {
@@ -18,6 +20,8 @@
   }
 
   const { info: shareInfo }: Props = $props()
+
+  let lang = $derived(resolveLanguage(shareInfo.paste.type))
 </script>
 
 <div class="paste">
@@ -25,12 +29,18 @@
     <h2>{shareInfo.paste.name}</h2>
     <div class="details">
       <span>Paste</span>
-      <span>{shareInfo.paste.type}</span>
+      <span>{lang?.name || 'Unknown'}</span>
       <span>{shareInfo.views} view{shareInfo.views === 1 ? '' : 's'}</span>
       <span>{formatDate(shareInfo.createdAt)}</span>
     </div>
   </div>
-  <textarea value={shareInfo.paste.content} disabled></textarea>
+  <div class="editor">
+    <Monaco
+      value={shareInfo.paste.content}
+      readonly
+      language={shareInfo.paste.type}
+    />
+  </div>
 </div>
 
 <style>
@@ -82,15 +92,15 @@
     margin: 0 5px;
   }
 
-  textarea {
-    all: unset;
-    background: var(--background-ter);
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 16px;
-    font-family: monospace;
+  .editor {
     resize: vertical;
-    width: calc(100% - 20px);
+    overflow: hidden;
+    border-radius: 10px;
+    width: 100%;
     height: 300px;
+    min-width: 150px;
+    min-height: 50px;
+    max-width: 100%;
+    max-height: 100%;
   }
 </style>

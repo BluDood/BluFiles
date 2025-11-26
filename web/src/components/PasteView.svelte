@@ -1,19 +1,22 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
+  import { LANGUAGE_MAPPINGS, SHARE_URL } from '$lib/constants.js'
+  import { formatDate, req, resolveLanguage } from '$lib/utils'
   import { createMessage } from '$lib/messages.js'
-  import { SHARE_URL } from '$lib/constants.js'
-  import { formatDate, req } from '$lib/utils'
   import { alert } from '$lib/popups'
 
   import Loader from './Loader.svelte'
+  import Monaco from './Monaco.svelte'
 
   let {
     id,
+    startEditing = false,
     onclose
   }: {
     id: string
-    onclose: (deleted?: boolean) => void
+    startEditing?: boolean
+    onclose: (reload?: boolean) => void
   } = $props()
 
   let closing = $state(false)
@@ -29,22 +32,27 @@
   let info: PasteInfo | null = $state(null)
   let loading = $state(true)
   let editing = $state(false)
+  let edited = $state(false)
   let content: string = $state('')
+  let language: string = $state('')
+  let readonly: boolean = $derived(!editing)
 
   function close(c: boolean = false) {
     closing = true
     setTimeout(() => {
       closing = false
-      onclose(c)
+      onclose(edited || c)
     }, 200)
   }
 
   async function load() {
+    if (startEditing) editing = true
     const res = await req.get(`paste/${id}`)
     if (!res) return
 
     info = res.data
     content = info!.content
+    language = info!.type
     loading = false
   }
 
@@ -188,18 +196,24 @@
 
   async function edit() {
     const res = await req.patch(`paste/${id}`, {
-      content
+      content: info!.content !== content ? content : undefined,
+      type: info!.type !== language ? language : undefined
     })
     if (!res) return
 
-    if (res.status !== 204)
+    if (res.status !== 200)
       return createMessage({
         type: 'error',
         title: 'An error has occurred',
         content: 'Please try again later.'
       })
 
+    info = res.data
+    info!.content = content
+    language = info!.type
+
     editing = false
+    edited = true
   }
 
   onMount(load)
@@ -217,7 +231,7 @@
   {#if loading || !info}
     <Loader />
   {:else}
-    <div class="pasteview">
+    <div class="pasteview" data-editing={editing}>
       <div class="v-align">
         <h1>{info.name}</h1>
         <button onclick={() => close()}>
@@ -226,34 +240,55 @@
       </div>
       <div class="details">
         <span>{formatDate(info.updatedAt)}</span>
-        <span>{info.type}</span>
+        <span>{resolveLanguage(language)?.name || 'Unknown'}</span>
       </div>
-      <textarea readonly={!editing} bind:value={content}></textarea>
+      <div class="editor">
+        <div class="monaco">
+          <Monaco bind:value={content} bind:language bind:readonly />
+        </div>
+      </div>
       <div class="actions">
-        {#if editing}
-          <button onclick={edit} data-color="green">
-            <span class="material-icons">done</span>
-          </button>
-          <button
-            onclick={() => {
-              editing = false
-              content = info!.content
-            }}
-            data-color="red"
-          >
-            <span class="material-icons">close</span>
-          </button>
-        {:else}
-          <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
-            <span class="material-icons">share</span>
-          </button>
-          <button onclick={() => (editing = true)} data-color="orange">
-            <span class="material-icons">edit</span>
-          </button>
-          <button onclick={del} data-color="red">
-            <span class="material-icons">delete</span>
-          </button>
-        {/if}
+        <div class="buttons">
+          {#if editing}
+            <button onclick={edit} data-color="green">
+              <span class="material-icons">done</span>
+            </button>
+            <button
+              onclick={() => {
+                editing = false
+                content = info!.content
+                language = info!.type
+              }}
+              data-color="red"
+            >
+              <span class="material-icons">close</span>
+            </button>
+          {:else}
+            <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
+              <span class="material-icons">share</span>
+            </button>
+            <button onclick={() => (editing = true)} data-color="orange">
+              <span class="material-icons">edit</span>
+            </button>
+            <button onclick={del} data-color="red">
+              <span class="material-icons">delete</span>
+            </button>
+          {/if}
+        </div>
+
+        <div class="options">
+          <div class="option">
+            <p>Language</p>
+            <select bind:value={language}>
+              <option value="auto">Auto</option>
+              {#each Object.entries(LANGUAGE_MAPPINGS) as lang}
+                <option value={lang[0]}>
+                  {lang[1].name}
+                </option>
+              {/each}
+            </select>
+          </div>
+        </div>
       </div>
     </div>
   {/if}
@@ -297,8 +332,9 @@
     flex-direction: column;
     animation: scale 200ms ease;
     transition: 200ms ease;
-    max-height: 90%;
-    max-width: 90%;
+    max-height: calc(100% - 50px);
+    overflow: hidden;
+    max-width: calc(100% - 50px);
   }
 
   .pasteview h1 {
@@ -340,49 +376,120 @@
     margin: 0 5px;
   }
 
-  .pasteview textarea {
-    all: unset;
-    background: var(--background-ter);
-    padding: 10px;
-    border-radius: 5px;
+  .pasteview .editor {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
     margin: 10px 0;
-    font-size: 16px;
-    font-family: monospace;
-    resize: both;
-    min-width: 300px;
-    min-height: 100px;
   }
 
-  .pasteview .actions {
+  .pasteview .monaco {
+    overflow: hidden;
+    border-radius: 10px;
+    resize: both;
+    width: 800px;
+    height: 400px;
+    min-width: 350px;
+    min-height: 100px;
+    max-width: 100%;
+    max-height: calc(100vh - 180px);
+  }
+
+  .pasteview .options {
+    display: flex;
+    gap: 20px;
+    transition: 200ms ease;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .pasteview[data-editing='true'] .options {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .pasteview .option {
     display: flex;
     align-items: center;
     gap: 10px;
   }
 
-  .pasteview .actions button {
+  .pasteview .option p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-sec);
+  }
+
+  .pasteview .option select {
+    all: unset;
+    padding: 5px 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    background: var(--background-ter);
+    color: var(--text);
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+    transition: 200ms ease;
+    background-image:
+      linear-gradient(45deg, transparent 50%, white 50%),
+      linear-gradient(135deg, white 50%, transparent 50%);
+    background-position:
+      calc(100% - 20px) calc(14px),
+      calc(100% - 15px) calc(14px);
+    background-size:
+      5px 5px,
+      5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 40px;
+  }
+
+  .pasteview .option select:hover {
+    background-color: var(--hover);
+  }
+
+  .pasteview .option select:focus {
+    outline-color: var(--accent);
+    background-color: var(--hover);
+  }
+
+  .pasteview .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .pasteview .actions .buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .pasteview .actions .buttons button {
     all: unset;
     display: flex;
     align-items: center;
     cursor: pointer;
   }
 
-  .pasteview .actions button[data-color='gray'] {
+  .pasteview .actions .buttons button[data-color='gray'] {
     color: var(--text-ter);
   }
 
-  .pasteview .actions button[data-color='red'] {
+  .pasteview .actions .buttons button[data-color='red'] {
     color: var(--red);
   }
 
-  .pasteview .actions button[data-color='green'] {
+  .pasteview .actions .buttons button[data-color='green'] {
     color: var(--green);
   }
 
-  .pasteview .actions button[data-color='blue'] {
+  .pasteview .actions .buttons button[data-color='blue'] {
     color: var(--accent);
   }
 
-  .pasteview .actions button[data-color='orange'] {
+  .pasteview .actions .buttons button[data-color='orange'] {
     color: var(--orange);
   }
 </style>

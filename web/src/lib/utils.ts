@@ -2,7 +2,8 @@ import axios from 'axios'
 import bowser from 'bowser'
 
 import { browser } from '$app/environment'
-import { API_URL } from './constants.js'
+
+import { API_URL, LANGUAGE_MAPPINGS } from './constants.js'
 
 export function formatBytes(bytes: number) {
   if (bytes === 0) return '0 Bytes'
@@ -69,3 +70,8 @@ export const random = (len: number) =>
     .map(s => s.toString(16))
     .join('')
     .slice(0, len)
+
+export const resolveLanguage = (ext?: string) =>
+  ext && ext in LANGUAGE_MAPPINGS
+    ? LANGUAGE_MAPPINGS[ext as keyof typeof LANGUAGE_MAPPINGS]
+    : null
