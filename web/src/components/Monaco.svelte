@@ -53,7 +53,6 @@
     })
 
     const resolved = resolveLanguage(language)
-    console.log(resolved)
 
     editor = monaco.editor.create(editorContainer, {
       value,
@@ -87,6 +86,7 @@
   })
 
   $effect(() => {
+    void value
     if (editor && value) {
       if (!editor.hasWidgetFocus()) {
         if (editor.getValue() !== value) editor.setValue(value)
