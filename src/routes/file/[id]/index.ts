@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import {
   getShare,
   isFileInCollectionShared,
-  isFileInFolderSHared
+  isFileInFolderShared
 } from '#lib/shares.js'
 
 import { deleteFile, filterFile, getFile, updateFile } from '#lib/files.js'
@@ -22,7 +22,7 @@ export async function get(req: Request, res: Response) {
     const share = await getShare(shareId)
     if (share) {
       if (share.type === 'folder' && share.folderId) {
-        if (await isFileInFolderSHared(id, shareId)) validShare = true
+        if (await isFileInFolderShared(id, shareId)) validShare = true
       } else if (share.type === 'collection' && share.collectionId) {
         if (await isFileInCollectionShared(id, shareId)) validShare = true
       }

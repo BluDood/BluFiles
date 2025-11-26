@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import {
   getShare,
   isFileInCollectionShared,
-  isFileInFolderSHared
+  isFileInFolderShared
 } from '#lib/shares.js'
 
 import { getRawFileSchema } from '#lib/schemas.js'
@@ -34,7 +34,7 @@ export async function get(req: Request, res: Response) {
         if (share.type === 'file' && share.fileId) {
           if (file.id === share.fileId) userId = 'share'
         } else if (share.type === 'folder' && share.folderId) {
-          if (await isFileInFolderSHared(file.id, shareId)) userId = 'share'
+          if (await isFileInFolderShared(file.id, shareId)) userId = 'share'
         } else if (share.type === 'collection' && share.collectionId) {
           if (await isFileInCollectionShared(id, shareId)) userId = 'share'
         }

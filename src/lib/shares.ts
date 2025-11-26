@@ -275,7 +275,7 @@ export async function isFolderShared(folderId: string, shareId: string) {
   return false
 }
 
-export async function isFileInFolderSHared(fileId: string, shareId: string) {
+export async function isFileInFolderShared(fileId: string, shareId: string) {
   const share = await prisma.share.findFirst({
     where: {
       id: shareId
