@@ -206,7 +206,9 @@
             </div>
             <div class="right">
               <div class="info">
-                <span>{formatBytes(user.usage)}</span>
+                <span
+                  >{user.usage <= 0 ? 'No data' : formatBytes(user.usage)}</span
+                >
               </div>
               <div class="actions">
                 <button
