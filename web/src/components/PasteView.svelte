@@ -215,6 +215,21 @@
     editing = false
     edited = true
   }
+  $effect(() => {
+    const listener = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close()
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key.toLowerCase() === 's' && editing) {
+          e.preventDefault()
+          edit()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', listener)
+
+    return () => window.removeEventListener('keydown', listener)
+  })
 
   onMount(load)
 </script>
