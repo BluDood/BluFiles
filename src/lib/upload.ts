@@ -1,5 +1,5 @@
 import prisma, { FileUpload, FileUploadStatus } from '#lib/prisma.js'
-import { append } from './filesystem.js'
+import { append, exists, remove } from './filesystem.js'
 
 interface FilteredFileUpload {
   id: string
@@ -53,6 +53,8 @@ export async function deleteFileUpload(id: string) {
   const upload = await prisma.fileUpload.delete({
     where: { id }
   })
+
+  if (await exists(id, 'upload')) await remove(id, 'upload')
 
   return upload
 }

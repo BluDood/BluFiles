@@ -7,6 +7,10 @@ import path from 'path'
 const basePath = path.resolve(process.env.STORAGE_DIR || 'data', 'storage')
 const uploadsPath = path.resolve(process.env.STORAGE_DIR || 'data', 'uploads')
 
+export async function getAllFiles() {
+  return await fs.readdir(basePath)
+}
+
 export async function exists(id: string, type: 'file' | 'upload' = 'file') {
   try {
     await fs.access(path.join(type === 'file' ? basePath : uploadsPath, id))
