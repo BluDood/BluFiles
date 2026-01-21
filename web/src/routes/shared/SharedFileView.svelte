@@ -4,6 +4,7 @@
   import { formatBytes, formatDate, req } from '$lib/utils.js'
 
   import Loader from '$components/Loader.svelte'
+  import Monaco from '$components/Monaco.svelte'
 
   interface Props {
     info: {
@@ -26,6 +27,14 @@
   let type: string | null = $state(null)
   let data: Blob | null = $state(null)
   let dataURL: string | null = $state(null)
+  let rawData: string = $state('')
+  let extension: string = $derived.by(() => {
+    if (!shareInfo) return ''
+    const parts = shareInfo.file.name.split('.')
+    if (parts.length < 2) return ''
+    return parts.pop()!.toLowerCase()
+  })
+
   let loading = $state(true)
 
   async function convert() {
@@ -58,6 +67,12 @@
       if (foundType.downloadBlob) {
         const url = await convert()
         dataURL = url as string
+      } else {
+        const reader = new FileReader()
+        reader.onload = () => {
+          rawData = reader.result as string
+        }
+        reader.readAsText(data!)
       }
     }
     loading = false
@@ -115,24 +130,6 @@
 </script>
 
 <div class="file">
-  {#if !loading}
-    <div class="preview">
-      {#if type === 'image'}
-        <img src={dataURL} alt="" />
-      {:else if type === 'text'}
-        <pre>{data}</pre>
-      {:else if type === 'video'}
-        <!-- svelte-ignore a11y_media_has_caption -->
-        <video src={dataURL} controls></video>
-      {:else if type === 'audio'}
-        <audio controls>
-          <source src={dataURL} type={shareInfo.file.mime} />
-        </audio>
-      {/if}
-    </div>
-  {:else}
-    <Loader />
-  {/if}
   <div class="info">
     <h2>{shareInfo.file.name}</h2>
     <div class="details">
@@ -146,6 +143,26 @@
       <button data-color="blue" onclick={download}> Download File </button>
     </div>
   </div>
+  {#if !loading}
+    <div class="preview">
+      {#if type === 'image'}
+        <img src={dataURL} alt="" />
+      {:else if type === 'text'}
+        <div class="monaco">
+          <Monaco bind:value={rawData} language={extension} readonly={true} />
+        </div>
+      {:else if type === 'video'}
+        <!-- svelte-ignore a11y_media_has_caption -->
+        <video src={dataURL} controls></video>
+      {:else if type === 'audio'}
+        <audio controls>
+          <source src={dataURL} type={shareInfo.file.mime} />
+        </audio>
+      {/if}
+    </div>
+  {:else}
+    <Loader />
+  {/if}
 </div>
 
 <style>
@@ -157,6 +174,13 @@
     width: 100%;
     height: 100%;
     animation: appear 500ms ease;
+  }
+
+  .preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
   }
 
   .preview:empty {
@@ -177,6 +201,18 @@
     min-height: 300px;
     max-width: 80vw;
     max-height: 50vh;
+  }
+
+  .preview .monaco {
+    resize: vertical;
+    overflow: hidden;
+    border-radius: 10px;
+    width: 100%;
+    height: 300px;
+    min-width: 150px;
+    min-height: 50px;
+    max-width: 100%;
+    max-height: 100%;
   }
 
   .info {
