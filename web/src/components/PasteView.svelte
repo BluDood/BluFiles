@@ -11,11 +11,11 @@
 
   let {
     id,
-    startEditing = false,
+    isNewPaste = false,
     onclose
   }: {
     id: string
-    startEditing?: boolean
+    isNewPaste?: boolean
     onclose: (reload?: boolean) => void
   } = $props()
 
@@ -46,7 +46,6 @@
   }
 
   async function load() {
-    if (startEditing) editing = true
     const res = await req.get(`paste/${id}`)
     if (!res) return
 
@@ -54,6 +53,11 @@
     content = info!.content
     language = info!.type
     loading = false
+
+    if (isNewPaste) {
+      editing = true
+      language = 'auto'
+    }
   }
 
   async function share() {
@@ -215,6 +219,7 @@
     editing = false
     edited = true
   }
+
   $effect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.key === 'Escape') close()

@@ -18,7 +18,7 @@
 
   let pastes: Paste[] | null = $state(null)
   let previewing: string | false = $state(false)
-  let startEditing: boolean = $state(false)
+  let isNewPaste: boolean = $state(false)
 
   async function load() {
     pastes = null
@@ -69,11 +69,11 @@
       content: 'The paste has been created.'
     })
 
-    startEditing = true
+    isNewPaste = true
     previewing = res.data.id
 
     setTimeout(() => {
-      startEditing = false
+      isNewPaste = false
     }, 100)
 
     load()
@@ -177,7 +177,7 @@
         if (c === true) load()
         previewing = false
       }}
-      {startEditing}
+      {isNewPaste}
       id={previewing}
     />
   {/if}
