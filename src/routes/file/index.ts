@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 
+import { createFileUpload, pushFileUpload } from '#lib/upload.js'
 import { createFile, filterFile } from '#lib/files.js'
 import { createFileSchema } from '#lib/schemas.js'
 import { createShare } from '#lib/shares.js'
@@ -9,7 +10,21 @@ export async function post(req: Request, res: Response) {
 
   const parsed = createFileSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)
-  const { name, folderId, uploadId, share } = parsed.data
+  const { name, folderId, share } = parsed.data
+
+  let uploadId: string | null = null
+  if ('uploadId' in parsed.data) {
+    uploadId = parsed.data.uploadId
+  } else {
+    const data = parsed.data.data
+    const upload = await createFileUpload({
+      ownerId: req.user.id,
+      totalBytes: data.length
+    })
+
+    await pushFileUpload(upload.id, data)
+    uploadId = upload.id
+  }
 
   const file = await createFile({
     name,

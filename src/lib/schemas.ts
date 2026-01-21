@@ -32,12 +32,24 @@ export const getRawFileSchema = z.object({
   shareId: z.string().optional()
 })
 
-export const createFileSchema = z.object({
+const createFileBaseSchema = z.object({
   name: z.string().min(1).max(128),
   folderId: z.string().optional(),
-  uploadId: z.string(),
   share: z.coerce.boolean().optional()
 })
+
+const createFileWithUploadIdSchema = createFileBaseSchema.extend({
+  uploadId: z.string()
+})
+
+const createFileWithDataSchema = createFileBaseSchema.extend({
+  data: z.instanceof(Buffer)
+})
+
+export const createFileSchema = z.union([
+  createFileWithUploadIdSchema,
+  createFileWithDataSchema
+])
 
 export const updateFileSchema = z.object({
   name: z.string().min(1).max(128).optional(),
