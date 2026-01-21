@@ -35,7 +35,7 @@ export const getRawFileSchema = z.object({
 export const createFileSchema = z.object({
   name: z.string().min(1).max(128),
   folderId: z.string().optional(),
-  data: z.instanceof(Buffer),
+  uploadId: z.string(),
   share: z.preprocess(val => {
     if (val === undefined) return false
     if (val === 'true') return true
@@ -133,3 +133,9 @@ export const createUserSchema = z.object({
 export const updateAdminUserSchema = z.object({
   type: z.enum(['user', 'admin']).optional()
 })
+
+export const createFileUploadSchema = z.object({
+  totalBytes: z.number().min(1)
+})
+
+export const pushFileUploadSchema = z.instanceof(Buffer)

@@ -1,12 +1,13 @@
 import prisma, { File, Folder } from '#lib/prisma.js'
 
-import { getType, hashFile, remove, write } from '#lib/filesystem.js'
+import { moveUploadToFile, getType, hashFile, remove } from '#lib/filesystem.js'
+import { deleteFileUpload, getFileUpload } from './upload.js'
 
 interface FilteredFile {
   id: string
   name: string
   mime: string
-  size: number
+  size: string
   ownerId: string
   folderId: string | null
   createdAt: Date
@@ -22,7 +23,7 @@ export const filterFile = (
     id: f.id,
     name: f.name,
     mime: f.mime,
-    size: f.size,
+    size: f.size.toString(),
     ownerId: f.ownerId,
     folderId: f.folderId,
     createdAt: f.createdAt,
@@ -214,16 +215,18 @@ export async function createFile({
   name,
   folderId,
   ownerId,
-  data
+  uploadId
 }: {
   name: string
   folderId?: string
   ownerId: string
-  data: Buffer
+  uploadId: string
 }) {
-  const fileHash = await hashFile(data)
-  const mime = await getType(data)
-  const size = data.byteLength
+  const upload = await getFileUpload(uploadId)
+  if (!upload) return null
+
+  const fileHash = await hashFile(upload.id, 'upload')
+  const mime = await getType(upload.id, 'upload', upload.totalBytes)
 
   const file = await prisma.file.create({
     data: {
@@ -232,11 +235,13 @@ export async function createFile({
       ownerId,
       hash: fileHash,
       mime,
-      size
+      size: upload.totalBytes
     }
   })
 
-  await write(file.id, data)
+  await moveUploadToFile(upload.id, file.id)
+
+  await deleteFileUpload(upload.id)
 
   return file
 }
@@ -306,5 +311,5 @@ export async function getFilesRecursive(folderId: string) {
 
 export async function getStorageUsage(ownerId?: string) {
   const files = await getFiles(ownerId || null)
-  return files.reduce((acc, file) => acc + file.size, 0)
+  return files.reduce((acc, file) => acc + file.size, 0n).toString()
 }

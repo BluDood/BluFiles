@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
 
 import { genericShareSchema } from '#lib/schemas.js'
+import { getReadStream } from '#lib/filesystem.js'
 import { isValidShare } from '#lib/shares.js'
-import { read } from '#lib/filesystem.js'
 import { getFile } from '#lib/files.js'
 
 export async function get(req: Request, res: Response) {
@@ -20,11 +20,11 @@ export async function get(req: Request, res: Response) {
   if (!file) return res.sendStatus(404)
   if (!validShare && file.ownerId !== req.user?.id) return res.sendStatus(404)
 
-  const data = await read(file.id)
-  if (!data) return res.sendStatus(404)
+  const stream = await getReadStream(id)
+  if (!stream) return res.sendStatus(404)
 
   res.setHeader('Content-Type', file.mime)
-  res.setHeader('Content-Length', data.byteLength)
+  res.setHeader('Content-Length', file.size.toString())
 
-  return res.send(data)
+  return stream.pipe(res)
 }

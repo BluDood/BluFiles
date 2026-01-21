@@ -65,7 +65,7 @@ export function generateFileMetaPage(
       metaTags.push(
         generateTag(
           ['description', 'twitter:description', 'og:description'],
-          `Shared file (${(file.size / 1024).toFixed(2)} KB)`
+          `Shared file (${(Number(file.size) / 1024).toFixed(2)} KB)`
         ),
         generateTag('twitter:card', 'summary'),
         generateTag('og:type', 'website')

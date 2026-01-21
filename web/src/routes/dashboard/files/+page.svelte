@@ -6,6 +6,7 @@
   import { createMessage } from '$lib/messages'
   import { SHARE_URL } from '$lib/constants.js'
 
+  import CircularProgress from '$components/CircularProgress.svelte'
   import FileView from '$components/FileView.svelte'
   import Loader from '$components/Loader.svelte'
 
@@ -33,6 +34,15 @@
   let info: FolderInfo | null = $state(null)
   let previewing: string | false = $state(false)
 
+  interface UploadInfo {
+    name: string
+    currentBytes: number
+    totalBytes: number
+    speed?: number
+  }
+
+  let uploadInfo: UploadInfo | null = $state(null)
+
   async function load(id: string | null = null) {
     loading = true
 
@@ -51,72 +61,151 @@
     const input = document.createElement('input')
     input.type = 'file'
 
-    input.onchange = () => {
+    input.onchange = async () => {
       const files = (input as HTMLInputElement).files
       if (!files || files.length === 0) return
       const file = files[0]
-      if (file.size > 100000000)
-        return createMessage({
-          type: 'error',
-          title: 'File too large',
-          content: 'The file must be less than 100MB'
-        })
+
+      const filename = await prompt({
+        title: 'Upload File',
+        content: 'Please enter a name for the new file',
+        placeholder: 'Enter a name...',
+        defaultValue: file.name,
+        buttons: [
+          {
+            text: 'Upload'
+          },
+          {
+            text: 'Cancel Upload',
+            color: 'red'
+          }
+        ]
+      })
+
+      if (!filename.type || !filename.input) return
+
+      uploadInfo = {
+        name: filename.input,
+        currentBytes: 0,
+        totalBytes: file.size
+      }
+
+      console.log(`File size: ${formatBytes(file.size)}`)
+
+      const CHUNK_SIZE = 64 * 1024 * 1024
 
       const reader = new FileReader()
+
+      const uploadRes = await req.post('uploads', {
+        totalBytes: file.size
+      })
+
+      if (uploadRes.status !== 200) {
+        const messages: Record<number, string> = {
+          403: 'You have reached your file limit.'
+        }
+
+        return createMessage({
+          type: 'error',
+          title: 'An error has occurred',
+          content: messages[uploadRes.status] || 'Please try again later.'
+        })
+      }
+
+      let offset = 0
+      const startTime = Date.now()
+      function readNextChunk() {
+        const slice = file.slice(offset, offset + CHUNK_SIZE)
+        reader.readAsArrayBuffer(slice)
+      }
 
       reader.onload = async e => {
         const content = e.target ? e.target.result : null
         if (!content) return
+        const buffer = content instanceof ArrayBuffer ? content : null
+        if (!buffer) return
 
-        const form = new FormData()
-        form.append('data', new Blob([content]))
-        if (info?.id) form.append('folderId', info.id)
-        const filename = await prompt({
-          title: 'Upload File',
-          content: 'Please enter a name for the new file',
-          placeholder: 'Enter a name...',
-          defaultValue: file.name,
-          buttons: [
-            {
-              text: 'Upload'
-            },
-            {
-              text: 'Cancel Upload',
-              color: 'red'
-            }
-          ]
-        })
-
-        if (!filename.type || !filename.input) return
-        form.append('name', filename.input as string)
-
-        loading = true
-        const res = await req.post('file', form)
-        loading = false
-        if (!res) return
-
-        if (res.status !== 200) {
-          const messages: Record<number, string> = {
-            403: 'You have reached your file limit.'
+        const res = await req.post(`uploads/${uploadRes.data.id}`, buffer, {
+          headers: {
+            'Content-Type': 'application/octet-stream'
           }
-
+        })
+        if (res.status !== 200) {
           return createMessage({
             type: 'error',
-            title: 'An error has occurred',
-            content: messages[res.status] || 'Please try again later.'
+            title: 'An error has occurred during upload',
+            content: 'Please try again later.'
           })
         }
 
-        createMessage({
-          title: 'File Uploaded',
-          type: 'success',
-          content: 'The file has been uploaded successfully.'
-        })
+        const elapsedTime = (Date.now() - startTime) / 1000
+        const uploadedBytes = Math.min(offset + CHUNK_SIZE, file.size)
+        const speed = uploadedBytes / elapsedTime
 
-        reload()
+        console.log(
+          `Uploaded ${formatBytes(Math.min(offset + CHUNK_SIZE, file.size))} of ${formatBytes(file.size)} at ${formatBytes(speed)}/s`
+        )
+
+        uploadInfo!.currentBytes = uploadedBytes
+        uploadInfo!.speed = speed
+
+        offset += CHUNK_SIZE
+        if (offset < file.size) {
+          readNextChunk()
+        } else {
+          const endTime = Date.now()
+          const duration = (endTime - startTime) / 1000
+
+          const speed = file.size / duration
+          console.log(
+            `Upload of ${formatBytes(file.size)} completed in ${duration.toFixed(2)} seconds (${formatBytes(speed)}/s)`
+          )
+
+          uploadInfo = null
+
+          const res = await req.post('file', {
+            name: filename.input,
+            folderId: info?.id || undefined,
+            uploadId: uploadRes.data.id
+          })
+          loading = false
+          if (!res) return
+
+          if (res.status !== 200) {
+            const messages: Record<number, string> = {
+              403: 'You have reached your file limit.'
+            }
+
+            return createMessage({
+              type: 'error',
+              title: 'An error has occurred',
+              content: messages[res.status] || 'Please try again later.'
+            })
+          }
+
+          createMessage({
+            title: 'File Uploaded',
+            type: 'success',
+            content: 'The file has been uploaded successfully.'
+          })
+
+          reload()
+        }
       }
 
-      reader.readAsArrayBuffer(file)
+      reader.onerror = e => {
+        console.error('Error reading file:', e)
+        loading = false
+        createMessage({
+          type: 'error',
+          title: 'An error has occurred',
+          content: 'There was an error reading the file. Please try again.'
+        })
+      }
+
+      loading = true
+      console.log('Starting read of file...')
+      readNextChunk()
     }
 
     input.click()
@@ -590,9 +679,27 @@
       </div>
       <div class="current">{info?.name || ''}</div>
     </div>
-    <div class="loading" data-loading={loading}>
-      <Loader />
-    </div>
+    {#if uploadInfo}
+      <div class="uploading" data-uploading={!!uploadInfo}>
+        <CircularProgress
+          progress={(uploadInfo.currentBytes / uploadInfo.totalBytes) * 100}
+        />
+        <div class="info">
+          <h3>
+            Uploading {uploadInfo.name}...
+          </h3>
+          {#if uploadInfo.speed}
+            <p>
+              {formatBytes(uploadInfo.speed)}/s
+            </p>
+          {/if}
+        </div>
+      </div>
+    {:else}
+      <div class="loading" data-loading={loading}>
+        <Loader />
+      </div>
+    {/if}
     <div class="content">
       {#if info}
         {#if info.folders.length === 0 && info.files.length === 0}
@@ -882,6 +989,7 @@
     width: 100%;
     height: calc(100% - 44px);
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     flex: 1;
@@ -894,6 +1002,33 @@
   }
 
   .loading[data-loading='true'] {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .uploading {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 44px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    pointer-events: none;
+    transition: 200ms ease;
+    z-index: 10;
+    animation: appear 500ms ease;
+  }
+
+  .uploading[data-uploading='true'] {
     opacity: 1;
     pointer-events: all;
   }

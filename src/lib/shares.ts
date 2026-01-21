@@ -13,7 +13,7 @@ interface FilteredShare {
   file?: {
     id: string
     name: string
-    size: number
+    size: string
     mime: string
   }
   folder?: {
@@ -77,7 +77,7 @@ export const filterShare = (
     share.file = {
       id: s.file.id,
       name: s.file.name,
-      size: s.file.size,
+      size: s.file.size.toString(),
       mime: s.file.mime
     }
   } else if (s.type === 'folder' && 'folder' in s && s.folder) {

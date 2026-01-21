@@ -10,7 +10,7 @@ export async function get(req: Request, res: Response) {
 
   return res.json(
     files
-      .sort((a, b) => b.size - a.size)
+      .sort((a, b) => (b.size > a.size ? 1 : b.size < a.size ? -1 : 0))
       .map(filterFile)
       .slice(0, 10)
   )

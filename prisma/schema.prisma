@@ -24,6 +24,7 @@ model User {
   pastes      Paste[]
   collections Collection[]
   shares      Share[]
+  uploads     FileUpload[]
 }
 
 enum UserType {
@@ -56,7 +57,7 @@ model File {
   mime      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  size      Int
+  size      BigInt
   public    Boolean  @default(false)
 
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
@@ -140,4 +141,21 @@ enum ShareType {
   folder
   collection
   paste
+}
+
+model FileUpload {
+  id           String           @id @unique @default(cuid())
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  currentBytes BigInt           @default(0)
+  totalBytes   BigInt
+  status       FileUploadStatus @default(pending)
+  owner        User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId      String
+}
+
+enum FileUploadStatus {
+  pending
+  uploading
+  completed
 }

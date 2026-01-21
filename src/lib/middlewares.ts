@@ -1,7 +1,6 @@
 import express, { Request, Response, NextFunction, Application } from 'express'
 
 import { router } from 'express-file-routing'
-import mp from 'parse-multipart-data'
 import cors from 'cors'
 import path from 'path'
 
@@ -34,21 +33,6 @@ async function auth(req: Request, res: Response, next: NextFunction) {
   next()
 }
 
-function parseMultipart(req: Request, res: Response, next: NextFunction) {
-  const header = req.headers['content-type']
-  if (!header || !header.startsWith('multipart/form-data')) return next()
-  const boundary = mp.getBoundary(header)
-  if (!boundary) return next()
-  const parsed = mp.parse(req.body, boundary)
-  req.body = Object.fromEntries(
-    parsed.map(field => [
-      field.name,
-      field.filename ? field.data : field.data.toString()
-    ])
-  )
-  next()
-}
-
 async function shareRoute(req: Request, res: Response) {
   const { id } = req.params
 
@@ -75,8 +59,7 @@ async function shareRoute(req: Request, res: Response) {
 export async function setupMiddlewares(app: Application) {
   app.use(cors())
   app.use(express.json())
-  app.use(express.raw({ type: 'multipart/form-data', limit: '100mb' }))
-  app.use(parseMultipart)
+  app.use(express.raw({ type: 'application/octet-stream', limit: '100mb' }))
   app.use(auth)
   app.use(
     '/api',
