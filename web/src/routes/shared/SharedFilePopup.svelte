@@ -6,6 +6,7 @@
   import { formatBytes, formatDate, req } from '$lib/utils'
 
   import Loader from '$components/Loader.svelte'
+  import CircularProgress from '$components/CircularProgress.svelte'
 
   let {
     id,
@@ -17,6 +18,9 @@
 
   let closing = $state(false)
   let loading = $state(true)
+
+  let downloading = $state(false)
+  let downloadProgress = $state(0)
 
   interface FileInfo {
     id: string
@@ -65,11 +69,20 @@
 
   async function download() {
     if (!info) return
+
+    downloading = true
+    downloadProgress = 0
+
     const shareId = page.url.searchParams.get('id')
     const raw = await req.get(`file/${id}/raw`, {
       responseType: 'blob',
       params: {
         shareId
+      },
+      onDownloadProgress: p => {
+        if (!p.total) return
+        const progress = Math.round((p.loaded / p.total) * 100)
+        downloadProgress = progress
       }
     })
     if (!raw) return
@@ -82,6 +95,8 @@
     a.click()
     URL.revokeObjectURL(url)
     a.remove()
+
+    downloading = false
   }
 
   async function convert() {
@@ -167,9 +182,13 @@
         <div class="unsupported">Unsupported file type</div>
       {/if}
       <div class="actions">
-        <button onclick={download} data-color="green">
-          <span class="material-icons">download</span>
-        </button>
+        {#if downloading}
+          <CircularProgress progress={downloadProgress} size={30} />
+        {:else}
+          <button onclick={download} data-color="green">
+            <span class="material-icons">download</span>
+          </button>
+        {/if}
       </div>
     </div>
   {/if}
@@ -331,6 +350,7 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+    padding: 3px;
   }
 
   .fileview .actions button[data-color='green'] {

@@ -1,12 +1,14 @@
 <script lang="ts">
   interface Props {
     progress: number
+    showLabel?: boolean
+    size?: number
   }
 
-  const { progress }: Props = $props()
+  const { progress, showLabel = true, size = 50 }: Props = $props()
 </script>
 
-<main>
+<div class="progress" style="--size: {size}">
   <svg
     width="50"
     height="50"
@@ -14,18 +16,20 @@
     style="--progress: {100 - progress}"
   >
     <circle class="bg" cx="25" cy="25" r="22.5" />
-    <circle class="progress" cx="25" cy="25" r="22.5" pathLength="100" />
+    <circle class="bar" cx="25" cy="25" r="22.5" pathLength="100" />
   </svg>
-  <div class="label">
-    {Math.round(progress)}%
-  </div>
-</main>
+  {#if showLabel}
+    <div class="label">
+      {Math.round(progress)}%
+    </div>
+  {/if}
+</div>
 
 <style>
-  main {
+  .progress {
     position: relative;
-    width: 50px;
-    height: 50px;
+    width: calc(var(--size) * 1px);
+    height: calc(var(--size) * 1px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -33,8 +37,13 @@
 
   .label {
     position: absolute;
-    font-size: 14px;
+    font-size: calc(var(--size) * 0.3px);
     font-weight: 500;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
   }
 
   circle {
@@ -47,7 +56,7 @@
     stroke: rgba(0, 0, 0, 0.5);
   }
 
-  .progress {
+  .bar {
     stroke: var(--accent);
     stroke-dasharray: 100;
     stroke-dashoffset: var(--progress);

@@ -8,6 +8,7 @@
 
   import Loader from './Loader.svelte'
   import Monaco from './Monaco.svelte'
+  import CircularProgress from './CircularProgress.svelte'
 
   let {
     id,
@@ -20,6 +21,9 @@
   let closing = $state(false)
   let loading = $state(true)
   let error: string | null = $state(null)
+
+  let downloading = $state(false)
+  let downloadProgress = $state(0)
 
   interface FileInfo {
     id: string
@@ -182,8 +186,17 @@
 
   async function download() {
     if (!info) return
+
+    downloading = true
+    downloadProgress = 0
+
     const raw = await req.get(`file/${id}/raw`, {
-      responseType: 'blob'
+      responseType: 'blob',
+      onDownloadProgress: p => {
+        if (!p.total) return
+        const progress = Math.round((p.loaded / p.total) * 100)
+        downloadProgress = progress
+      }
     })
     if (!raw) return
 
@@ -195,6 +208,8 @@
     a.click()
     URL.revokeObjectURL(url)
     a.remove()
+
+    downloading = false
   }
 
   async function del() {
@@ -331,9 +346,13 @@
         <button onclick={share} data-color={info.shareId ? 'blue' : 'gray'}>
           <span class="material-icons">share</span>
         </button>
-        <button onclick={download} data-color="green">
-          <span class="material-icons">download</span>
-        </button>
+        {#if downloading}
+          <CircularProgress progress={downloadProgress} size={30} />
+        {:else}
+          <button onclick={download} data-color="green">
+            <span class="material-icons">download</span>
+          </button>
+        {/if}
         <button onclick={del} data-color="red">
           <span class="material-icons">delete</span>
         </button>
@@ -499,6 +518,7 @@
     display: flex;
     align-items: center;
     cursor: pointer;
+    padding: 3px;
   }
 
   .fileview .actions button[data-color='gray'] {
