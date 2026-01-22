@@ -21,6 +21,7 @@
 
   let closing = $state(false)
   let loading = $state(true)
+  let error: string | null = $state(null)
 
   let shouldReload = $state(false)
 
@@ -233,8 +234,12 @@
 
   async function load() {
     const res = await req.get(`collection/${id}`)
-
-    if (!res) return close()
+    if (res.status !== 200) {
+      if (res.status === 404) error = 'The collection was not found.'
+      else error = 'Please try again later.'
+      loading = false
+      return
+    }
 
     info = res.data
 
@@ -268,9 +273,21 @@
       id={previewing}
     />
   {/if}
-  {#if loading || !info}
+  {#if loading}
     <Loader />
-  {:else}
+  {:else if error}
+    <div class="error">
+      <span class="material-icons"> error_outline </span>
+      <h2>An error has occurred!</h2>
+      <p>{error}</p>
+      <div class="buttons">
+        <button onclick={() => close(true)}>
+          <div class="material-icons">close</div>
+          Close
+        </button>
+      </div>
+    </div>
+  {:else if info}
     <div class="collection">
       <div class="v-align">
         <h1>{info.name}</h1>
@@ -523,5 +540,55 @@
     font-size: 14px;
     text-align: center;
     margin: 20px;
+  }
+
+  .error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: var(--background-sec);
+    padding: 20px 30px;
+    border-radius: 10px;
+    animation: scale 200ms ease;
+    transition: 200ms ease;
+  }
+
+  .wrapper[data-closing='true'] .error {
+    transform: scale(0.8);
+  }
+
+  .error > .material-icons {
+    font-size: 48px;
+    color: var(--red);
+  }
+
+  .error .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    gap: 10px;
+  }
+
+  .error .buttons button {
+    all: unset;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: var(--accent);
+    transition: 200ms ease;
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .error .buttons button:hover {
+    opacity: 0.8;
+  }
+
+  .error .buttons button:focus {
+    outline-color: var(--accent);
   }
 </style>
