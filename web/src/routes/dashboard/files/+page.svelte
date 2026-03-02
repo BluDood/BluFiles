@@ -1047,6 +1047,7 @@
 
   .content .item {
     all: unset;
+    -webkit-user-drag: element;
     display: flex;
     align-items: center;
     gap: 10px;
