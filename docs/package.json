@@ -1,0 +1,18 @@
+{
+  "name": "blufiles-docs",
+  "version": "1.0.0",
+  "description": "Documentation for BluFiles",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build",
+    "preview": "vitepress preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "vitepress": "^1.6.4"
+  }
+}
