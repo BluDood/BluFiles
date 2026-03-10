@@ -3,6 +3,11 @@ import { Request, Response } from 'express'
 import { authenticate, updateUser } from '#lib/users.js'
 import { updatePasswordSchema } from '#lib/schemas.js'
 
+/**
+ * Change password
+ *
+ * Updates the authenticated user's password after verifying the current one.
+ */
 export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)

@@ -3,6 +3,11 @@ import { Request, Response } from 'express'
 import { deleteUser, updateUser } from '#lib/users.js'
 import { updateUserSchema } from '#lib/schemas.js'
 
+/**
+ * Get current user
+ *
+ * Returns the authenticated user's ID, username, and role.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)
@@ -16,6 +21,11 @@ export async function get(req: Request, res: Response) {
   })
 }
 
+/**
+ * Update current user
+ *
+ * Updates the authenticated user's username.
+ */
 export async function patcH(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)
@@ -33,6 +43,11 @@ export async function patcH(req: Request, res: Response) {
   res.sendStatus(204)
 }
 
+/**
+ * Delete current user
+ *
+ * Permanently deletes the authenticated user's account and all associated data.
+ */
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)

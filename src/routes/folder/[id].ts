@@ -10,6 +10,11 @@ import {
 import { genericShareSchema, updateFolderSchema } from '#lib/schemas.js'
 import { isValidShare } from '#lib/shares.js'
 
+/**
+ * Get folder
+ *
+ * Returns a folder and its contents by ID. Accessible via a valid share link or as the owner.
+ */
 export async function get(req: Request, res: Response) {
   const parsed = genericShareSchema.safeParse(req.query)
   if (!parsed.success) return res.sendStatus(400)
@@ -29,6 +34,11 @@ export async function get(req: Request, res: Response) {
   return res.json(filterFolder(folder))
 }
 
+/**
+ * Delete folder
+ *
+ * Permanently deletes a folder and all files inside it.
+ */
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -43,6 +53,11 @@ export async function del(req: Request, res: Response) {
   return res.sendStatus(204)
 }
 
+/**
+ * Update folder
+ *
+ * Updates the name or parent folder of an existing folder.
+ */
 export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 

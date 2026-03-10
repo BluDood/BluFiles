@@ -7,6 +7,11 @@ import {
   incrementShareViews
 } from '#lib/shares.js'
 
+/**
+ * Get share
+ *
+ * Returns share metadata and increments the view counter. Publicly accessible.
+ */
 export async function get(req: Request, res: Response) {
   const { id } = req.params
   const share = await getShare(id)
@@ -20,6 +25,11 @@ export async function get(req: Request, res: Response) {
   return res.json(filterShare(share))
 }
 
+/**
+ * Delete share
+ *
+ * Revokes a share link, making the shared resource inaccessible to anonymous users.
+ */
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 

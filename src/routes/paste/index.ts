@@ -5,6 +5,11 @@ import { checkPasteCreationAllowed } from '#lib/config.js'
 import { createPasteSchema } from '#lib/schemas.js'
 import { createShare } from '#lib/shares.js'
 
+/**
+ * List pastes
+ *
+ * Returns all pastes owned by the authenticated user.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -13,6 +18,11 @@ export async function get(req: Request, res: Response) {
   return res.json(pastes.map(p => filterPaste(p, false)))
 }
 
+/**
+ * Create paste
+ *
+ * Creates a new text paste. Optionally creates a share link in the same request.
+ */
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (!(await checkPasteCreationAllowed(req.user.id)))

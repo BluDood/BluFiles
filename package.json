@@ -9,7 +9,8 @@
     "dev": "tsc-watch --onSuccess \"node .\"",
     "lint": "eslint .",
     "check": "tsc --noEmit",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "openapi": "npx tsx scripts/generate.ts"
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "globals": "^16.5.0",
     "prettier": "^3.6.2",
     "prisma": "^6.19.0",
+    "ts-morph": "^27.0.2",
     "tsc-watch": "^7.2.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.4"

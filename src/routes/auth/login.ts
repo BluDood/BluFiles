@@ -5,6 +5,11 @@ import { authenticate } from '#lib/users.js'
 import { createToken } from '#lib/tokens.js'
 import { logger } from '#lib/utils.js'
 
+/**
+ * Log in
+ *
+ * Authenticates with a username and password and returns a session token.
+ */
 export async function post(req: Request, res: Response) {
   const parsed = loginSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)

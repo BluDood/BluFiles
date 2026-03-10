@@ -7,6 +7,12 @@ import { countShares } from '#lib/shares.js'
 import { countPastes } from '#lib/paste.js'
 import { getConfig } from '#lib/config.js'
 
+/**
+ * Get usage stats
+ *
+ * Returns the authenticated user's current usage counters for storage, files, folders,
+ * pastes, collections, shares, and tokens alongside their configured per-user limits.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)

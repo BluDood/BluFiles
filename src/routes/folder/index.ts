@@ -4,6 +4,11 @@ import { createFolder, filterFolder, getRootFolder } from '#lib/files.js'
 import { checkFolderCreationAllowed } from '#lib/config.js'
 import { createFolderSchema } from '#lib/schemas.js'
 
+/**
+ * Get root folder
+ *
+ * Returns the authenticated user's root folder.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -12,6 +17,11 @@ export async function get(req: Request, res: Response) {
   return res.json(filterFolder(folder))
 }
 
+/**
+ * Create folder
+ *
+ * Create a new folder under an optional parent.
+ */
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (!(await checkFolderCreationAllowed(req.user.id)))

@@ -5,6 +5,12 @@ import { createFile, filterFile } from '#lib/files.js'
 import { createFileSchema } from '#lib/schemas.js'
 import { createShare } from '#lib/shares.js'
 
+/**
+ * Upload file
+ *
+ * Creates a new file record. Supply either an `uploadId` from a completed chunked upload
+ * or raw `data` bytes for small files. Optionally creates a share link in the same request.
+ */
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 

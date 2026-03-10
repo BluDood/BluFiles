@@ -10,6 +10,11 @@ import {
 import { genericShareSchema, updateCollectionSchema } from '#lib/schemas.js'
 import { isValidShare } from '#lib/shares.js'
 
+/**
+ * Get collection
+ *
+ * Returns a collection by ID. Accessible via a valid share link or as the owner.
+ */
 export async function get(req: Request, res: Response) {
   const parsed = genericShareSchema.safeParse(req.query)
   if (!parsed.success) return res.sendStatus(400)
@@ -30,6 +35,11 @@ export async function get(req: Request, res: Response) {
   return res.json(filterCollection(collection))
 }
 
+/**
+ * Update collection
+ *
+ * Updates the name or file membership of a collection.
+ */
 export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -47,6 +57,11 @@ export async function patch(req: Request, res: Response) {
   return res.sendStatus(204)
 }
 
+/**
+ * Delete collection
+ *
+ * Permanently deletes a collection. The files inside are not deleted.
+ */
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 

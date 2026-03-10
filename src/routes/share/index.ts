@@ -4,6 +4,11 @@ import { createShare, filterShare, getShares } from '#lib/shares.js'
 import { checkShareCreationAllowed } from '#lib/config.js'
 import { createShareSchema } from '#lib/schemas.js'
 
+/**
+ * List shares
+ *
+ * Returns all share links owned by the authenticated user.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -12,6 +17,11 @@ export async function get(req: Request, res: Response) {
   return res.json(shares.map(filterShare))
 }
 
+/**
+ * Create share
+ *
+ * Creates a public share link for a file, folder, collection, or paste.
+ */
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (!(await checkShareCreationAllowed(req.user.id)))

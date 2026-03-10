@@ -4,6 +4,12 @@ import { checkFileCreationAllowed } from '#lib/config.js'
 import { createFileUploadSchema } from '#lib/schemas.js'
 import { createFileUpload, filterFileUpload } from '#lib/upload.js'
 
+/**
+ * Start chunked upload
+ *
+ * Initialises a multi-part file upload session and returns an upload ID.
+ * Use the upload ID to push data chunks, then finalise by creating a file.
+ */
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 

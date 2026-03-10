@@ -6,6 +6,11 @@ import { registerSchema } from '#lib/schemas.js'
 import { createToken } from '#lib/tokens.js'
 import { logger } from '#lib/utils.js'
 
+/**
+ * Register
+ *
+ * Creates a new user account and returns a session token. May be disabled by server configuration.
+ */
 export async function post(req: Request, res: Response) {
   if (!(await checkRegistrationAllowed())) return res.sendStatus(403)
 

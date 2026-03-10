@@ -8,6 +8,11 @@ import {
   pushFileUpload
 } from '#lib/upload.js'
 
+/**
+ * Push upload chunk
+ *
+ * Appends a raw binary chunk to an in-progress upload session.
+ */
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -30,6 +35,11 @@ export async function post(req: Request, res: Response) {
   return res.json(filterFileUpload(updated))
 }
 
+/**
+ * Cancel upload
+ *
+ * Cancels and deletes an in-progress upload session.
+ */
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 

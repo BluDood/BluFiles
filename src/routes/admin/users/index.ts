@@ -10,6 +10,11 @@ import { checkUserCreationAllowed } from '#lib/config.js'
 import { createUserSchema } from '#lib/schemas.js'
 import { getStorageUsage } from '#lib/files.js'
 
+/**
+ * List all users
+ *
+ * Returns all registered users including their storage usage. Requires an admin session token.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.type !== 'admin') return res.sendStatus(403)
@@ -27,6 +32,11 @@ export async function get(req: Request, res: Response) {
   res.json(withUsage.map(filterAdminUser))
 }
 
+/**
+ * Create a user
+ *
+ * Creates a new user account. Requires an admin session token.
+ */
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.type !== 'admin') return res.sendStatus(403)

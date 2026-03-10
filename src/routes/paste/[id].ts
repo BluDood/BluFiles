@@ -3,6 +3,11 @@ import { Request, Response } from 'express'
 import { deletePaste, filterPaste, getPaste, updatePaste } from '#lib/paste.js'
 import { updatePasteSchema } from '#lib/schemas.js'
 
+/**
+ * Get paste
+ *
+ * Returns a paste including its full content.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -14,6 +19,11 @@ export async function get(req: Request, res: Response) {
   return res.json(filterPaste(paste, true))
 }
 
+/**
+ * Update paste
+ *
+ * Updates the name, content, or syntax type of a paste.
+ */
 export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -31,6 +41,11 @@ export async function patch(req: Request, res: Response) {
   return res.json(filterPaste(updated, false))
 }
 
+/**
+ * Delete paste
+ *
+ * Permanently deletes a paste.
+ */
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 

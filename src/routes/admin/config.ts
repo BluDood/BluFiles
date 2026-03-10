@@ -3,6 +3,11 @@ import { Request, Response } from 'express'
 import { getConfig, updateConfig } from '#lib/config.js'
 import { updateConfigSchema } from '#lib/schemas.js'
 
+/**
+ * Get server configuration
+ *
+ * Returns the current server configuration. Requires an admin session token.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.type !== 'admin') return res.sendStatus(403)
@@ -13,6 +18,11 @@ export async function get(req: Request, res: Response) {
   res.json(config)
 }
 
+/**
+ * Update server configuration
+ *
+ * Applies partial updates to the server configuration. Requires an admin session token.
+ */
 export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.type !== 'admin') return res.sendStatus(403)

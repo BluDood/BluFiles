@@ -12,6 +12,11 @@ import {
 import { createTokenSchema, deleteTokenSchema } from '#lib/schemas.js'
 import { checkTokenCreationAllowed } from '#lib/config.js'
 
+/**
+ * List API tokens
+ *
+ * Returns all API tokens for the authenticated user, sorted with the current token first.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)
@@ -38,6 +43,11 @@ export async function get(req: Request, res: Response) {
   )
 }
 
+/**
+ * Create API token
+ *
+ * Creates a new named uploader API token for programmatic access.
+ */
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)
@@ -57,6 +67,11 @@ export async function post(req: Request, res: Response) {
   return res.json(token)
 }
 
+/**
+ * Delete API token(s)
+ *
+ * Deletes a specific token by ID, all tokens, or all tokens except the current session.
+ */
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)

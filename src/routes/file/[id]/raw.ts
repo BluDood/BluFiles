@@ -5,6 +5,12 @@ import { getReadStream } from '#lib/filesystem.js'
 import { isValidShare } from '#lib/shares.js'
 import { getFile } from '#lib/files.js'
 
+/**
+ * Download file
+ *
+ * Streams the raw file content with the appropriate Content-Type header.
+ * Accessible via a valid share link or as the owner.
+ */
 export async function get(req: Request, res: Response) {
   const { id } = req.params
   if (!id) return res.sendStatus(400)

@@ -9,6 +9,11 @@ import {
 import { createCollectionSchema } from '#lib/schemas.js'
 import { checkCollectionCreationAllowed } from '#lib/config.js'
 
+/**
+ * List collections
+ *
+ * Returns all collections owned by the authenticated user.
+ */
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -17,6 +22,11 @@ export async function get(req: Request, res: Response) {
   return res.json(collections.map(filterCollection))
 }
 
+/**
+ * Create collection
+ *
+ * Creates a new empty collection for grouping files.
+ */
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (!(await checkCollectionCreationAllowed(req.user.id)))

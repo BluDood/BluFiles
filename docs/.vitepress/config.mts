@@ -1,4 +1,11 @@
 import { defineConfig } from 'vitepress'
+import { useSidebar } from 'vitepress-openapi'
+
+import spec from '../src/assets/openapi.json' with { type: 'json' }
+
+const sidebar = useSidebar({
+  spec
+})
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -58,10 +65,27 @@ export default defineConfig({
         ]
       },
       {
-        text: 'API Reference',
+        text: 'Guides',
         items: [
           { text: 'Setting up and using an API token', link: '/api-tokens' },
           { text: 'Uploading files using the API', link: '/api-upload' }
+        ]
+      },
+      {
+        text: 'API Reference',
+        items: [
+          {
+            text: 'Specification',
+            link: '/api'
+          },
+          ...sidebar
+            .itemsByPaths({
+              linkPrefix: '/api/'
+            })[0]
+            .items!.map(group => ({
+              ...group,
+              collapsed: true
+            }))
         ]
       }
     ],

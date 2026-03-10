@@ -4,6 +4,11 @@ import { deleteFile, filterFile, getFile, updateFile } from '#lib/files.js'
 import { genericShareSchema, updateFileSchema } from '#lib/schemas.js'
 import { isValidShare } from '#lib/shares.js'
 
+/**
+ * Get file metadata
+ *
+ * Returns metadata for a file by ID. Accessible via a valid share link or as the owner.
+ */
 export async function get(req: Request, res: Response) {
   const { id } = req.params
   if (!id) return res.sendStatus(400)
@@ -22,6 +27,11 @@ export async function get(req: Request, res: Response) {
   return res.json(filterFile(file))
 }
 
+/**
+ * Delete file
+ *
+ * Permanently deletes a file and its stored content.
+ */
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
@@ -36,6 +46,11 @@ export async function del(req: Request, res: Response) {
   return res.sendStatus(204)
 }
 
+/**
+ * Update file metadata
+ *
+ * Updates the name or parent folder of a file.
+ */
 export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
