@@ -3,7 +3,7 @@
   "info": {
     "title": "BluFiles API",
     "version": "1.0.0",
-    "description": "BluFiles file management API"
+    "description": "BluFiles Management API - auto-generated from source code annotations"
   },
   "servers": [
     {
@@ -135,11 +135,7 @@
           "files": {
             "type": "array",
             "items": {
-              "allOf": [
-                {
-                  "$ref": "#/components/schemas/FilteredFile"
-                }
-              ],
+              "$ref": "#/components/schemas/FilteredFile",
               "nullable": true
             },
             "nullable": true
@@ -546,7 +542,7 @@
       }
     },
     "securitySchemes": {
-      "TokenAuth": {
+      "Token": {
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
@@ -562,7 +558,7 @@
         "description": "Returns the current server configuration. Requires an admin session token.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -593,7 +589,7 @@
         "description": "Applies partial updates to the server configuration. Requires an admin session token.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -614,7 +610,9 @@
                       },
                       {
                         "type": "string",
-                        "const": "afterFirstUser"
+                        "enum": [
+                          "afterFirstUser"
+                        ]
                       }
                     ]
                   },
@@ -737,7 +735,7 @@
         "description": "Returns server-wide usage counters for storage, files, folders, pastes, collections,\nand shares alongside their configured limits. Requires an admin session token.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1023,7 +1021,7 @@
         "description": "Returns a collection by ID. Accessible via a valid share link or as the owner.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -1050,11 +1048,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredCollection"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredCollection",
                   "nullable": true
                 }
               }
@@ -1077,7 +1071,7 @@
         "description": "Updates the name or file membership of a collection.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -1137,7 +1131,7 @@
         "description": "Permanently deletes a collection. The files inside are not deleted.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -1170,7 +1164,7 @@
         "description": "Returns all collections owned by the authenticated user.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1181,11 +1175,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/FilteredCollection"
-                      }
-                    ],
+                    "$ref": "#/components/schemas/FilteredCollection",
                     "nullable": true
                   }
                 }
@@ -1203,7 +1193,7 @@
         "description": "Creates a new empty collection for grouping files.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -1233,11 +1223,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredCollection"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredCollection",
                   "nullable": true
                 }
               }
@@ -1262,7 +1248,7 @@
         "description": "Creates a new file record. Supply either an `uploadId` from a completed chunked upload\nor raw `data` bytes for small files. Optionally creates a share link in the same request.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1271,11 +1257,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredFile"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredFile",
                   "nullable": true
                 }
               }
@@ -1297,7 +1279,7 @@
         "description": "Returns a folder and its contents by ID. Accessible via a valid share link or as the owner.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -1324,11 +1306,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredFolder"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredFolder",
                   "nullable": true
                 }
               }
@@ -1351,7 +1329,7 @@
         "description": "Permanently deletes a folder and all files inside it.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -1385,7 +1363,7 @@
         "description": "Updates the name or parent folder of an existing folder.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -1411,14 +1389,8 @@
                     "maxLength": 128
                   },
                   "parentId": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
+                    "type": "string",
+                    "nullable": true
                   }
                 },
                 "additionalProperties": false
@@ -1449,7 +1421,7 @@
         "description": "Returns the authenticated user's root folder.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1458,11 +1430,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredFolder"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredFolder",
                   "nullable": true
                 }
               }
@@ -1479,7 +1447,7 @@
         "description": "Create a new folder under an optional parent.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -1512,11 +1480,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredFolder"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredFolder",
                   "nullable": true
                 }
               }
@@ -1541,7 +1505,7 @@
         "description": "Permanently deletes all collections owned by the authenticated user.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1564,7 +1528,7 @@
         "description": "Permanently deletes all files and folders owned by the authenticated user.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1587,7 +1551,7 @@
         "description": "Returns the authenticated user's ID, username, and role.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1635,7 +1599,7 @@
         "description": "Updates the authenticated user's username.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -1680,7 +1644,7 @@
         "description": "Permanently deletes the authenticated user's account and all associated data.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1703,7 +1667,7 @@
         "description": "Invalidates the current session token.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1726,7 +1690,7 @@
         "description": "Updates the authenticated user's password after verifying the current one.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -1780,7 +1744,7 @@
         "description": "Permanently deletes all pastes owned by the authenticated user.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1803,7 +1767,7 @@
         "description": "Permanently deletes all share links owned by the authenticated user.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1826,7 +1790,7 @@
         "description": "Returns all API tokens for the authenticated user, sorted with the current token first.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -1857,7 +1821,7 @@
         "description": "Creates a new named uploader API token for programmatic access.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -1920,7 +1884,7 @@
         "description": "Deletes a specific token by ID, all tokens, or all tokens except the current session.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -1981,7 +1945,7 @@
         "description": "Returns a paste including its full content.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2019,7 +1983,7 @@
         "description": "Updates the name, content, or syntax type of a paste.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2084,7 +2048,7 @@
         "description": "Permanently deletes a paste.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2117,7 +2081,7 @@
         "description": "Returns all pastes owned by the authenticated user.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -2145,7 +2109,7 @@
         "description": "Creates a new text paste. Optionally creates a share link in the same request.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -2210,7 +2174,7 @@
         "description": "Returns all share links owned by the authenticated user.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -2221,11 +2185,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/FilteredShare"
-                      }
-                    ],
+                    "$ref": "#/components/schemas/FilteredShare",
                     "nullable": true
                   }
                 }
@@ -2243,7 +2203,7 @@
         "description": "Creates a public share link for a file, folder, collection, or paste.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -2283,11 +2243,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredShare"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredShare",
                   "nullable": true
                 }
               }
@@ -2312,7 +2268,7 @@
         "description": "Initialises a multi-part file upload session and returns an upload ID.\nUse the upload ID to push data chunks, then finalise by creating a file.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -2341,11 +2297,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredFileUpload"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredFileUpload",
                   "nullable": true
                 }
               }
@@ -2370,7 +2322,7 @@
         "description": "Returns the authenticated user's top 10 files sorted by size descending.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -2381,11 +2333,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/FilteredFile"
-                      }
-                    ],
+                    "$ref": "#/components/schemas/FilteredFile",
                     "nullable": true
                   }
                 }
@@ -2408,7 +2356,7 @@
         "description": "Returns the authenticated user's current usage counters for storage, files, folders,\npastes, collections, shares, and tokens alongside their configured per-user limits.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -2554,7 +2502,7 @@
         "description": "Returns all registered users including their storage usage. Requires an admin session token.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "responses": {
@@ -2565,11 +2513,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/FilteredAdminUser"
-                      }
-                    ],
+                    "$ref": "#/components/schemas/FilteredAdminUser",
                     "nullable": true
                   }
                 }
@@ -2593,7 +2537,7 @@
         "description": "Creates a new user account. Requires an admin session token.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "requestBody": {
@@ -2651,7 +2595,7 @@
         "description": "Returns metadata for a file by ID. Accessible via a valid share link or as the owner.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2678,11 +2622,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredFile"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredFile",
                   "nullable": true
                 }
               }
@@ -2705,7 +2645,7 @@
         "description": "Permanently deletes a file and its stored content.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2739,7 +2679,7 @@
         "description": "Updates the name or parent folder of a file.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2765,14 +2705,8 @@
                     "maxLength": 128
                   },
                   "folderId": {
-                    "anyOf": [
-                      {
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
+                    "type": "string",
+                    "nullable": true
                   }
                 },
                 "additionalProperties": false
@@ -2803,7 +2737,7 @@
         "description": "Streams the raw file content with the appropriate Content-Type header.\nAccessible via a valid share link or as the owner.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2858,11 +2792,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredShare"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredShare",
                   "nullable": true
                 }
               }
@@ -2879,7 +2809,7 @@
         "description": "Revokes a share link, making the shared resource inaccessible to anonymous users.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2912,7 +2842,7 @@
         "description": "Appends a raw binary chunk to an in-progress upload session.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2931,11 +2861,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    {
-                      "$ref": "#/components/schemas/FilteredFileUpload"
-                    }
-                  ],
+                  "$ref": "#/components/schemas/FilteredFileUpload",
                   "nullable": true
                 }
               }
@@ -2958,7 +2884,7 @@
         "description": "Cancels and deletes an in-progress upload session.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -2994,7 +2920,7 @@
         "description": "Updates the role of a specific user. Requires an admin session token.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [
@@ -3051,7 +2977,7 @@
         "description": "Permanently deletes a user account and all associated data. Requires an admin session token.",
         "security": [
           {
-            "TokenAuth": []
+            "Token": []
           }
         ],
         "parameters": [

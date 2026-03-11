@@ -34,11 +34,12 @@ function isAnonName(name: string) {
   return ANON_TYPE_NAMES.has(name) || name.startsWith('__')
 }
 
-// Wrap a schema as nullable in an OpenAPI 3.0-safe way.
-// A bare `$ref` cannot be combined with sibling keywords in OAS 3.0, so we
-// wrap it in `allOf` before adding `nullable`.
+// Wrap a schema as nullable.
+// OAS 3.0 technically forbids sibling keywords on `$ref`, but every major
+// renderer (Swagger UI, Redoc, vitepress-openapi) supports `nullable: true`
+// alongside `$ref` in practice. The `allOf` wrapper is spec-purist but breaks
+// schema renderers that don't dereference single-entry allOf lists.
 function makeNullable(schema: JsonSchema): JsonSchema {
-  if ('$ref' in schema) return { allOf: [schema], nullable: true }
   return { ...schema, nullable: true }
 }
 
@@ -185,14 +186,66 @@ function typeToJsonSchema(
 
 // ─── Zod request schema → JSON Schema ─────────────────────────────────────────
 
+// Recursively normalise a JSON Schema 2020-12 object to be OpenAPI 3.0 compatible:
+//   • { const: v }                          → { enum: [v] }
+//   • anyOf: [{ type: T }, { type: "null"}] → { type: T, nullable: true }  (and merges siblings)
+function oas30(schema: JsonSchema): JsonSchema {
+  if (typeof schema !== 'object' || schema === null || Array.isArray(schema))
+    return schema
+
+  // Recurse into all child schemas first
+  const s: JsonSchema = {}
+  for (const [k, v] of Object.entries(schema)) {
+    if (k === 'properties' && typeof v === 'object' && v !== null) {
+      s[k] = Object.fromEntries(
+        Object.entries(v as Record<string, JsonSchema>).map(([pk, pv]) => [
+          pk,
+          oas30(pv)
+        ])
+      )
+    } else if (k === 'anyOf' || k === 'oneOf' || k === 'allOf') {
+      s[k] = (v as JsonSchema[]).map(oas30)
+    } else if (k === 'items' && typeof v === 'object') {
+      s[k] = oas30(v as JsonSchema)
+    } else {
+      s[k] = v
+    }
+  }
+
+  // const → enum
+  if ('const' in s) {
+    const { const: cv, ...rest } = s
+    return oas30({ ...rest, enum: [cv] })
+  }
+
+  // anyOf with a sole { type: "null" } member → nullable + unwrap
+  if (Array.isArray(s.anyOf)) {
+    const nullParts = (s.anyOf as JsonSchema[]).filter(
+      t => typeof t === 'object' && (t as any).type === 'null'
+    )
+    const nonNull = (s.anyOf as JsonSchema[]).filter(
+      t => typeof t !== 'object' || (t as any).type !== 'null'
+    )
+    if (nullParts.length > 0) {
+      const { anyOf: _, ...rest } = s
+      if (nonNull.length === 1) {
+        // Flatten: { anyOf: [T, null] } → { ...T, nullable: true }
+        return { ...nonNull[0], ...rest, nullable: true }
+      }
+      return { ...rest, anyOf: nonNull, nullable: true }
+    }
+  }
+
+  return s
+}
+
 function getZodJsonSchema(schemaName: string): JsonSchema | null {
   try {
     const schema = (schemasModule as Record<string, unknown>)[schemaName]
     if (!schema || !(schema instanceof z.ZodType)) return null
     const result = z.toJSONSchema(schema) as Record<string, unknown>
     delete result.$schema
-
-    return result as JsonSchema
+    return oas30(result as JsonSchema)
   } catch {
     return null
   }
@@ -293,13 +346,18 @@ const spec: OpenAPISpec = {
   info: {
     title: 'BluFiles API',
     version: '1.0.0',
-    description: 'BluFiles file management API'
+    description:
+      'BluFiles Management API - auto-generated from source code annotations'
   },
-  servers: [{ url: '/' }],
+  servers: [
+    {
+      url: '/'
+    }
+  ],
   components: {
     schemas: {},
     securitySchemes: {
-      TokenAuth: {
+      Token: {
         type: 'apiKey',
         in: 'header',
         name: 'Authorization',
@@ -404,7 +462,7 @@ for (const file of project.getSourceFiles('src/routes/**/*.ts')) {
     if (jsdoc.summary) operation.summary = jsdoc.summary
     if (jsdoc.description) operation.description = jsdoc.description
     if (jsdoc.deprecated) operation.deprecated = true
-    if (auth) operation.security = [{ TokenAuth: [] }]
+    if (auth) operation.security = [{ Token: [] }]
     if (parameters.length) operation.parameters = parameters
     if (bodySchema) {
       operation.requestBody = {

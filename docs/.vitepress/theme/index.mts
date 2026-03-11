@@ -11,7 +11,12 @@ export default {
   extends: DefaultTheme,
   enhanceApp: async ctx => {
     useOpenapi({
-      spec
+      spec,
+      config: {
+        server: {
+          allowCustomServer: true
+        }
+      }
     })
     theme.enhanceApp(ctx)
   }
