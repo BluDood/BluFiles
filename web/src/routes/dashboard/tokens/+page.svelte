@@ -78,6 +78,50 @@
     load()
   }
 
+  async function regenerate(id: string) {
+    const confirmed = await alert({
+      title: 'Regenerate Token',
+      content:
+        'Are you sure you want to regenerate this token? The old token will stop working.',
+      buttons: [
+        {
+          text: 'Regenerate',
+          color: 'red'
+        },
+        {
+          text: 'Cancel'
+        }
+      ]
+    })
+
+    if (!confirmed.type) return
+
+    const res = await req.patch(`me/tokens`, {
+      id
+    })
+    if (!res) return
+
+    if (res.status !== 200)
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: 'Please try again later.'
+      })
+
+    await prompt({
+      title: 'Token Regenerated',
+      content: 'Please copy it now, as it cannot be shown again.',
+      readonly: true,
+      defaultValue: res.data.token,
+      buttons: [
+        {
+          text: 'Done'
+        }
+      ]
+    })
+    load()
+  }
+
   async function del(id: string, self: boolean) {
     const confirmed = await alert({
       title: 'Delete Token',
@@ -159,7 +203,22 @@
                   : 'Never used'}
               </p>
               <div class="actions">
-                <button onclick={() => del(token.id, token.me)}>
+                {#if token.type === 'uploader'}
+                  <button
+                    class="action"
+                    data-color="orange"
+                    tabindex="0"
+                    onclick={() => regenerate(token.id)}
+                  >
+                    <span class="material-icons">refresh</span>
+                  </button>
+                {/if}
+                <button
+                  class="action"
+                  data-color="red"
+                  tabindex="0"
+                  onclick={() => del(token.id, token.me)}
+                >
                   <span class="material-icons">delete</span>
                 </button>
               </div>
@@ -246,17 +305,34 @@
     margin: 0 5px;
   }
 
-  .token .info .actions {
+  .token .actions {
     display: flex;
+    align-items: center;
     gap: 10px;
   }
 
-  .token .info .actions button {
+  .token .actions .action {
     all: unset;
     display: flex;
     align-items: center;
-    justify-content: center;
     cursor: pointer;
-    color: var(--accent);
+    transition: 200ms ease;
+    opacity: 0.8;
+  }
+
+  .token .actions .action:hover {
+    opacity: 1;
+  }
+
+  .token .actions .action[data-color='red'] {
+    color: var(--red);
+  }
+
+  .token .actions .action[data-color='orange'] {
+    color: var(--orange);
+  }
+
+  .token .actions .action span {
+    font-size: 20px;
   }
 </style>

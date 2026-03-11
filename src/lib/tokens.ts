@@ -63,6 +63,24 @@ export async function createToken({
   }
 }
 
+export async function regenerateToken(id: string) {
+  const token = random(64)
+
+  const details = await prisma.token.update({
+    where: {
+      id
+    },
+    data: {
+      hash: hash(token)
+    }
+  })
+
+  return {
+    ...details,
+    token
+  }
+}
+
 export async function getToken({ id, token }: { id?: string; token?: string }) {
   return await prisma.token.findFirst({
     where: token ? { hash: hash(token) } : { id },

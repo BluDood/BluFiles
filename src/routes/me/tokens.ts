@@ -6,10 +6,15 @@ import {
   deleteTokens,
   filterToken,
   getToken,
-  getTokens
+  getTokens,
+  regenerateToken
 } from '#lib/tokens.js'
 
-import { createTokenSchema, deleteTokenSchema } from '#lib/schemas.js'
+import {
+  createTokenSchema,
+  deleteTokenSchema,
+  regenerateTokenSchema
+} from '#lib/schemas.js'
 import { checkTokenCreationAllowed } from '#lib/config.js'
 
 /**
@@ -65,6 +70,29 @@ export async function post(req: Request, res: Response) {
   })
 
   return res.json(token)
+}
+
+/**
+ * Regenerate API token
+ *
+ * Regenerates a token by ID. Only applicable to uploader tokens.
+ */
+export async function patch(req: Request, res: Response) {
+  if (!req.user) return res.sendStatus(401)
+  if (req.user.token.type !== 'user') return res.sendStatus(418)
+
+  const parsed = regenerateTokenSchema.safeParse(req.body)
+  if (!parsed.success) return res.sendStatus(400)
+  const { id } = parsed.data
+
+  const token = await getToken({ id })
+  if (!token) return res.sendStatus(404)
+  if (token.userId !== req.user.id) return res.sendStatus(404)
+  if (token.type !== 'uploader') return res.sendStatus(400)
+
+  const newToken = await regenerateToken(id)
+
+  return res.json(newToken)
 }
 
 /**
