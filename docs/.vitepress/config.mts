@@ -13,82 +13,128 @@ export default defineConfig({
   description: 'Documentation for BluFiles',
   srcDir: 'src',
   appearance: 'dark',
+  head: [['link', { rel: 'icon', href: '/assets/BluFilesSquare.png' }]],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: '/assets/BluFilesSquare.png',
     nav: [
-      { text: 'Home', link: '/' },
-      {
-        text: 'Reference',
-        link: '/api'
-      }
-    ],
-    sidebar: [
-      {
-        text: 'About BluFiles',
-        items: [
-          { text: 'What is BluFiles?', link: '/about' },
-          { text: 'Getting Started', link: '/getting-started' },
-          {
-            text: 'Features',
-            items: [
-              {
-                text: 'Files',
-                link: '/features/files/'
-              },
-              {
-                text: 'Pastes',
-                link: '/features/pastes/'
-              },
-              {
-                text: 'Collections',
-                link: '/features/collections/'
-              },
-              {
-                text: 'Sharing',
-                link: '/features/sharing/'
-              },
-              {
-                text: 'Tokens',
-                link: '/features/tokens/'
-              },
-              {
-                text: 'Usage',
-                link: '/features/usage/'
-              },
-              {
-                text: 'Administration',
-                link: '/features/admin/'
-              }
-            ]
-          }
-        ]
-      },
-      {
-        text: 'Guides',
-        items: [
-          { text: 'Setting up and using an API token', link: '/api-tokens' },
-          { text: 'Uploading files using the API', link: '/api-upload' }
-        ]
-      },
+      { text: 'Guide', link: '/guide/about/', activeMatch: '^/guide/*' },
       {
         text: 'API Reference',
-        items: [
-          {
-            text: 'Specification',
-            link: '/api'
-          },
-          ...sidebar
-            .itemsByPaths({
-              linkPrefix: '/api/'
-            })[0]
-            .items!.map(group => ({
-              ...group,
-              collapsed: true
-            }))
-        ]
+        link: '/api/',
+        activeMatch: '^/api/*'
       }
     ],
+    sidebar: {
+      '/guide': [
+        {
+          text: 'About BluFiles',
+          items: [
+            { text: 'What is BluFiles?', link: '/guide/about/' },
+            { text: 'Getting Started', link: '/guide/getting-started/' },
+            {
+              text: 'Features',
+              items: [
+                {
+                  text: 'Files',
+                  link: '/guide/features/files/'
+                },
+                {
+                  text: 'Pastes',
+                  link: '/guide/features/pastes/'
+                },
+                {
+                  text: 'Collections',
+                  link: '/guide/features/collections/'
+                },
+                {
+                  text: 'Sharing',
+                  link: '/guide/features/sharing/'
+                },
+                {
+                  text: 'Tokens',
+                  link: '/guide/features/tokens/'
+                },
+                {
+                  text: 'Usage',
+                  link: '/guide/features/usage/'
+                },
+                {
+                  text: 'Profile',
+                  link: '/guide/features/profile/'
+                },
+                {
+                  text: 'Settings',
+                  link: '/guide/features/settings/',
+                  collapsed: true,
+                  items: [
+                    {
+                      text: 'Password',
+                      link: '/guide/features/settings/password/'
+                    },
+                    {
+                      text: 'Danger Zone',
+                      link: '/guide/features/settings/danger/'
+                    }
+                  ]
+                },
+                {
+                  text: 'Administration',
+                  link: '/guide/features/admin/',
+                  collapsed: true,
+                  items: [
+                    {
+                      text: 'User Management',
+                      link: '/guide/features/admin/users/'
+                    },
+                    {
+                      text: 'Usage Stats',
+                      link: '/guide/features/admin/usage/'
+                    },
+                    {
+                      text: 'Configuration',
+                      link: '/guide/features/admin/config/'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          text: 'Guides',
+          items: [
+            {
+              text: 'Setting up and using an API token',
+              link: '/guide/api-tokens/'
+            },
+            {
+              text: 'Uploading files using the API',
+              link: '/guide/api-upload/'
+            }
+          ]
+        }
+      ],
+      '/api': [
+        {
+          text: 'API Reference',
+          items: [
+            {
+              text: 'Specification',
+              link: '/api/'
+            },
+            ...sidebar
+              .itemsByPaths({
+                linkPrefix: '/api/'
+              })[0]
+              .items!.map(group => ({
+                ...group,
+                collapsed: true
+              }))
+          ]
+        }
+      ]
+    },
     outline: { level: [2, 3] },
     externalLinkIcon: true,
 

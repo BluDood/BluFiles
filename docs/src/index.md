@@ -11,10 +11,10 @@ hero:
   actions:
     - theme: brand
       text: Getting Started
-      link: /about
+      link: /guide/getting-started/
     - theme: alt
       text: API Reference
-      link: /api
+      link: /api/
     - theme: alt
       text: Source code
       link: https://github.com/BluDood/BluFiles
