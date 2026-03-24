@@ -31,6 +31,10 @@ export async function get(req: Request, res: Response) {
 
   res.setHeader('Content-Type', file.mime)
   res.setHeader('Content-Length', file.size.toString())
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${encodeURIComponent(file.name)}"`
+  )
 
   return stream.pipe(res)
 }
