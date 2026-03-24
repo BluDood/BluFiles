@@ -7,9 +7,9 @@ import cors from 'cors'
 import path from 'path'
 
 import { generateFileMetaPage } from './opengraph.js'
+import { isDev, logger } from '#lib/utils.js'
 import { useToken } from '#lib/tokens.js'
 import { getShare } from './shares.js'
-import { logger } from '#lib/utils.js'
 
 async function auth(req: Request, res: Response, next: NextFunction) {
   const auth = req.headers.authorization
@@ -74,7 +74,10 @@ async function shareRoute(req: Request, res: Response) {
 }
 
 export async function setupMiddlewares(app: Application) {
-  app.use(cors())
+  const trustProxy = process.env.TRUST_PROXY
+  if (trustProxy?.toLowerCase() === 'true') app.set('trust proxy', 1)
+  if (isDev) app.use(cors())
+
   app.use(express.json())
   app.use(
     express.raw({

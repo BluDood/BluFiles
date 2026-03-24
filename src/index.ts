@@ -1,7 +1,7 @@
 import express from 'express'
 
+import { getPackage, isDev, logger } from '#lib/utils.js'
 import { setupMiddlewares } from '#lib/middlewares.js'
-import { getPackage, logger } from '#lib/utils.js'
 import { registerJobs } from '#lib/jobs.js'
 
 const app = express()
@@ -14,6 +14,7 @@ app.listen(PORT, async () => {
   const pkg = await getPackage()
 
   logger.info(`BluFiles ${pkg.version} running on port ${PORT}`)
+  if (isDev) logger.warn('Running in development mode')
 
   await registerJobs()
 })

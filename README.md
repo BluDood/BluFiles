@@ -36,6 +36,7 @@ If you want a further look at the features, setup, API usage and more, you can f
        environment:
          - DATABASE_URL=postgresql://postgres:DB_PASSWORD_PLEASE_CHANGE@postgres:5432/files
          - STORAGE_DIR=/data
+         # - TRUST_PROXY=true # uncomment this line when running behind a reverse proxy
        depends_on:
          postgres:
            condition: service_healthy
@@ -61,7 +62,7 @@ If you want a further look at the features, setup, API usage and more, you can f
 
    > Here you can also choose where BluFiles stores uploaded files by changing the `STORAGE_DIR` variable or the mount point.
 
-   > Adjust the network configuration if you want to use a reverse proxy.
+   > Adjust the network and environment configuration if you want to use a reverse proxy or a different port.
 
 2. Start the BluFiles container using Docker Compose:
 
@@ -77,11 +78,12 @@ If you want a further look at the features, setup, API usage and more, you can f
 
 The most of the configuration is done using the web interface, but these are some startup options you can set using environment variables:
 
-| Environment Variable | Description                          | Default |
-| -------------------- | ------------------------------------ | ------- |
-| `DATABASE_URL`       | PostgreSQL connection string         | -       |
-| `STORAGE_DIR`        | Directory for uploaded files on disk | `/data` |
-| `PORT`               | Port the server listens on           | `1337`  |
+| Environment Variable | Description                                                                | Default |
+| -------------------- | -------------------------------------------------------------------------- | ------- |
+| `DATABASE_URL`       | PostgreSQL connection string                                               | -       |
+| `STORAGE_DIR`        | Directory for uploaded files on disk                                       | `/data` |
+| `PORT`               | Port the server listens on                                                 | `1337`  |
+| `TRUST_PROXY`        | Set to `true` when running behind a reverse proxy (nginx, Caddy, Traefik). | -       |
 
 ## Contributing
 

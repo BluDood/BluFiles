@@ -25,6 +25,7 @@ BluFiles uses Docker Compose for easy setup and deployment. Files are stored in 
        environment:
          - DATABASE_URL=postgresql://postgres:DB_PASSWORD_PLEASE_CHANGE@postgres:5432/files # change the database password!
          - STORAGE_DIR=/data
+         # - TRUST_PROXY=true # uncomment this line when running behind a reverse proxy
        depends_on:
          postgres:
            condition: service_healthy
@@ -64,9 +65,10 @@ The default configuration for BluFiles lets the first registered user be the adm
 
 BluFiles can be configured using environment variables. The most important ones are:
 
-- `DATABASE_URL`: The connection string for the PostgreSQL database. The default value is `postgresql://postgres:postgres@postgres:5432/files`.
+- `DATABASE_URL`: The connection string for the PostgreSQL database.
 - `STORAGE_DIR`: The directory where files are stored. The default value is `/data`.
 - `PORT`: The port that BluFiles binds to. The default value is `1337`.
+- `TRUST_PROXY`: Set this to `true` when running behind a reverse proxy (nginx, Caddy, Traefik). This will make BluFiles trust the `X-Forwarded-*` headers, used for rate limiting.
 
 ## Architecture
 
