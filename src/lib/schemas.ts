@@ -68,14 +68,14 @@ export const updateFolderSchema = z.object({
 
 export const createPasteSchema = z.object({
   name: z.string().min(1).max(128),
-  content: z.string(),
+  content: z.string().max(1_000_000),
   type: z.string(),
   share: z.coerce.boolean().optional()
 })
 
 export const updatePasteSchema = z.object({
   name: z.string().min(1).max(128).optional(),
-  content: z.string().optional(),
+  content: z.string().max(1_000_000).optional(),
   type: z.string().optional()
 })
 
