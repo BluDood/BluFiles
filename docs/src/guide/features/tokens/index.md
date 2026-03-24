@@ -27,3 +27,9 @@ To delete a token, click the trash icon on the right side of the token you want 
 ![](./del_self.png)
 
 If you delete the token for your current session, you will be logged out.
+
+## Generating Snippets
+
+![](./generator.png)
+
+BluFiles also allows you to generate code/configuration snippets for other applications/tools (currently ShareX and cURL)! Click the `<>` icon in the top right of the token page to open the generator. Here you can paste your API token, select the type of snippet you want to generate, and see the configuration update in real time. You can also click the copy button to copy the generated snippet to your clipboard.

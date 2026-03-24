@@ -6,6 +6,7 @@
   import { prompt, alert } from '$lib/popups'
 
   import Loader from '$components/Loader.svelte'
+  import Generator from './Generator.svelte'
 
   interface Token {
     id: string
@@ -17,6 +18,7 @@
   }
 
   let tokens: Token[] | null = $state(null)
+  let generating = $state(false)
 
   async function load() {
     tokens = null
@@ -168,11 +170,19 @@
 </script>
 
 <main>
+  {#if generating}
+    <Generator onclose={() => (generating = false)} />
+  {/if}
   <div class="v-align">
     <h2>Tokens</h2>
-    <button onclick={add}>
-      <span class="material-icons">add</span>
-    </button>
+    <div class="buttons">
+      <button onclick={() => (generating = true)} data-color="orange">
+        <span class="material-icons">code</span>
+      </button>
+      <button onclick={add}>
+        <span class="material-icons">add</span>
+      </button>
+    </div>
   </div>
   {#if tokens}
     <div class="tokenList">
@@ -242,8 +252,17 @@
     animation: appear 500ms ease;
   }
 
+  .v-align .buttons {
+    display: flex;
+    gap: 15px;
+  }
+
   .v-align button {
     color: var(--accent);
+  }
+
+  .v-align button[data-color='orange'] {
+    color: var(--orange);
   }
 
   .loader {

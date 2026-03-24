@@ -89,5 +89,9 @@ export const LANGUAGE_MAPPINGS: Record<string, LanguageMapping> = {
   swift: {
     name: 'Swift',
     monaco: 'swift'
+  },
+  shell: {
+    name: 'Shell',
+    monaco: 'shell'
   }
 }

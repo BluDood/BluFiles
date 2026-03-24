@@ -41,11 +41,17 @@ https://files.bludood.com/s/<shareId>
 
 In the example response above, the share link URL would be `https://files.bludood.com/s/cmmm4ladt0003356nf1aeafi2`.
 
-### Example using ShareX
+### Using ShareX
+
+You can set up BluFiles as a custom uploader in ShareX to easily upload files using the API.
+
+BluFiles has an integrated snippet generator which can automatically generate a custom ShareX uploader for you based on your API token. See the [Generating Snippets](/guide/features/tokens/#generating-snippets) guide for more information on this.
+
+You can also manually create a configuration for ShareX like this:
 
 ![](./sharex.png)
 
-You can set up BluFiles as a custom uploader in ShareX to easily upload files using the API. To do this, you can use the following configuration:
+Here is an example of a JSON config for the custom uploader:
 
 ```json
 {
