@@ -61,9 +61,13 @@ const configPath = path.resolve(
 export async function getConfig(): Promise<Config> {
   try {
     const data = await fs.readFile(configPath, 'utf8')
+    const saved = JSON.parse(data)
+
     return {
       ...defaultConfig,
-      ...JSON.parse(data)
+      ...saved,
+      total: { ...defaultConfig.total, ...saved.total },
+      user: { ...defaultConfig.user, ...saved.user }
     }
   } catch {
     return defaultConfig
