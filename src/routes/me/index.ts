@@ -26,7 +26,7 @@ export async function get(req: Request, res: Response) {
  *
  * Updates the authenticated user's username.
  */
-export async function patcH(req: Request, res: Response) {
+export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
   if (req.user.token.type !== 'user') return res.sendStatus(418)
 
