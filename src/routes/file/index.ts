@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 
 import { createFileUpload, pushFileUpload } from '#lib/upload.js'
+import { checkFileCreationAllowed } from '#lib/config.js'
 import { createFile, filterFile } from '#lib/files.js'
 import { createFileSchema } from '#lib/schemas.js'
 import { createShare } from '#lib/shares.js'
@@ -23,6 +24,10 @@ export async function post(req: Request, res: Response) {
     uploadId = parsed.data.uploadId
   } else {
     const data = parsed.data.data
+
+    if (!(await checkFileCreationAllowed(req.user.id, data.length)))
+      return res.sendStatus(403)
+
     const upload = await createFileUpload({
       ownerId: req.user.id,
       totalBytes: data.length
