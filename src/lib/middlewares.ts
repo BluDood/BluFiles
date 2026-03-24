@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction, Application } from 'express'
 
+import { rateLimit } from 'express-rate-limit'
 import { router } from 'express-file-routing'
 import mp from 'parse-multipart-data'
 import cors from 'cors'
@@ -83,6 +84,27 @@ export async function setupMiddlewares(app: Application) {
   )
   app.use(parseMultipart)
   app.use(auth)
+
+  app.use(
+    '/api/auth/login',
+    rateLimit({
+      windowMs: 15 * 60 * 1000,
+      limit: 10,
+      standardHeaders: true,
+      legacyHeaders: false
+    })
+  )
+
+  app.use(
+    '/api/auth/register',
+    rateLimit({
+      windowMs: 60 * 60 * 1000,
+      limit: 5,
+      standardHeaders: true,
+      legacyHeaders: false
+    })
+  )
+
   app.use(
     '/api',
     await router({ directory: path.join(process.cwd(), 'dist/routes') })
