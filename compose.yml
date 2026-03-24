@@ -9,14 +9,22 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/files
       - STORAGE_DIR=/data
+    depends_on:
+      postgres:
+        condition: service_healthy
   postgres:
-    image: postgres
+    image: postgres:16
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: files
     volumes:
       - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres:

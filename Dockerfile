@@ -35,4 +35,4 @@ COPY --from=builder /app/web/build ./web/build
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/generated ./generated
 
-CMD npx prisma db push && node .
+CMD npx prisma migrate deploy && node .

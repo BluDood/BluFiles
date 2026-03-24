@@ -23,20 +23,32 @@ BluFiles uses Docker Compose for easy setup and deployment. Files are stored in 
        volumes:
          - ./data:/data # change this mount if you want to store files in a different location
        environment:
-         - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/files
+         - DATABASE_URL=postgresql://postgres:DB_PASSWORD_PLEASE_CHANGE@postgres:5432/files # change the database password!
          - STORAGE_DIR=/data
+       depends_on:
+         postgres:
+           condition: service_healthy
      postgres:
-       image: postgres
+       image: postgres:16
        environment:
          POSTGRES_USER: postgres
-         POSTGRES_PASSWORD: postgres
+         POSTGRES_PASSWORD: DB_PASSWORD_PLEASE_CHANGE # change the database password!
          POSTGRES_DB: files
        volumes:
          - postgres:/var/lib/postgresql/data
+       healthcheck:
+         test: ['CMD-SHELL', 'pg_isready -U postgres']
+         interval: 5s
+         timeout: 5s
+         retries: 5
 
    volumes:
      postgres:
    ```
+
+   ::: warning Change the database credentials
+   Replace `DB_PASSWORD_PLEASE_CHANGE` with a randomly generated password in both `DATABASE_URL` and `POSTGRES_PASSWORD`.
+   :::
 
 3. Start the BluFiles container using Docker Compose:
    ```bash
