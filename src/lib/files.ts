@@ -225,6 +225,8 @@ export async function createFile({
   const upload = await getFileUpload(uploadId)
   if (!upload) return null
 
+  if (upload.ownerId !== ownerId) return null
+
   const fileHash = await hashFile(upload.id, 'upload')
   const mime = await getType(upload.id, 'upload', upload.totalBytes)
 

@@ -21,6 +21,7 @@ export async function post(req: Request, res: Response) {
 
   const upload = await getFileUpload(id)
   if (!upload) return res.sendStatus(404)
+  if (upload.ownerId !== req.user.id) return res.sendStatus(404)
 
   const parsed = pushFileUploadSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)
@@ -48,6 +49,7 @@ export async function del(req: Request, res: Response) {
 
   const upload = await getFileUpload(id)
   if (!upload) return res.sendStatus(404)
+  if (upload.ownerId !== req.user.id) return res.sendStatus(404)
 
   await deleteFileUpload(id)
 
