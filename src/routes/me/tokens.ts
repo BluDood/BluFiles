@@ -69,7 +69,7 @@ export async function post(req: Request, res: Response) {
     name: name
   })
 
-  return res.json(token)
+  return res.json({ ...filterToken(token), token: token.token })
 }
 
 /**
@@ -92,7 +92,7 @@ export async function patch(req: Request, res: Response) {
 
   const newToken = await regenerateToken(id)
 
-  return res.json(newToken)
+  return res.json({ ...filterToken(newToken), token: newToken.token })
 }
 
 /**
