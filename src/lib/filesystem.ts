@@ -4,6 +4,8 @@ import fs from 'fs/promises'
 import crypto from 'crypto'
 import path from 'path'
 
+import { logger } from './utils.js'
+
 const basePath = path.resolve(process.env.STORAGE_DIR || 'data', 'storage')
 const uploadsPath = path.resolve(process.env.STORAGE_DIR || 'data', 'uploads')
 
@@ -11,13 +13,18 @@ export async function getAllFiles() {
   return await fs.readdir(basePath)
 }
 
-export async function exists(id: string, type: 'file' | 'upload' = 'file') {
+export async function pathExists(path: string) {
   try {
-    await fs.access(path.join(type === 'file' ? basePath : uploadsPath, id))
+    await fs.access(path)
     return true
   } catch {
     return false
   }
+}
+
+export async function exists(id: string, type: 'file' | 'upload' = 'file') {
+  const filePath = path.join(type === 'file' ? basePath : uploadsPath, id)
+  return await pathExists(filePath)
 }
 
 export async function read(id: string, type: 'file' | 'upload' = 'file') {
@@ -156,12 +163,22 @@ export async function getStorageUsage(ids: string[] | null = null) {
   return Math.round(total)
 }
 
-if (!(await exists(basePath)))
+if (!(await pathExists(basePath))) {
+  logger.info(
+    `Storage directory not found, creating at ${basePath}`,
+    'Filesystem'
+  )
   fs.mkdir(basePath, {
     recursive: true
   })
+}
 
-if (!(await exists(uploadsPath, 'upload')))
+if (!(await pathExists(uploadsPath))) {
+  logger.info(
+    `Uploads directory not found, creating at ${uploadsPath}`,
+    'Filesystem'
+  )
   fs.mkdir(uploadsPath, {
     recursive: true
   })
+}
