@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "eslint": "^9.39.1",
@@ -34,6 +35,7 @@
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "@vscode/vscode-languagedetection": "^1.0.22",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "express-file-routing": "^3.1.0",

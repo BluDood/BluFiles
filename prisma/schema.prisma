@@ -14,7 +14,6 @@ datasource db {
 model User {
   id       String   @id @unique @default(cuid())
   username String   @unique
-  salt     String
   hash     String
   type     UserType @default(user)
 

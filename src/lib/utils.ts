@@ -1,6 +1,7 @@
 import language from '@vscode/vscode-languagedetection'
 import fs from 'fs/promises'
 import crypto from 'crypto'
+import bcrypt from 'bcrypt'
 
 export const random = (len: number) =>
   crypto.randomBytes(len / 2).toString('hex')
@@ -8,14 +9,15 @@ export const random = (len: number) =>
 export const hash = (str: string) =>
   crypto.createHash('sha256').update(str).digest('hex')
 
-export function hashPassword(password: string) {
-  const salt = random(16)
-  const hashed = hash(salt + password)
-  return { salt, hash: hashed }
+const BCRYPT_ROUNDS = 12
+
+export async function hashPassword(password: string) {
+  return await bcrypt.hash(password, BCRYPT_ROUNDS)
 }
 
-export const verifyPassword = (pass: string, salt: string, hashed: string) =>
-  hash(salt + pass) === hashed
+export async function verifyPassword(pass: string, hashed: string) {
+  return bcrypt.compare(pass, hashed)
+}
 
 export const getPackage = async () =>
   JSON.parse(await fs.readFile('./package.json', 'utf8'))

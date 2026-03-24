@@ -37,14 +37,13 @@ export async function createUser({
   username: string
   password: string
 }) {
-  const { salt, hash } = hashPassword(password)
+  const hash = await hashPassword(password)
 
   const count = await countUsers()
 
   const user = await prisma.user.create({
     data: {
       username,
-      salt,
       hash,
       type: count === 0 ? 'admin' : 'user'
     }
@@ -86,11 +85,8 @@ export async function updateUser({
 }) {
   const update: any = {}
   if (username) update.username = username
-  if (password) {
-    const { salt, hash } = hashPassword(password)
-    update.salt = salt
-    update.hash = hash
-  }
+  if (password) update.hash = await hashPassword(password)
+
   if (type) update.type = type
 
   const user = await prisma.user.update({
@@ -138,9 +134,7 @@ export async function authenticate({
 
   if (!user) return false
 
-  const { salt, hash } = user
-
-  if (!verifyPassword(password, salt, hash)) return false
+  if (!(await verifyPassword(password, user.hash))) return false
 
   return user
 }
