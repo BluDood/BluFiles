@@ -2,10 +2,13 @@
 
 BluFiles is a lightweight and modern system for easily working with and sharing files and folders.
 
+<img src="./blufiles.png" />
+
 ## Features
 
 - **File Management**: BluFiles provides a user-friendly interface for managing your files and folders
 - **Pastes**: Create and share text-based pastes with syntax highlighting for code snippets
 - **Collections**: Organize your files, folders and pastes into collections for sharing a set of items together
 - **Sharing**: Share files, folders, pastes or collections with a simple link
-- **API Integrations**: Allows for easy integration with custom uploaders, with prebuilt templates for ShareX
+- **Admin Panel**: Manage users, quotas, and other configuration through the web interface
+- **API Integrations**: Allows for easy integration with custom uploaders using an API, with prebuilt templates for ShareX
