@@ -3,6 +3,9 @@ import { Request, Response } from 'express'
 import { createShare, filterShare, getShares } from '#lib/shares.js'
 import { checkShareCreationAllowed } from '#lib/config.js'
 import { createShareSchema } from '#lib/schemas.js'
+import { getCollection } from '#lib/collections.js'
+import { getFile, getFolder } from '#lib/files.js'
+import { getPaste } from '#lib/paste.js'
 
 /**
  * List shares
@@ -30,6 +33,16 @@ export async function post(req: Request, res: Response) {
   const parsed = createShareSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)
   const { type, id } = parsed.data
+
+  const getResource = {
+    file: getFile,
+    folder: getFolder,
+    collection: getCollection,
+    paste: getPaste
+  }
+  const resource = await getResource[type](id)
+  if (!resource) return res.sendStatus(404)
+  if (resource.ownerId !== req.user.id) return res.sendStatus(403)
 
   const share = await createShare({
     ownerId: req.user.id,
