@@ -171,7 +171,7 @@ export async function updateFolder(
 ) {
   const update: any = {}
   if (name) update.name = name
-  if (parentId) update.parentId = parentId
+  if (parentId !== undefined) update.parentId = parentId
 
   const folder = await prisma.folder.update({
     where: { id },
