@@ -3,7 +3,7 @@ import prisma from '#lib/prisma.js'
 import { deleteFileUpload } from '#lib/upload.js'
 import { logger } from '#lib/utils.js'
 
-export const name = 'Purge Unfinished Downloads'
+export const name = 'Purge Unfinished Uploads'
 
 export const interval = '0 * * * *'
 
@@ -21,8 +21,8 @@ export async function execute() {
   if (uploads.length === 0) return { status: 'success' }
 
   logger.info(
-    `Purging ${uploads.length} unfinished downloads`,
-    'Purge Unfinished Downloads'
+    `Purging ${uploads.length} unfinished uploads`,
+    'Purge Unfinished Uploads'
   )
 
   for (const upload of uploads) {
