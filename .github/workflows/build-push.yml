@@ -31,3 +31,5 @@ jobs:
             ghcr.io/bludood/files:latest
             ghcr.io/bludood/files:${{ github.sha }}
             ghcr.io/bludood/files:${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
