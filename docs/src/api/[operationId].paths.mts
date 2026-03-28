@@ -1,6 +1,6 @@
 import { usePaths } from 'vitepress-openapi'
 
-import spec from '../assets/openapi.json' with { type: 'json' }
+import spec from '../../src/openapi.json' with { type: 'json' }
 
 export default {
   paths: () => {

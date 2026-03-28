@@ -59,7 +59,7 @@ BluFiles uses Docker Compose for easy setup and deployment. Files are stored in 
 
 ## Initial Setup
 
-The default configuration for BluFiles lets the first registered user be the admin, and then registration will be disabled. This can be configured using the administration panel explained in the [Admin page documentation](features/admin.md). From here, you can either re-enable registration, or create extra users manually.
+The default configuration for BluFiles lets the first registered user be the admin, and then registration will be disabled. This can be configured using the administration panel explained in the [Admin page documentation](../features/admin/index.md). From here, you can either re-enable registration, or create extra users manually.
 
 ## Extra Configuration
 

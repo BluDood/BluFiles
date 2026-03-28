@@ -5,11 +5,7 @@
     "version": "1.0.0",
     "description": "BluFiles Management API - auto-generated from source code annotations"
   },
-  "servers": [
-    {
-      "url": "/"
-    }
-  ],
+  "servers": [],
   "components": {
     "schemas": {
       "Config": {
@@ -503,14 +499,7 @@
           "totalBytes": {
             "type": "string"
           },
-          "status": {
-            "type": "string",
-            "enum": [
-              "pending",
-              "uploading",
-              "completed"
-            ]
-          }
+          "status": {}
         }
       },
       "FilteredAdminUser": {
@@ -1268,6 +1257,9 @@
           },
           "401": {
             "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -1853,11 +1845,48 @@
                 "schema": {
                   "type": "object",
                   "required": [
-                    "token"
+                    "token",
+                    "id",
+                    "type",
+                    "createdAt",
+                    "usedAt",
+                    "userAgent",
+                    "me",
+                    "name"
                   ],
                   "properties": {
                     "token": {
                       "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "user",
+                        "uploader"
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "usedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "userAgent": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "me": {
+                      "type": "boolean"
+                    },
+                    "name": {
+                      "type": "string",
+                      "nullable": true
                     }
                   }
                 }
@@ -1872,6 +1901,106 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch-me-tokens",
+        "summary": "Regenerate API token",
+        "description": "Regenerates a token by ID. Only applicable to uploader tokens.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "cuid",
+                    "pattern": "^[cC][^\\s-]{8,}$"
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "id",
+                    "type",
+                    "createdAt",
+                    "usedAt",
+                    "userAgent",
+                    "me",
+                    "name"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "user",
+                        "uploader"
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "usedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "userAgent": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "me": {
+                      "type": "boolean"
+                    },
+                    "name": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           },
           "418": {
             "description": "Wrong token type"
@@ -2009,7 +2138,8 @@
                     "maxLength": 128
                   },
                   "content": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 1000000
                   },
                   "type": {
                     "type": "string"
@@ -2125,7 +2255,8 @@
                     "maxLength": 128
                   },
                   "content": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 1000000
                   },
                   "type": {
                     "type": "string"
@@ -2257,6 +2388,9 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }

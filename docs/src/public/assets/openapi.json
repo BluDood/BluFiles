@@ -1,0 +1,3147 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BluFiles API",
+    "version": "1.0.0",
+    "description": "BluFiles Management API - auto-generated from source code annotations"
+  },
+  "servers": [],
+  "components": {
+    "schemas": {
+      "Config": {
+        "type": "object",
+        "required": [
+          "maxUsers",
+          "disableRegistration",
+          "total",
+          "user"
+        ],
+        "properties": {
+          "maxUsers": {
+            "type": "number"
+          },
+          "disableRegistration": {
+            "oneOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "afterFirstUser"
+                ]
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "total": {
+            "type": "object",
+            "required": [
+              "maxFiles",
+              "maxFolders",
+              "maxPastes",
+              "maxCollections",
+              "maxShares",
+              "maxStorage"
+            ],
+            "properties": {
+              "maxFiles": {
+                "type": "number"
+              },
+              "maxFolders": {
+                "type": "number"
+              },
+              "maxPastes": {
+                "type": "number"
+              },
+              "maxCollections": {
+                "type": "number"
+              },
+              "maxShares": {
+                "type": "number"
+              },
+              "maxStorage": {
+                "type": "number"
+              }
+            }
+          },
+          "user": {
+            "type": "object",
+            "required": [
+              "maxFiles",
+              "maxFolders",
+              "maxPastes",
+              "maxCollections",
+              "maxShares",
+              "maxTokens",
+              "maxStorage"
+            ],
+            "properties": {
+              "maxFiles": {
+                "type": "number"
+              },
+              "maxFolders": {
+                "type": "number"
+              },
+              "maxPastes": {
+                "type": "number"
+              },
+              "maxCollections": {
+                "type": "number"
+              },
+              "maxShares": {
+                "type": "number"
+              },
+              "maxTokens": {
+                "type": "number"
+              },
+              "maxStorage": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      },
+      "FilteredCollection": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "ownerId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilteredFile",
+              "nullable": true
+            },
+            "nullable": true
+          },
+          "count": {
+            "type": "number",
+            "nullable": true
+          },
+          "shareId": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "FilteredFile": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "mime",
+          "size",
+          "ownerId",
+          "folderId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "mime": {
+            "type": "string"
+          },
+          "size": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "folderId": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "shareId": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "FilteredFolder": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "ownerId",
+          "parentId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilteredFile"
+            },
+            "nullable": true
+          },
+          "folders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FilteredFolder"
+            },
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "shareId": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "FilteredToken": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "createdAt",
+          "usedAt",
+          "userAgent",
+          "me",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "uploader"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "usedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "userAgent": {
+            "type": "string",
+            "nullable": true
+          },
+          "me": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "FilteredPaste": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "ownerId",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "shareId": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "FilteredShare": {
+        "type": "object",
+        "required": [
+          "id",
+          "ownerId",
+          "type",
+          "createdAt",
+          "views"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "file",
+              "folder",
+              "collection",
+              "paste"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "views": {
+            "type": "number"
+          },
+          "owner": {
+            "type": "object",
+            "required": [
+              "id",
+              "username"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            },
+            "nullable": true
+          },
+          "file": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "size",
+              "mime"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "size": {
+                "type": "string"
+              },
+              "mime": {
+                "type": "string"
+              }
+            },
+            "nullable": true
+          },
+          "folder": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "fileCount",
+              "folderCount"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "fileCount": {
+                "type": "number"
+              },
+              "folderCount": {
+                "type": "number"
+              }
+            },
+            "nullable": true
+          },
+          "collection": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "fileCount"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "fileCount": {
+                "type": "number"
+              }
+            },
+            "nullable": true
+          },
+          "paste": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "type",
+              "content"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "nullable": true
+          }
+        }
+      },
+      "FilteredFileUpload": {
+        "type": "object",
+        "required": [
+          "id",
+          "createdAt",
+          "updatedAt",
+          "currentBytes",
+          "totalBytes",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "currentBytes": {
+            "type": "string"
+          },
+          "totalBytes": {
+            "type": "string"
+          },
+          "status": {}
+        }
+      },
+      "FilteredAdminUser": {
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ]
+          },
+          "usage": {
+            "type": "number",
+            "nullable": true
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Token": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Format: `token <value>`. Types: `user` (session) or `uploader` (API token)."
+      }
+    }
+  },
+  "paths": {
+    "/api/admin/config": {
+      "get": {
+        "operationId": "get-admin-config",
+        "summary": "Get server configuration",
+        "description": "Returns the current server configuration. Requires an admin session token.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Config"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch-admin-config",
+        "summary": "Update server configuration",
+        "description": "Applies partial updates to the server configuration. Requires an admin session token.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "maxUsers": {
+                    "type": "number",
+                    "minimum": -1
+                  },
+                  "disableRegistration": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "afterFirstUser"
+                        ]
+                      }
+                    ]
+                  },
+                  "total": {
+                    "type": "object",
+                    "properties": {
+                      "maxFiles": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxFolders": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxPastes": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxCollections": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxShares": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxStorage": {
+                        "type": "number",
+                        "minimum": -1
+                      }
+                    },
+                    "required": [
+                      "maxFiles",
+                      "maxFolders",
+                      "maxPastes",
+                      "maxCollections",
+                      "maxShares",
+                      "maxStorage"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "maxFiles": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxFolders": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxPastes": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxCollections": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxShares": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxTokens": {
+                        "type": "number",
+                        "minimum": -1
+                      },
+                      "maxStorage": {
+                        "type": "number",
+                        "minimum": -1
+                      }
+                    },
+                    "required": [
+                      "maxFiles",
+                      "maxFolders",
+                      "maxPastes",
+                      "maxCollections",
+                      "maxShares",
+                      "maxTokens",
+                      "maxStorage"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "maxUsers",
+                  "disableRegistration",
+                  "total",
+                  "user"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/admin/usage": {
+      "get": {
+        "operationId": "get-admin-usage",
+        "summary": "Get global usage stats",
+        "description": "Returns server-wide usage counters for storage, files, folders, pastes, collections,\nand shares alongside their configured limits. Requires an admin session token.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "storage",
+                    "files",
+                    "folders",
+                    "pastes",
+                    "collections",
+                    "shares"
+                  ],
+                  "properties": {
+                    "storage": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "string"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "files": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "folders": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "pastes": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "collections": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "shares": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "post-auth-login",
+        "summary": "Log in",
+        "description": "Authenticates with a username and password and returns a session token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 32
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "user"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "username"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "username": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "post-auth-register",
+        "summary": "Register",
+        "description": "Creates a new user account and returns a session token. May be disabled by server configuration.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 32
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "user"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "username"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "username": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "409": {
+            "description": "Conflict"
+          }
+        }
+      }
+    },
+    "/api/collection/{id}": {
+      "get": {
+        "operationId": "get-collection-id",
+        "summary": "Get collection",
+        "description": "Returns a collection by ID. Accessible via a valid share link or as the owner.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "shareId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredCollection",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch-collection-id",
+        "summary": "Update collection",
+        "description": "Updates the name or file membership of a collection.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "fileIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "cuid",
+                      "pattern": "^[cC][^\\s-]{8,}$"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-collection-id",
+        "summary": "Delete collection",
+        "description": "Permanently deletes a collection. The files inside are not deleted.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/collection": {
+      "get": {
+        "operationId": "get-collection",
+        "summary": "List collections",
+        "description": "Returns all collections owned by the authenticated user.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FilteredCollection",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-collection",
+        "summary": "Create collection",
+        "description": "Creates a new empty collection for grouping files.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredCollection",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/file": {
+      "post": {
+        "operationId": "post-file",
+        "summary": "Upload file",
+        "description": "Creates a new file record. Supply either an `uploadId` from a completed chunked upload\nor raw `data` bytes for small files. Optionally creates a share link in the same request.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredFile",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/folder/{id}": {
+      "get": {
+        "operationId": "get-folder-id",
+        "summary": "Get folder",
+        "description": "Returns a folder and its contents by ID. Accessible via a valid share link or as the owner.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "shareId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredFolder",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-folder-id",
+        "summary": "Delete folder",
+        "description": "Permanently deletes a folder and all files inside it.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch-folder-id",
+        "summary": "Update folder",
+        "description": "Updates the name or parent folder of an existing folder.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "parentId": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/folder": {
+      "get": {
+        "operationId": "get-folder",
+        "summary": "Get root folder",
+        "description": "Returns the authenticated user's root folder.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredFolder",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-folder",
+        "summary": "Create folder",
+        "description": "Create a new folder under an optional parent.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "parentId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredFolder",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/me/collections": {
+      "delete": {
+        "operationId": "delete-me-collections",
+        "summary": "Delete all collections",
+        "description": "Permanently deletes all collections owned by the authenticated user.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/me/files": {
+      "delete": {
+        "operationId": "delete-me-files",
+        "summary": "Delete all files and folders",
+        "description": "Permanently deletes all files and folders owned by the authenticated user.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/me": {
+      "get": {
+        "operationId": "get-me",
+        "summary": "Get current user",
+        "description": "Returns the authenticated user's ID, username, and role.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "username",
+                    "type"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "user",
+                        "admin"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch-me",
+        "summary": "Update current user",
+        "description": "Updates the authenticated user's username.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 32
+                  }
+                },
+                "required": [
+                  "username"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-me",
+        "summary": "Delete current user",
+        "description": "Permanently deletes the authenticated user's account and all associated data.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/me/logout": {
+      "post": {
+        "operationId": "post-me-logout",
+        "summary": "Log out",
+        "description": "Invalidates the current session token.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/me/password": {
+      "patch": {
+        "operationId": "patch-me-password",
+        "summary": "Change password",
+        "description": "Updates the authenticated user's password after verifying the current one.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "currentPassword": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "currentPassword",
+                  "newPassword"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/me/pastes": {
+      "delete": {
+        "operationId": "delete-me-pastes",
+        "summary": "Delete all pastes",
+        "description": "Permanently deletes all pastes owned by the authenticated user.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/me/shares": {
+      "delete": {
+        "operationId": "delete-me-shares",
+        "summary": "Delete all shares",
+        "description": "Permanently deletes all share links owned by the authenticated user.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/me/tokens": {
+      "get": {
+        "operationId": "get-me-tokens",
+        "summary": "List API tokens",
+        "description": "Returns all API tokens for the authenticated user, sorted with the current token first.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FilteredToken"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-me-tokens",
+        "summary": "Create API token",
+        "description": "Creates a new named uploader API token for programmatic access.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "id",
+                    "type",
+                    "createdAt",
+                    "usedAt",
+                    "userAgent",
+                    "me",
+                    "name"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "user",
+                        "uploader"
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "usedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "userAgent": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "me": {
+                      "type": "boolean"
+                    },
+                    "name": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch-me-tokens",
+        "summary": "Regenerate API token",
+        "description": "Regenerates a token by ID. Only applicable to uploader tokens.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "format": "cuid",
+                    "pattern": "^[cC][^\\s-]{8,}$"
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "id",
+                    "type",
+                    "createdAt",
+                    "usedAt",
+                    "userAgent",
+                    "me",
+                    "name"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "user",
+                        "uploader"
+                      ]
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "usedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "nullable": true
+                    },
+                    "userAgent": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "me": {
+                      "type": "boolean"
+                    },
+                    "name": {
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-me-tokens",
+        "summary": "Delete API token(s)",
+        "description": "Deletes a specific token by ID, all tokens, or all tokens except the current session.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "all",
+                          "except"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "format": "cuid",
+                        "pattern": "^[cC][^\\s-]{8,}$"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/paste/{id}": {
+      "get": {
+        "operationId": "get-paste-id",
+        "summary": "Get paste",
+        "description": "Returns a paste including its full content.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredPaste"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch-paste-id",
+        "summary": "Update paste",
+        "description": "Updates the name, content, or syntax type of a paste.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "content": {
+                    "type": "string",
+                    "maxLength": 1000000
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredPaste"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-paste-id",
+        "summary": "Delete paste",
+        "description": "Permanently deletes a paste.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/paste": {
+      "get": {
+        "operationId": "get-paste",
+        "summary": "List pastes",
+        "description": "Returns all pastes owned by the authenticated user.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FilteredPaste"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-paste",
+        "summary": "Create paste",
+        "description": "Creates a new text paste. Optionally creates a share link in the same request.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "content": {
+                    "type": "string",
+                    "maxLength": 1000000
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "share": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "name",
+                  "content",
+                  "type"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredPaste"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/share": {
+      "get": {
+        "operationId": "get-share",
+        "summary": "List shares",
+        "description": "Returns all share links owned by the authenticated user.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FilteredShare",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-share",
+        "summary": "Create share",
+        "description": "Creates a public share link for a file, folder, collection, or paste.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "file",
+                      "folder",
+                      "collection",
+                      "paste"
+                    ]
+                  },
+                  "id": {
+                    "type": "string",
+                    "format": "cuid",
+                    "pattern": "^[cC][^\\s-]{8,}$"
+                  }
+                },
+                "required": [
+                  "type",
+                  "id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredShare",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/uploads": {
+      "post": {
+        "operationId": "post-uploads",
+        "summary": "Start chunked upload",
+        "description": "Initialises a multi-part file upload session and returns an upload ID.\nUse the upload ID to push data chunks, then finalise by creating a file.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "totalBytes": {
+                    "type": "number",
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "totalBytes"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredFileUpload",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        }
+      }
+    },
+    "/api/usage/largest": {
+      "get": {
+        "operationId": "get-usage-largest",
+        "summary": "Get largest files",
+        "description": "Returns the authenticated user's top 10 files sorted by size descending.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FilteredFile",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/usage/stats": {
+      "get": {
+        "operationId": "get-usage-stats",
+        "summary": "Get usage stats",
+        "description": "Returns the authenticated user's current usage counters for storage, files, folders,\npastes, collections, shares, and tokens alongside their configured per-user limits.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "storage",
+                    "files",
+                    "folders",
+                    "pastes",
+                    "collections",
+                    "shares",
+                    "tokens"
+                  ],
+                  "properties": {
+                    "storage": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "string"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "files": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "folders": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "pastes": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "collections": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "shares": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "tokens": {
+                      "type": "object",
+                      "required": [
+                        "current",
+                        "max"
+                      ],
+                      "properties": {
+                        "current": {
+                          "type": "number"
+                        },
+                        "max": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "operationId": "get-admin-users",
+        "summary": "List all users",
+        "description": "Returns all registered users including their storage usage. Requires an admin session token.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FilteredAdminUser",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      },
+      "post": {
+        "operationId": "post-admin-users",
+        "summary": "Create a user",
+        "description": "Creates a new user account. Requires an admin session token.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 32
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    },
+    "/api/file/{id}": {
+      "get": {
+        "operationId": "get-file-id",
+        "summary": "Get file metadata",
+        "description": "Returns metadata for a file by ID. Accessible via a valid share link or as the owner.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "shareId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredFile",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-file-id",
+        "summary": "Delete file",
+        "description": "Permanently deletes a file and its stored content.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "patch-file-id",
+        "summary": "Update file metadata",
+        "description": "Updates the name or parent folder of a file.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128
+                  },
+                  "folderId": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/file/{id}/raw": {
+      "get": {
+        "operationId": "get-file-id-raw",
+        "summary": "Download file",
+        "description": "Streams the raw file content with the appropriate Content-Type header.\nAccessible via a valid share link or as the owner.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "shareId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/share/{id}": {
+      "get": {
+        "operationId": "get-share-id",
+        "summary": "Get share",
+        "description": "Returns share metadata and increments the view counter. Publicly accessible.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredShare",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-share-id",
+        "summary": "Delete share",
+        "description": "Revokes a share link, making the shared resource inaccessible to anonymous users.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/uploads/{id}": {
+      "post": {
+        "operationId": "post-uploads-id",
+        "summary": "Push upload chunk",
+        "description": "Appends a raw binary chunk to an in-progress upload session.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilteredFileUpload",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-uploads-id",
+        "summary": "Cancel upload",
+        "description": "Cancels and deletes an in-progress upload session.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/admin/users/{id}": {
+      "patch": {
+        "operationId": "patch-admin-users-id",
+        "summary": "Update a user",
+        "description": "Updates the role of a specific user. Requires an admin session token.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "user",
+                      "admin"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "delete-admin-users-id",
+        "summary": "Delete a user",
+        "description": "Permanently deletes a user account and all associated data. Requires an admin session token.",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "418": {
+            "description": "Wrong token type"
+          }
+        }
+      }
+    }
+  }
+}

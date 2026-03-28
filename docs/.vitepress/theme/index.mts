@@ -5,7 +5,7 @@ import { theme, useOpenapi } from 'vitepress-openapi/client'
 
 import 'vitepress-openapi/dist/style.css'
 
-import spec from '../..//src/assets/openapi.json' with { type: 'json' }
+import spec from '../../src/openapi.json' with { type: 'json' }
 
 export default {
   extends: DefaultTheme,

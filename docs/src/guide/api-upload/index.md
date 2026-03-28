@@ -4,7 +4,7 @@ This guide will show you an example on how to upload files using the BluFiles AP
 
 ## Prerequisites
 
-Before you can upload files using the API, you need to have an API token included in your `Authorization` request header. See [Setting up and using an API token](/guide/api-tokens) for more information on how to generate a token.
+Before you can upload files using the API, you need to have an API token included in your `Authorization` request header. See [Setting up and using an API token](/guide/api-tokens/index.md) for more information on how to generate a token.
 
 ## Uploading a file as a multipart request
 

@@ -349,11 +349,7 @@ const spec: OpenAPISpec = {
     description:
       'BluFiles Management API - auto-generated from source code annotations'
   },
-  servers: [
-    {
-      url: '/'
-    }
-  ],
+  servers: [],
   components: {
     schemas: {},
     securitySchemes: {
@@ -486,9 +482,12 @@ for (const [name, build] of namedTypes) {
 }
 
 // Write output
-const outPath = process.argv[2] ?? 'docs/src/assets/openapi.json'
-fs.writeFileSync(outPath, JSON.stringify(spec, null, 2))
-process.stderr.write(
-  `Written ${Object.keys(spec.paths).length} paths, ` +
-    `${Object.keys(spec.components.schemas).length} schemas → ${outPath}\n`
+const outPaths = [
+  'docs/src/public/assets/openapi.json',
+  'docs/src/openapi.json'
+]
+outPaths.forEach(p => fs.writeFileSync(p, JSON.stringify(spec, null, 2)))
+
+console.log(
+  `Written ${Object.keys(spec.paths).length} paths, ${Object.keys(spec.components.schemas).length} schemas`
 )

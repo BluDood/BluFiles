@@ -16,4 +16,4 @@ The token should be included in the `Authorization` header of your requests, usi
 Authorization: token <generated API token>
 ```
 
-You can find more information about the endpoints in the [API Reference](/api).
+You can find more information about the endpoints in the [API Reference](/api/index.md).
