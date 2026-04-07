@@ -7,7 +7,7 @@
 
   interface User {
     id: string
-    name: string
+    username: string
   }
 
   let user: User | null = $state(null)
@@ -18,11 +18,11 @@
 
     if (token) {
       loading = true
-      const res = await req.get('/', {
+      const res = await req.get('me', {
         no401Redirect: true
       })
 
-      if (res.status === 200) user = res.data.user
+      if (res.status === 200) user = res.data
       loading = false
     }
   })
@@ -37,7 +37,7 @@
     <Loader />
   {:else}
     {#if user}
-      <p>Welcome back, {user.name}!</p>
+      <p>Welcome back, {user.username}!</p>
     {/if}
     <div class="buttons">
       {#if user}
