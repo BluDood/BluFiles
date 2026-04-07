@@ -35,8 +35,26 @@
   let loading = $state(true)
   let info: FolderInfo | null = $state(null)
   let previewing: string | false = $state(false)
+
   let searchQuery = $state('')
   let searchMode: 'current' | 'recursive' | 'all' = $state('current')
+
+  let sortMode: 'name' | 'date' | 'size' = $state('name')
+  let sortAscending = $state(false)
+
+  const toggleSortMode = () => {
+    if (sortMode === 'name') sortMode = 'date'
+    else if (sortMode === 'date') sortMode = 'size'
+    else sortMode = 'name'
+
+    sort()
+  }
+
+  const toggleSortDirection = () => {
+    sortAscending = !sortAscending
+    sort()
+  }
+
   let results: { files: File[]; folders: Folder[] } | null = $state(null)
 
   const toggleSearchMode = () => {
@@ -87,6 +105,8 @@
         folders: res.data.folders
       }
     }
+
+    sort()
 
     loading = false
   }
@@ -652,6 +672,43 @@
     }, 500)
   }
 
+  function sort() {
+    if (!results) return
+
+    const copied = {
+      folders: [...results.folders],
+      files: [...results.files]
+    }
+
+    results = null
+
+    copied.folders.sort((a, b) => {
+      let res = 0
+      if (sortMode === 'name') {
+        res = a.name.localeCompare(b.name)
+      } else if (sortMode === 'date') {
+        res = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+      }
+
+      return sortAscending ? res : -res
+    })
+
+    copied.files.sort((a, b) => {
+      let res = 0
+      if (sortMode === 'name') {
+        res = a.name.localeCompare(b.name)
+      } else if (sortMode === 'date') {
+        res = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
+      } else if (sortMode === 'size') {
+        res = a.size - b.size
+      }
+
+      return sortAscending ? res : -res
+    })
+
+    results = copied
+  }
+
   onMount(load)
 </script>
 
@@ -772,6 +829,40 @@
             </span>
           </button>
         </div>
+      </div>
+      <div class="sort">
+        <button
+          disabled={loading || searchQuery.length >= 1}
+          onclick={toggleSortMode}
+          title={sortMode === 'name'
+            ? 'Sort by Name'
+            : sortMode === 'date'
+              ? 'Sort by Date'
+              : 'Sort by Size'}
+        >
+          <span class="material-icons">
+            {#if sortMode === 'name'}
+              sort_by_alpha
+            {:else if sortMode === 'date'}
+              access_time
+            {:else}
+              storage
+            {/if}
+          </span>
+        </button>
+        <button
+          disabled={loading || searchQuery.length >= 1}
+          onclick={toggleSortDirection}
+          title={sortAscending ? 'Sort Ascending' : 'Sort Descending'}
+        >
+          <span class="material-icons">
+            {#if sortAscending}
+              arrow_upward
+            {:else}
+              arrow_downward
+            {/if}
+          </span>
+        </button>
       </div>
     </div>
     {#if uploadInfo}
@@ -1074,6 +1165,24 @@
     height: 30px;
     user-select: text;
     white-space: nowrap;
+  }
+
+  .titlebar .sort {
+    display: flex;
+  }
+
+  .titlebar .sort button {
+    all: unset;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 200ms ease;
+    border-radius: 5px;
+    padding: 5px;
+  }
+
+  .titlebar .sort button span {
+    font-size: 20px;
   }
 
   .titlebar .search {
