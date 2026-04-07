@@ -15,6 +15,7 @@ export async function get(req: Request, res: Response) {
   const paste = await getPaste(id)
 
   if (!paste) return res.sendStatus(404)
+  if (paste.ownerId !== req.user.id) return res.sendStatus(404)
 
   return res.json(filterPaste(paste, true))
 }
