@@ -111,7 +111,8 @@ export default defineConfig({
             {
               text: 'Uploading files using the API',
               link: '/guide/api-upload/'
-            }
+            },
+            { text: 'Backing up BluFiles', link: '/guide/backup/' }
           ]
         }
       ],
