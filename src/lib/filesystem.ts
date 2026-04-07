@@ -1,5 +1,6 @@
 import { fileTypeFromStream } from 'file-type'
 import { createReadStream } from 'fs'
+import { Readable } from 'stream'
 import fs from 'fs/promises'
 import crypto from 'crypto'
 import path from 'path'
@@ -125,7 +126,7 @@ export async function getType(
   const stream = await getReadStream(id, type)
   if (!stream) return 'unknown'
 
-  const mime = await fileTypeFromStream(stream)
+  const mime = await fileTypeFromStream(Readable.toWeb(stream))
   if (mime) return mime.mime
 
   const PLAIN_MAX_SIZE = 10 * 1024 * 1024 // 10MB

@@ -55,10 +55,16 @@ async function shareRoute(req: Request, res: Response) {
 
   const userAgent = req.headers['user-agent'] || ''
   const isCrawler = /discordbot|slackbot|twitterbot/i.test(userAgent)
-  if (!isCrawler) return res.redirect(`/shared?id=${id}`)
+  if (!isCrawler) {
+    res.redirect(`/shared?id=${id}`)
+    return
+  }
 
   const share = await getShare(id)
-  if (!share) return res.sendStatus(404)
+  if (!share) {
+    res.sendStatus(404)
+    return
+  }
 
   const protocol = req.headers['x-forwarded-proto'] || req.protocol
   const host = req.headers['x-forwarded-host'] || req.headers.host
@@ -70,7 +76,7 @@ async function shareRoute(req: Request, res: Response) {
     `${protocol}://${host}`
   )
 
-  return res.send(page)
+  res.send(page)
 }
 
 export async function setupMiddlewares(app: Application) {

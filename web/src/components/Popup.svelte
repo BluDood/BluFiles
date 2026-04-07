@@ -6,7 +6,7 @@
   let selectElement: HTMLSelectElement | null = $state(null)
   let buttonsElement: HTMLDivElement | null = $state(null)
 
-  let input = $state(
+  let input = $derived(
     popup.input?.enabled
       ? popup.input.value || ''
       : popup.select?.enabled

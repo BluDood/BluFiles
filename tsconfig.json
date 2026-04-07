@@ -3,7 +3,7 @@
     "target": "ES2020",
     "module": "ESNext",
     "lib": ["ES2020"],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
 
     "allowJs": false,
     "checkJs": false,
@@ -23,9 +23,8 @@
 
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": "./src",
     "paths": {
-      "#lib/*": ["lib/*"]
+      "#lib/*": ["./src/lib/*"]
     },
     "typeRoots": ["src/types"],
 
