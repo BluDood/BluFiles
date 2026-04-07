@@ -46,7 +46,7 @@
   }
 
   .slot {
-    overflow-y: scroll;
+    overflow-y: auto;
     height: calc(100vh - 50px);
   }
 

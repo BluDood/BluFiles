@@ -10,29 +10,42 @@
   import FileView from '$components/FileView.svelte'
   import Loader from '$components/Loader.svelte'
 
+  interface File {
+    id: string
+    name: string
+    mime: string
+    size: number
+    updatedAt: string
+    shareId: string | null
+  }
+
+  interface Folder {
+    id: string
+    name: string
+    updatedAt: string
+    shareId: string | null
+  }
+
   interface FolderInfo {
     id: string
     name: string
     parentId: string | null
-    files: {
-      id: string
-      name: string
-      mime: string
-      size: number
-      updatedAt: string
-      shareId: string | null
-    }[]
-    folders: {
-      id: string
-      name: string
-      updatedAt: string
-      shareId: string | null
-    }[]
   }
 
   let loading = $state(true)
   let info: FolderInfo | null = $state(null)
   let previewing: string | false = $state(false)
+  let searchQuery = $state('')
+  let searchMode: 'current' | 'recursive' | 'all' = $state('current')
+  let results: { files: File[]; folders: Folder[] } | null = $state(null)
+
+  const toggleSearchMode = () => {
+    if (searchMode === 'current') searchMode = 'recursive'
+    else if (searchMode === 'recursive') searchMode = 'all'
+    else searchMode = 'current'
+
+    if (searchQuery.length >= 1) debounceSearch(true)
+  }
 
   interface UploadInfo {
     name: string
@@ -45,11 +58,36 @@
 
   async function load(id: string | null = null) {
     loading = true
+    if (id && searchQuery.length >= 1) {
+      searchQuery = ''
+    }
 
-    const res = await req.get(`folder/${id || ''}`)
-    if (!res) return
+    if (searchQuery.length <= 0) {
+      const res = await req.get(`folder/${id || ''}`)
+      if (!res) return
 
-    info = res.data
+      info = res.data
+
+      results = {
+        files: res.data.files,
+        folders: res.data.folders
+      }
+    } else {
+      const res = await req.post('search', {
+        query: searchQuery,
+        folderId: ['recursive', 'current'].includes(searchMode)
+          ? info?.id
+          : undefined,
+        recursive: ['all', 'recursive'].includes(searchMode)
+      })
+      if (!res) return
+
+      results = {
+        files: res.data.files,
+        folders: res.data.folders
+      }
+    }
+
     loading = false
   }
 
@@ -601,6 +639,19 @@
     await reload()
   }
 
+  let searchTimeout: NodeJS.Timeout | null = null
+
+  async function debounceSearch(force = false) {
+    if (searchTimeout) clearTimeout(searchTimeout)
+
+    const toLoad = searchQuery.length <= 0 ? info?.id || null : null
+    if (force) return load(toLoad)
+    searchTimeout = setTimeout(() => {
+      searchTimeout = null
+      load(toLoad)
+    }, 500)
+  }
+
   onMount(load)
 </script>
 
@@ -617,14 +668,8 @@
     {/if}
     <div class="titlebar">
       <div class="actions">
-        <!-- <button>
-          <span class="material-icons">arrow_back</span>
-        </button>
-        <button>
-          <span class="material-icons">arrow_forward</span>
-        </button> -->
         <button
-          disabled={loading || !info?.id}
+          disabled={loading || !info?.id || searchQuery.length >= 1}
           onclick={() => load(info?.parentId)}
           ondrop={e => {
             e.preventDefault()
@@ -641,7 +686,7 @@
         >
           <span class="material-icons">arrow_upward</span>
         </button>
-        <button disabled={loading} onclick={reload}>
+        <button disabled={loading || searchQuery.length >= 1} onclick={reload}>
           <span class="material-icons">refresh</span>
         </button>
         <div class="menuWrapper">
@@ -655,12 +700,12 @@
               <p>New Folder</p>
             </button>
           </div>
-          <button disabled={loading}>
+          <button disabled={loading || searchQuery.length >= 1}>
             <span class="material-icons">add</span>
           </button>
         </div>
         <button
-          disabled={loading || !info?.id}
+          disabled={loading || !info?.id || searchQuery.length >= 1}
           onclick={() => load(null)}
           ondrop={e => {
             e.preventDefault()
@@ -677,7 +722,57 @@
           <span class="material-icons">home</span>
         </button>
       </div>
-      <div class="current">{info?.name || ''}</div>
+      <div class="current">
+        {#if searchQuery.length >= 1}
+          Searching {searchMode === 'current'
+            ? `in ${info?.name || 'current folder'}`
+            : searchMode === 'recursive'
+              ? `recursively in ${info?.name || 'current folder'}`
+              : ' all files'}
+        {:else}
+          {info?.name || ''}
+        {/if}
+      </div>
+      <div class="search">
+        <input
+          type="text"
+          bind:value={searchQuery}
+          placeholder="Search files and folders..."
+          onkeydown={e => e.key === 'Enter' && debounceSearch(true)}
+          oninput={() => debounceSearch()}
+        />
+        <div class="buttons">
+          {#if searchQuery.length >= 1}
+            <button
+              data-color="red"
+              onclick={() => {
+                searchQuery = ''
+                debounceSearch(true)
+              }}
+            >
+              <span class="material-icons"> close </span>
+            </button>
+          {/if}
+          <button
+            onclick={toggleSearchMode}
+            title={searchMode === 'current'
+              ? 'Current Folder'
+              : searchMode === 'recursive'
+                ? 'Recursive'
+                : 'All Files'}
+          >
+            <span class="material-icons">
+              {#if searchMode === 'current'}
+                folder
+              {:else if searchMode === 'recursive'}
+                folder_copy
+              {:else}
+                storage
+              {/if}
+            </span>
+          </button>
+        </div>
+      </div>
     </div>
     {#if uploadInfo}
       <div class="uploading" data-uploading={!!uploadInfo}>
@@ -701,171 +796,177 @@
       </div>
     {/if}
     <div class="content">
-      {#if info}
-        {#if info.folders.length === 0 && info.files.length === 0}
+      {#if results}
+        {#if results.folders.length === 0 && results.files.length === 0}
           <div class="empty">
-            No files or folders here. Press + to add some!
+            {#if searchQuery.length >= 1}
+              No search results found.
+            {:else}
+              No files or folders here. Press + to add some!
+            {/if}
           </div>
         {:else}
-          {#each info.folders as folder (folder.id)}
-            <button
-              draggable="true"
-              onclick={() => load(folder.id)}
-              class="item"
-              ondrop={e => {
-                e.preventDefault()
-                if (!e.dataTransfer) return
-                const id = e.dataTransfer.getData('id')
-                const type = e.dataTransfer.getData('type')
-                if (folder.id === id) return
-                if (type === 'folder') moveFolder(id, folder.id)
-                else moveFile(id, folder.id)
-              }}
-              ondragover={e => {
-                e.preventDefault()
-              }}
-              ondragstart={e => {
-                if (!e.dataTransfer) return
-                e.dataTransfer.setData('id', folder.id)
-                e.dataTransfer.setData('type', 'folder')
-              }}
-            >
-              <div class="icon">
-                <span class="material-icons">folder</span>
-              </div>
-              <p>{folder.name}</p>
-              <div class="right">
-                <div class="info">
-                  <span>{formatDate(folder.updatedAt)}</span>
+          {#key results}
+            {#each results.folders as folder (folder.id)}
+              <button
+                draggable="true"
+                onclick={() => load(folder.id)}
+                class="item"
+                ondrop={e => {
+                  e.preventDefault()
+                  if (!e.dataTransfer) return
+                  const id = e.dataTransfer.getData('id')
+                  const type = e.dataTransfer.getData('type')
+                  if (folder.id === id) return
+                  if (type === 'folder') moveFolder(id, folder.id)
+                  else moveFile(id, folder.id)
+                }}
+                ondragover={e => {
+                  e.preventDefault()
+                }}
+                ondragstart={e => {
+                  if (!e.dataTransfer) return
+                  e.dataTransfer.setData('id', folder.id)
+                  e.dataTransfer.setData('type', 'folder')
+                }}
+              >
+                <div class="icon">
+                  <span class="material-icons">folder</span>
                 </div>
-                <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <div class="actions">
-                  <span
-                    class="action"
-                    data-color={folder.shareId ? 'blue' : 'gray'}
-                    tabindex="0"
-                    role="button"
-                    onclick={e => {
-                      e.stopPropagation()
-                      share(folder, 'folder')
-                    }}
-                  >
-                    <span class="material-icons">share</span>
-                  </span>
-                  <span
-                    class="action"
-                    data-color="orange"
-                    tabindex="0"
-                    role="button"
-                    onclick={e => {
-                      e.stopPropagation()
-                      editFolder(folder.id, folder.name)
-                    }}
-                  >
-                    <span class="material-icons">edit</span>
-                  </span>
-                  <span
-                    class="action"
-                    data-color="red"
-                    tabindex="0"
-                    role="button"
-                    onclick={e => {
-                      e.stopPropagation()
-                      delFolder(folder.id, folder.name)
-                    }}
-                  >
-                    <span class="material-icons">delete</span>
-                  </span>
+                <p>{folder.name}</p>
+                <div class="right">
+                  <div class="info">
+                    <span>{formatDate(folder.updatedAt)}</span>
+                  </div>
+                  <!-- svelte-ignore a11y_click_events_have_key_events -->
+                  <div class="actions">
+                    <span
+                      class="action"
+                      data-color={folder.shareId ? 'blue' : 'gray'}
+                      tabindex="0"
+                      role="button"
+                      onclick={e => {
+                        e.stopPropagation()
+                        share(folder, 'folder')
+                      }}
+                    >
+                      <span class="material-icons">share</span>
+                    </span>
+                    <span
+                      class="action"
+                      data-color="orange"
+                      tabindex="0"
+                      role="button"
+                      onclick={e => {
+                        e.stopPropagation()
+                        editFolder(folder.id, folder.name)
+                      }}
+                    >
+                      <span class="material-icons">edit</span>
+                    </span>
+                    <span
+                      class="action"
+                      data-color="red"
+                      tabindex="0"
+                      role="button"
+                      onclick={e => {
+                        e.stopPropagation()
+                        delFolder(folder.id, folder.name)
+                      }}
+                    >
+                      <span class="material-icons">delete</span>
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </button>
-          {/each}
-          {#each info.files as file (file.id)}
-            <button
-              draggable="true"
-              class="item"
-              onclick={() => (previewing = file.id)}
-              ondragstart={e => {
-                if (!e.dataTransfer) return
-                e.dataTransfer.setData('id', file.id)
-                e.dataTransfer.setData('type', 'file')
-              }}
-            >
-              <div class="icon">
-                <span class="material-icons">
-                  {#if file.mime.startsWith('image')}
-                    image
-                  {:else if file.mime.startsWith('video')}
-                    movie
-                  {:else if file.mime.startsWith('audio')}
-                    music_note
-                  {:else if file.mime.startsWith('text')}
-                    description
-                  {:else}
-                    insert_drive_file
-                  {/if}
-                </span>
-              </div>
-              <p>{file.name}</p>
-              <div class="right">
-                <div class="info">
-                  <span>{formatDate(file.updatedAt)}</span>
-                  <span>{formatBytes(file.size)}</span>
-                </div>
-                <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <div class="actions">
-                  <span
-                    class="action"
-                    tabindex="0"
-                    role="button"
-                    data-color="orange"
-                    onclick={e => {
-                      e.stopPropagation()
-                      addToCollection(file)
-                    }}
-                  >
-                    <span class="material-icons"> playlist_add </span>
-                  </span>
-                  <span
-                    class="action"
-                    data-color={file.shareId ? 'blue' : 'gray'}
-                    tabindex="0"
-                    role="button"
-                    onclick={e => {
-                      e.stopPropagation()
-                      share(file, 'file')
-                    }}
-                  >
-                    <span class="material-icons">share</span>
-                  </span>
-                  <span
-                    class="action"
-                    data-color="orange"
-                    role="button"
-                    tabindex="0"
-                    onclick={e => {
-                      e.stopPropagation()
-                      editFile(file.id, file.name)
-                    }}
-                  >
-                    <span class="material-icons">edit</span>
-                  </span>
-                  <span
-                    class="action"
-                    data-color="red"
-                    tabindex="0"
-                    role="button"
-                    onclick={e => {
-                      e.stopPropagation()
-                      delFile(file.id, file.name)
-                    }}
-                  >
-                    <span class="material-icons">delete</span>
+              </button>
+            {/each}
+            {#each results.files as file (file.id)}
+              <button
+                draggable="true"
+                class="item"
+                onclick={() => (previewing = file.id)}
+                ondragstart={e => {
+                  if (!e.dataTransfer) return
+                  e.dataTransfer.setData('id', file.id)
+                  e.dataTransfer.setData('type', 'file')
+                }}
+              >
+                <div class="icon">
+                  <span class="material-icons">
+                    {#if file.mime.startsWith('image')}
+                      image
+                    {:else if file.mime.startsWith('video')}
+                      movie
+                    {:else if file.mime.startsWith('audio')}
+                      music_note
+                    {:else if file.mime.startsWith('text')}
+                      description
+                    {:else}
+                      insert_drive_file
+                    {/if}
                   </span>
                 </div>
-              </div>
-            </button>
-          {/each}
+                <p>{file.name}</p>
+                <div class="right">
+                  <div class="info">
+                    <span>{formatDate(file.updatedAt)}</span>
+                    <span>{formatBytes(file.size)}</span>
+                  </div>
+                  <!-- svelte-ignore a11y_click_events_have_key_events -->
+                  <div class="actions">
+                    <span
+                      class="action"
+                      tabindex="0"
+                      role="button"
+                      data-color="orange"
+                      onclick={e => {
+                        e.stopPropagation()
+                        addToCollection(file)
+                      }}
+                    >
+                      <span class="material-icons"> playlist_add </span>
+                    </span>
+                    <span
+                      class="action"
+                      data-color={file.shareId ? 'blue' : 'gray'}
+                      tabindex="0"
+                      role="button"
+                      onclick={e => {
+                        e.stopPropagation()
+                        share(file, 'file')
+                      }}
+                    >
+                      <span class="material-icons">share</span>
+                    </span>
+                    <span
+                      class="action"
+                      data-color="orange"
+                      role="button"
+                      tabindex="0"
+                      onclick={e => {
+                        e.stopPropagation()
+                        editFile(file.id, file.name)
+                      }}
+                    >
+                      <span class="material-icons">edit</span>
+                    </span>
+                    <span
+                      class="action"
+                      data-color="red"
+                      tabindex="0"
+                      role="button"
+                      onclick={e => {
+                        e.stopPropagation()
+                        delFile(file.id, file.name)
+                      }}
+                    >
+                      <span class="material-icons">delete</span>
+                    </span>
+                  </div>
+                </div>
+              </button>
+            {/each}
+          {/key}
         {/if}
       {/if}
     </div>
@@ -963,7 +1064,7 @@
     background: var(--background-ter);
   }
 
-  .current {
+  .titlebar .current {
     display: flex;
     align-items: center;
     background: var(--background);
@@ -972,6 +1073,49 @@
     border-radius: 5px;
     height: 30px;
     user-select: text;
+    white-space: nowrap;
+  }
+
+  .titlebar .search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--background);
+    border-radius: 5px;
+    height: 30px;
+    width: 300px;
+  }
+
+  .titlebar .search input {
+    all: unset;
+    font-size: 14px;
+    height: 100%;
+    padding-left: 10px;
+    flex: 1;
+    width: 0;
+  }
+
+  .titlebar .search .buttons {
+    display: flex;
+    gap: 10px;
+    padding: 0 8px;
+  }
+
+  .titlebar .search button {
+    all: unset;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: 200ms ease;
+    animation: fade 200ms ease;
+  }
+
+  .titlebar .search button:hover {
+    color: var(--accent);
+  }
+
+  .titlebar .search button span {
+    font-size: 18px;
   }
 
   .content {

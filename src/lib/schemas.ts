@@ -145,3 +145,9 @@ export const createFileUploadSchema = z.object({
 })
 
 export const pushFileUploadSchema = z.instanceof(Buffer)
+
+export const searchSchema = z.object({
+  query: z.string().min(1),
+  folderId: z.string().optional(),
+  recursive: z.boolean().optional()
+})

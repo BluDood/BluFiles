@@ -315,3 +315,110 @@ export async function getStorageUsage(ownerId?: string) {
   const files = await getFiles(ownerId || null)
   return files.reduce((acc, file) => acc + file.size, 0n).toString()
 }
+
+export async function search(
+  query: string,
+  ownerId: string,
+  recursive = false,
+  folderId?: string
+) {
+  const results: { files: File[]; folders: Folder[] } = {
+    files: [],
+    folders: []
+  }
+
+  if (recursive) {
+    if (!folderId) {
+      const [files, folders] = await Promise.all([
+        prisma.file.findMany({
+          where: {
+            ownerId,
+            name: { contains: query, mode: 'insensitive' }
+          },
+          include: { share: { select: { id: true } } }
+        }),
+        prisma.folder.findMany({
+          where: {
+            ownerId,
+            name: { contains: query, mode: 'insensitive' }
+          },
+          include: { share: { select: { id: true } } }
+        })
+      ])
+      results.files = files
+      results.folders = folders
+    } else {
+      const recursiveFolderIds = await prisma.$queryRaw<{ id: string }[]>`
+        WITH RECURSIVE tree AS (
+          SELECT id FROM "Folder" WHERE id = ${folderId} AND "ownerId" = ${ownerId}
+          UNION ALL
+          SELECT f.id FROM "Folder" f JOIN tree t ON f."parentId" = t.id
+        )
+        SELECT id FROM tree
+      `
+      const folderIds = recursiveFolderIds.map(d => d.id)
+
+      const [files, folders] = await Promise.all([
+        prisma.file.findMany({
+          where: {
+            ownerId,
+            folderId: { in: folderIds },
+            name: { contains: query, mode: 'insensitive' }
+          },
+          include: { share: { select: { id: true } } }
+        }),
+        prisma.folder.findMany({
+          where: {
+            ownerId,
+            id: { in: folderIds },
+            name: { contains: query, mode: 'insensitive' }
+          },
+          include: { share: { select: { id: true } } }
+        })
+      ])
+      results.files = files
+      results.folders = folders
+    }
+  } else {
+    const [files, folders] = await Promise.all([
+      prisma.file.findMany({
+        where: {
+          ownerId,
+          folderId: folderId || null,
+          name: { contains: query, mode: 'insensitive' }
+        },
+        include: { share: { select: { id: true } } }
+      }),
+      prisma.folder.findMany({
+        where: {
+          ownerId,
+          parentId: folderId || null,
+          name: { contains: query, mode: 'insensitive' }
+        },
+        include: { share: { select: { id: true } } }
+      })
+    ])
+    results.files = files
+    results.folders = folders
+  }
+
+  function similarityRank(name: string): number {
+    const n = name.toLowerCase()
+    const q = query.toLowerCase()
+
+    if (n === q) return 3
+    if (n.startsWith(q)) return 2
+    if (n.includes(q)) return 1
+
+    return 0
+  }
+
+  return {
+    files: results.files.sort(
+      (a, b) => similarityRank(b.name) - similarityRank(a.name)
+    ),
+    folders: results.folders.sort(
+      (a, b) => similarityRank(b.name) - similarityRank(a.name)
+    )
+  }
+}
