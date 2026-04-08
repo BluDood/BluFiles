@@ -115,61 +115,73 @@
     load(info?.id)
   }
 
-  async function upload() {
+  async function startUpload() {
     const input = document.createElement('input')
     input.type = 'file'
+    input.multiple = true
 
     input.onchange = async () => {
       const files = (input as HTMLInputElement).files
       if (!files || files.length === 0) return
-      const file = files[0]
 
-      const filename = await prompt({
-        title: 'Upload File',
-        content: 'Please enter a name for the new file',
-        placeholder: 'Enter a name...',
-        defaultValue: file.name,
-        buttons: [
-          {
-            text: 'Upload'
-          },
-          {
-            text: 'Cancel Upload',
-            color: 'red'
-          }
-        ]
-      })
-
-      if (!filename.type || !filename.input) return
-
-      uploadInfo = {
-        name: filename.input,
-        currentBytes: 0,
-        totalBytes: file.size
+      for (const file of files) {
+        await uploadSingleFile(file)
       }
+    }
 
-      console.log(`File size: ${formatBytes(file.size)}`)
+    input.click()
+  }
 
-      const CHUNK_SIZE = 64 * 1024 * 1024
-
-      const reader = new FileReader()
-
-      const uploadRes = await req.post('uploads', {
-        totalBytes: file.size
-      })
-
-      if (uploadRes.status !== 200) {
-        const messages: Record<number, string> = {
-          403: 'You have reached your file limit.'
+  async function uploadSingleFile(file: globalThis.File) {
+    const filename = await prompt({
+      title: 'Upload File',
+      content: 'Please enter a name for the new file',
+      placeholder: 'Enter a name...',
+      defaultValue: file.name,
+      buttons: [
+        {
+          text: 'Upload'
+        },
+        {
+          text: 'Cancel Upload',
+          color: 'red'
         }
+      ]
+    })
 
-        return createMessage({
-          type: 'error',
-          title: 'An error has occurred',
-          content: messages[uploadRes.status] || 'Please try again later.'
-        })
+    if (!filename.type || !filename.input) return
+
+    uploadInfo = {
+      name: filename.input,
+      currentBytes: 0,
+      totalBytes: file.size
+    }
+
+    console.log(`File size: ${formatBytes(file.size)}`)
+
+    const CHUNK_SIZE = 64 * 1024 * 1024
+
+    const reader = new FileReader()
+
+    const uploadRes = await req.post('uploads', {
+      totalBytes: file.size
+    })
+
+    if (uploadRes.status !== 200) {
+      const messages: Record<number, string> = {
+        403: 'You have reached your file limit.'
       }
 
+      uploadInfo = null
+
+      return createMessage({
+        type: 'error',
+        title: 'An error has occurred',
+        content: messages[uploadRes.status] || 'Please try again later.'
+      })
+    }
+
+    return new Promise<void>(resolve => {
       let offset = 0
       const startTime = Date.now()
       function readNextChunk() {
@@ -189,11 +201,13 @@
           }
         })
         if (res.status !== 200) {
-          return createMessage({
+          createMessage({
             type: 'error',
             title: 'An error has occurred during upload',
             content: 'Please try again later.'
           })
+
+          return resolve()
         }
 
         const elapsedTime = (Date.now() - startTime) / 1000
@@ -227,18 +241,19 @@
             uploadId: uploadRes.data.id
           })
           loading = false
-          if (!res) return
+          if (!res) return resolve()
 
           if (res.status !== 200) {
             const messages: Record<number, string> = {
               403: 'You have reached your file limit.'
             }
 
-            return createMessage({
+            createMessage({
               type: 'error',
               title: 'An error has occurred',
               content: messages[res.status] || 'Please try again later.'
             })
+            return resolve()
           }
 
           createMessage({
@@ -248,25 +263,25 @@
           })
 
           reload()
+          resolve()
         }
-      }
 
-      reader.onerror = e => {
-        console.error('Error reading file:', e)
-        loading = false
-        createMessage({
-          type: 'error',
-          title: 'An error has occurred',
-          content: 'There was an error reading the file. Please try again.'
-        })
+        reader.onerror = e => {
+          console.error('Error reading file:', e)
+          loading = false
+          createMessage({
+            type: 'error',
+            title: 'An error has occurred',
+            content: 'There was an error reading the file. Please try again.'
+          })
+          resolve()
+        }
       }
 
       loading = true
       console.log('Starting read of file...')
       readNextChunk()
-    }
-
-    input.click()
+    })
   }
 
   async function newFolder() {
@@ -748,7 +763,7 @@
         </button>
         <div class="menuWrapper">
           <div class="menu">
-            <button disabled={loading} onclick={upload}>
+            <button disabled={loading} onclick={startUpload}>
               <span class="material-icons">add</span>
               <p>Upload</p>
             </button>
@@ -886,7 +901,32 @@
         <Loader />
       </div>
     {/if}
-    <div class="content">
+    <div
+      class="content"
+      role="list"
+      ondrop={async e => {
+        if (!e.dataTransfer) return
+
+        const files = [...e.dataTransfer.items]
+          .filter(item => item.kind === 'file')
+          .map(item => item.getAsFile())
+          .filter(f => !!f)
+
+        if (files.length > 0) {
+          e.preventDefault()
+
+          for (const file of files) {
+            await uploadSingleFile(file)
+          }
+        }
+      }}
+      ondragover={e => {
+        if (!e.dataTransfer) return
+        if ([...e.dataTransfer.items].some(item => item.kind === 'file')) {
+          e.preventDefault()
+        }
+      }}
+    >
       {#if results}
         {#if results.folders.length === 0 && results.files.length === 0}
           <div class="empty">
