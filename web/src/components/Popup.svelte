@@ -6,13 +6,14 @@
   let selectElement: HTMLSelectElement | null = $state(null)
   let buttonsElement: HTMLDivElement | null = $state(null)
 
-  let input = $derived(
-    popup.input?.enabled
-      ? popup.input.value || ''
-      : popup.select?.enabled
-        ? popup.select.value || ''
-        : ''
-  )
+  // svelte-ignore state_referenced_locally
+  const initial = popup.input?.enabled
+    ? popup.input.value || ''
+    : popup.select?.enabled
+      ? popup.select.value || ''
+      : ''
+
+  let input = $state(initial)
 
   $effect(() => {
     if (popup.input?.enabled && inputElement) {
