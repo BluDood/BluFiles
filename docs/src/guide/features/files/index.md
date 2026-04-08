@@ -22,6 +22,16 @@ The toolbar contains the following items from left to right:
 4. **Home**: Move to the root directory
 5. **Address Bar**: Displays the current directory
 
+#### Search and Sort
+
+On the right side of the toolbar, you can find the search and sort options:
+
+![](./toolbar-right.png)
+
+**Search**: Here you can search for files and folders by name. The button to the right of the search input allows you to toggle between searching for files in the current directory, recursively in the current directory, or all files on your account.
+
+**Sort**: Here you can choose how files and folders should be sorted. You can toggle between sorting by name, date and size, and choose the direction to sort in.
+
 ## Uploading Files
 
 ![](./upload.png)
