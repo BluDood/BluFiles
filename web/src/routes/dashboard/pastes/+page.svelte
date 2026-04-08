@@ -145,7 +145,7 @@
     })
     if (!res) return
 
-    if (res.status !== 204)
+    if (res.status !== 200)
       return createMessage({
         type: 'error',
         title: 'An error has occurred',
