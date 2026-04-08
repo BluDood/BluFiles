@@ -4,6 +4,10 @@ export const username = z.string().min(3).max(32)
 export const password = z.string().min(8)
 export const id = z.cuid()
 
+export const idSchema = z.object({
+  id
+})
+
 export const loginSchema = z.object({
   username,
   password

@@ -7,13 +7,18 @@ import {
   incrementShareViews
 } from '#lib/shares.js'
 
+import { idSchema } from '#lib/schemas.js'
+
 /**
  * Get share
  *
  * Returns share metadata and increments the view counter. Publicly accessible.
  */
 export async function get(req: Request, res: Response) {
-  const { id } = req.params
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
+
   const share = await getShare(id)
 
   if (!share) return res.sendStatus(404)
@@ -33,7 +38,9 @@ export async function get(req: Request, res: Response) {
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const share = await getShare(id)
   if (!share) return res.sendStatus(404)

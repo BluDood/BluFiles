@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 
-import { updateAdminUserSchema } from '#lib/schemas.js'
+import { idSchema, updateAdminUserSchema } from '#lib/schemas.js'
 import { deleteUser, updateUser } from '#lib/users.js'
 
 /**
@@ -13,8 +13,9 @@ export async function patch(req: Request, res: Response) {
   if (req.user.type !== 'admin') return res.sendStatus(403)
   if (req.user.token.type !== 'user') return res.sendStatus(418)
 
-  const { id } = req.params
-  if (!id) return res.sendStatus(400)
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const parsed = updateAdminUserSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)
@@ -35,8 +36,9 @@ export async function del(req: Request, res: Response) {
   if (req.user.type !== 'admin') return res.sendStatus(403)
   if (req.user.token.type !== 'user') return res.sendStatus(418)
 
-  const { id } = req.params
-  if (!id) return res.sendStatus(400)
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   await deleteUser(id)
 

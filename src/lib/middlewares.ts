@@ -9,6 +9,7 @@ import path from 'path'
 import { generateFileMetaPage } from './opengraph.js'
 import { isDev, logger } from '#lib/utils.js'
 import { useToken } from '#lib/tokens.js'
+import { idSchema } from './schemas.js'
 import { getShare } from './shares.js'
 
 async function auth(req: Request, res: Response, next: NextFunction) {
@@ -51,7 +52,12 @@ function parseMultipart(req: Request, res: Response, next: NextFunction) {
 }
 
 async function shareRoute(req: Request, res: Response) {
-  const { id } = req.params
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) {
+    res.sendStatus(400)
+    return
+  }
+  const { id } = parsedParams.data
 
   const userAgent = req.headers['user-agent'] || ''
   const isCrawler = /discordbot|slackbot|twitterbot/i.test(userAgent)

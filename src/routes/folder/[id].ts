@@ -7,7 +7,12 @@ import {
   updateFolder
 } from '#lib/files.js'
 
-import { genericShareSchema, updateFolderSchema } from '#lib/schemas.js'
+import {
+  genericShareSchema,
+  idSchema,
+  updateFolderSchema
+} from '#lib/schemas.js'
+
 import { isValidShare } from '#lib/shares.js'
 
 /**
@@ -20,8 +25,9 @@ export async function get(req: Request, res: Response) {
   if (!parsed.success) return res.sendStatus(400)
   const { shareId } = parsed.data
 
-  const { id } = req.params
-  if (!id) return res.sendStatus(400)
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const validShare = await isValidShare(shareId, 'folder', id)
 
@@ -42,8 +48,9 @@ export async function get(req: Request, res: Response) {
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
-  if (!id) return res.sendStatus(400)
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const folder = await getFolder(id)
   if (!folder) return res.sendStatus(404)
@@ -61,8 +68,9 @@ export async function del(req: Request, res: Response) {
 export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
-  if (!id) return res.sendStatus(400)
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const parsed = updateFolderSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)

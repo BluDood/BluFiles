@@ -1,12 +1,13 @@
 import { Request, Response } from 'express'
 
-import { pushFileUploadSchema } from '#lib/schemas.js'
 import {
   deleteFileUpload,
   filterFileUpload,
   getFileUpload,
   pushFileUpload
 } from '#lib/upload.js'
+
+import { idSchema, pushFileUploadSchema } from '#lib/schemas.js'
 
 /**
  * Push upload chunk
@@ -16,8 +17,9 @@ import {
 export async function post(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
-  if (!id) return res.sendStatus(400)
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const upload = await getFileUpload(id)
   if (!upload) return res.sendStatus(404)
@@ -44,8 +46,9 @@ export async function post(req: Request, res: Response) {
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
-  if (!id) return res.sendStatus(400)
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const upload = await getFileUpload(id)
   if (!upload) return res.sendStatus(404)

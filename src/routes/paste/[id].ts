@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
 import { deletePaste, filterPaste, getPaste, updatePaste } from '#lib/paste.js'
-import { updatePasteSchema } from '#lib/schemas.js'
+import { idSchema, updatePasteSchema } from '#lib/schemas.js'
 
 /**
  * Get paste
@@ -11,7 +11,10 @@ import { updatePasteSchema } from '#lib/schemas.js'
 export async function get(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
+
   const paste = await getPaste(id)
 
   if (!paste) return res.sendStatus(404)
@@ -28,7 +31,9 @@ export async function get(req: Request, res: Response) {
 export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const parsed = updatePasteSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)
@@ -50,7 +55,9 @@ export async function patch(req: Request, res: Response) {
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const paste = await getPaste(id)
   if (!paste) return res.sendStatus(404)

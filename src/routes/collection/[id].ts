@@ -7,7 +7,12 @@ import {
   updateCollection
 } from '#lib/collections.js'
 
-import { genericShareSchema, updateCollectionSchema } from '#lib/schemas.js'
+import {
+  genericShareSchema,
+  idSchema,
+  updateCollectionSchema
+} from '#lib/schemas.js'
+
 import { isValidShare } from '#lib/shares.js'
 
 /**
@@ -20,8 +25,9 @@ export async function get(req: Request, res: Response) {
   if (!parsed.success) return res.sendStatus(400)
   const { shareId } = parsed.data
 
-  const { id } = req.params
-  if (!id) return res.sendStatus(400)
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const validShare = await isValidShare(shareId, 'collection', id)
 
@@ -43,7 +49,9 @@ export async function get(req: Request, res: Response) {
 export async function patch(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const parsed = updateCollectionSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)
@@ -65,7 +73,9 @@ export async function patch(req: Request, res: Response) {
 export async function del(req: Request, res: Response) {
   if (!req.user) return res.sendStatus(401)
 
-  const { id } = req.params
+  const parsedParams = idSchema.safeParse(req.params)
+  if (!parsedParams.success) return res.sendStatus(400)
+  const { id } = parsedParams.data
 
   const collection = await getCollection(id)
   if (!collection) return res.sendStatus(404)
