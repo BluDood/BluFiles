@@ -21,15 +21,15 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+      - name: Generate Docker image tags
+        id: tags
+        run: bash .github/scripts/docker-tags.sh ${{ github.ref_name }} ${{ github.sha }}
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ghcr.io/bludood/files:latest
-            ghcr.io/bludood/files:${{ github.sha }}
-            ghcr.io/bludood/files:${{ github.ref_name }}
+          tags: ${{ steps.tags.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
