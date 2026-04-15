@@ -46,7 +46,13 @@
   async function loadStats() {
     const res = await req.get('/admin/usage')
     if (res.status === 200) {
-      info = res.data
+      info = {
+        ...res.data,
+        storage: {
+          current: Number(res.data.storage.current),
+          max: Number(res.data.storage.max)
+        }
+      }
     }
   }
 

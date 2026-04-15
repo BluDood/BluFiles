@@ -9,15 +9,19 @@
   import { userStore } from '$lib/stores.js'
 
   import Loader from '$components/Loader.svelte'
+  import UserView from './UserView.svelte'
 
   let users: User[] | null = $state(null)
+  let previewing: string | false = $state(false)
   let loading = $state(true)
 
   interface User {
     id: string
     username: string
     type: 'user' | 'admin'
-    usage: number
+    storage: {
+      current: number
+    }
   }
 
   async function addUser() {
@@ -186,6 +190,15 @@
 </script>
 
 <main>
+  {#if previewing}
+    <UserView
+      onclose={c => {
+        if (c === true) load()
+        previewing = false
+      }}
+      id={previewing}
+    />
+  {/if}
   <div class="section">
     <h2>Users</h2>
 
@@ -197,7 +210,11 @@
         </div>
       {:else if users}
         {#each users as user}
-          <div class="user">
+          <button
+            class="user"
+            tabindex="0"
+            onclick={() => (previewing = user.id)}
+          >
             <div class="info">
               <div class="username">{user.username}</div>
               {#if user.type === 'admin'}
@@ -207,13 +224,18 @@
             <div class="right">
               <div class="info">
                 <span
-                  >{user.usage <= 0 ? 'No data' : formatBytes(user.usage)}</span
+                  >{user.storage.current <= 0
+                    ? 'No data'
+                    : formatBytes(user.storage.current)}</span
                 >
               </div>
+              <!-- svelte-ignore a11y_click_events_have_key_events -->
               <div class="actions">
-                <button
+                <span
                   class="action"
                   data-color="blue"
+                  tabindex="0"
+                  role="button"
                   onclick={e => {
                     e.stopPropagation()
                     setUserAdmin(user.id, user.type === 'user')
@@ -224,22 +246,24 @@
                       ? 'remove_moderator'
                       : 'add_moderator'}
                   </span>
-                </button>
+                </span>
                 {#if user.id !== $userStore?.id}
-                  <button
+                  <span
                     class="action"
                     data-color="red"
+                    tabindex="0"
+                    role="button"
                     onclick={e => {
                       e.stopPropagation()
                       deleteUser(user.id)
                     }}
                   >
                     <span class="material-icons"> delete </span>
-                  </button>
+                  </span>
                 {/if}
               </div>
             </div>
-          </div>
+          </button>
         {/each}
       {/if}
     </div>
@@ -294,13 +318,19 @@
   }
 
   .user {
+    all: unset;
+    cursor: pointer;
     padding: 10px;
-    background: var(--background-ter);
     border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     animation: appear 500ms ease;
+    transition: 200ms ease;
+  }
+
+  .user:hover {
+    background: var(--background-ter);
   }
 
   .user .info {

@@ -20,8 +20,8 @@ export async function get(req: Request, res: Response) {
 
   res.json({
     storage: {
-      current: await getStorageUsage(),
-      max: config.total.maxStorage
+      current: (await getStorageUsage()).toString(),
+      max: config.total.maxStorage.toString()
     },
     files: {
       current: await countFiles(),

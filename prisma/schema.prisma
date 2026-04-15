@@ -17,13 +17,25 @@ model User {
   hash     String
   type     UserType @default(user)
 
-  tokens      Token[]
-  files       File[]
+  files        File[]
+  fileLimit    Int?
+  storageLimit BigInt?
+  uploads      FileUpload[]
+
   folders     Folder[]
-  pastes      Paste[]
-  collections Collection[]
-  shares      Share[]
-  uploads     FileUpload[]
+  folderLimit Int?
+
+  pastes     Paste[]
+  pasteLimit Int?
+
+  collections     Collection[]
+  collectionLimit Int?
+
+  shares     Share[]
+  shareLimit Int?
+
+  tokens     Token[]
+  tokenLimit Int?
 }
 
 enum UserType {

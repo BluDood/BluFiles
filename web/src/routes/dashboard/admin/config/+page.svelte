@@ -139,7 +139,7 @@
         </div>
         <div class="double-group">
           <div class="group">
-            <h3>User Limits</h3>
+            <h3>Default User Limits</h3>
             <div class="field">
               <span>Limit Files</span>
               <div class="double">

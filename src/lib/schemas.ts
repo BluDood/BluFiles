@@ -141,7 +141,14 @@ export const createUserSchema = z.object({
 })
 
 export const updateAdminUserSchema = z.object({
-  type: z.enum(['user', 'admin']).optional()
+  type: z.enum(['user', 'admin']).optional(),
+  storageLimit: z.number().min(0).nullable().optional(),
+  fileLimit: z.number().min(0).nullable().optional(),
+  folderLimit: z.number().min(0).nullable().optional(),
+  pasteLimit: z.number().min(0).nullable().optional(),
+  collectionLimit: z.number().min(0).nullable().optional(),
+  shareLimit: z.number().min(0).nullable().optional(),
+  tokenLimit: z.number().min(0).nullable().optional()
 })
 
 export const createFileUploadSchema = z.object({

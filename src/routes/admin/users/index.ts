@@ -25,7 +25,7 @@ export async function get(req: Request, res: Response) {
   const withUsage = await Promise.all(
     users.map(async u => ({
       ...u,
-      usage: await getStorageUsage(u.id)
+      storage: await getStorageUsage(u.id)
     }))
   )
 

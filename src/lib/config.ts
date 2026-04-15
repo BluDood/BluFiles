@@ -5,7 +5,7 @@ import { countFiles, countFolders, getFiles } from '#lib/files.js'
 import { getStorageUsage } from '#lib/filesystem.js'
 import { countCollections } from './collections.js'
 import { countPastes } from '#lib/paste.js'
-import { countUsers } from '#lib/users.js'
+import { countUsers, getUser } from '#lib/users.js'
 import { countShares } from './shares.js'
 import { countTokens } from './tokens.js'
 
@@ -115,8 +115,12 @@ export async function checkUserCreationAllowed() {
 export async function checkFileCreationAllowed(userId: string, size: number) {
   const config = await getConfig()
 
+  const user = await getUser(userId)
+  if (!user) return false
+
   const files = await countFiles(userId)
   if (config.user.maxFiles !== -1 && files >= config.user.maxFiles) return false
+  if (user.fileLimit !== null && files >= user.fileLimit) return false
 
   const totalFiles = await countFiles()
   if (config.total.maxFiles !== -1 && totalFiles >= config.total.maxFiles)
@@ -128,6 +132,8 @@ export async function checkFileCreationAllowed(userId: string, size: number) {
     config.user.maxStorage !== -1 &&
     storageUsage + size >= config.user.maxStorage
   )
+    return false
+  if (user.storageLimit !== null && storageUsage + size >= user.storageLimit)
     return false
 
   const totalStorageUsage = await getStorageUsage()
@@ -143,9 +149,13 @@ export async function checkFileCreationAllowed(userId: string, size: number) {
 export async function checkFolderCreationAllowed(userId: string) {
   const config = await getConfig()
 
+  const user = await getUser(userId)
+  if (!user) return false
+
   const folders = await countFolders(userId)
   if (config.user.maxFolders !== -1 && folders >= config.user.maxFolders)
     return false
+  if (user.folderLimit !== null && folders >= user.folderLimit) return false
 
   const totalFolders = await countFolders()
   if (config.total.maxFolders !== -1 && totalFolders >= config.total.maxFolders)
@@ -157,9 +167,13 @@ export async function checkFolderCreationAllowed(userId: string) {
 export async function checkPasteCreationAllowed(userId: string) {
   const config = await getConfig()
 
+  const user = await getUser(userId)
+  if (!user) return false
+
   const pastes = await countPastes(userId)
   if (config.user.maxPastes !== -1 && pastes >= config.user.maxPastes)
     return false
+  if (user.pasteLimit !== null && pastes >= user.pasteLimit) return false
 
   const totalPastes = await countPastes()
   if (config.total.maxPastes !== -1 && totalPastes >= config.total.maxPastes)
@@ -171,11 +185,16 @@ export async function checkPasteCreationAllowed(userId: string) {
 export async function checkCollectionCreationAllowed(userId: string) {
   const config = await getConfig()
 
+  const user = await getUser(userId)
+  if (!user) return false
+
   const collections = await countCollections(userId)
   if (
     config.user.maxCollections !== -1 &&
     collections >= config.user.maxCollections
   )
+    return false
+  if (user.collectionLimit !== null && collections >= user.collectionLimit)
     return false
 
   const totalCollections = await countCollections()
@@ -191,9 +210,14 @@ export async function checkCollectionCreationAllowed(userId: string) {
 export async function checkShareCreationAllowed(userId: string) {
   const config = await getConfig()
 
+  const user = await getUser(userId)
+  if (!user) return false
+
   const shares = await countShares(userId)
   if (config.user.maxShares !== -1 && shares >= config.user.maxShares)
     return false
+
+  if (user.shareLimit !== null && shares >= user.shareLimit) return false
 
   const totalShares = await countShares()
   if (config.total.maxShares !== -1 && totalShares >= config.total.maxShares)
@@ -204,9 +228,29 @@ export async function checkShareCreationAllowed(userId: string) {
 export async function checkTokenCreationAllowed(userId: string) {
   const config = await getConfig()
 
+  const user = await getUser(userId)
+  if (!user) return false
+
   const tokens = await countTokens(userId, true)
   if (config.user.maxTokens !== -1 && tokens >= config.user.maxTokens)
     return false
+  if (user.tokenLimit !== null && tokens >= user.tokenLimit) return false
 
   return true
+}
+
+export async function getUserMaxLimits(userId: string) {
+  const config = await getConfig()
+  const user = await getUser(userId)
+  if (!user) return null
+
+  return {
+    storage: user.storageLimit ?? config.user.maxStorage,
+    files: user.fileLimit ?? config.user.maxFiles,
+    folders: user.folderLimit ?? config.user.maxFolders,
+    pastes: user.pasteLimit ?? config.user.maxPastes,
+    collections: user.collectionLimit ?? config.user.maxCollections,
+    shares: user.shareLimit ?? config.user.maxShares,
+    tokens: user.tokenLimit ?? config.user.maxTokens
+  }
 }

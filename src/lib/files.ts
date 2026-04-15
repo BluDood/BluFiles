@@ -313,7 +313,7 @@ export async function getFilesRecursive(folderId: string) {
 
 export async function getStorageUsage(ownerId?: string) {
   const files = await getFiles(ownerId || null)
-  return files.reduce((acc, file) => acc + file.size, 0n).toString()
+  return files.reduce((acc, file) => acc + file.size, 0n)
 }
 
 export async function search(
