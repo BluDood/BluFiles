@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
 
-import { genericShareSchema, idSchema } from '#lib/schemas.js'
+import { getShareCredentials, isValidShare } from '#lib/shares.js'
+import { getRawFileSchema, idSchema } from '#lib/schemas.js'
 import { getReadStream } from '#lib/filesystem.js'
-import { isValidShare } from '#lib/shares.js'
 import { getFile } from '#lib/files.js'
 
 /**
@@ -16,11 +16,20 @@ export async function get(req: Request, res: Response) {
   if (!parsedParams.success) return res.sendStatus(400)
   const { id } = parsedParams.data
 
-  const parsed = genericShareSchema.safeParse(req.query)
-  if (!parsed.success) return res.sendStatus(400)
-  const { shareId } = parsed.data
+  const shareCredentials = getShareCredentials(req)
 
-  const validShare = await isValidShare(shareId, 'file', id)
+  const parsedQuery = getRawFileSchema.safeParse(req.query)
+  if (!parsedQuery.success) return res.sendStatus(400)
+  const { shareId } = parsedQuery.data
+
+  const validShare = await isValidShare(
+    {
+      id: shareCredentials.id || shareId,
+      password: shareCredentials.password
+    },
+    'file',
+    id
+  )
   if (!req.user && !validShare) return res.sendStatus(401)
 
   const file = await getFile(id)

@@ -1,4 +1,8 @@
+import { Request } from 'express'
+
 import prisma, { Share, ShareType } from '#lib/prisma.js'
+import { hashPassword, verifyPassword } from './utils.js'
+import { shareHeaderSchema } from './schemas.js'
 
 interface FilteredShare {
   id: string
@@ -6,6 +10,7 @@ interface FilteredShare {
   type: 'file' | 'folder' | 'collection' | 'paste'
   createdAt: Date
   views: number
+  protected: boolean
   owner?: {
     id: string
     username: string
@@ -63,7 +68,8 @@ export const filterShare = (
     ownerId: s.ownerId,
     type: s.type,
     createdAt: s.createdAt,
-    views: s.views
+    views: s.views,
+    protected: !!s.passwordHash
   }
 
   if ('owner' in s && s.owner) {
@@ -168,18 +174,46 @@ export async function countShares(ownerId?: string) {
 export async function createShare({
   ownerId,
   type,
-  id
+  id,
+  password
 }: {
   ownerId: string
   type: 'file' | 'folder' | 'collection' | 'paste'
   id: string
+  password?: string
 }) {
   const data: any = { ownerId, type }
+  if (password) data.passwordHash = await hashPassword(password)
+
   if (type === 'file') data.fileId = id
   if (type === 'folder') data.folderId = id
   if (type === 'collection') data.collectionId = id
   if (type === 'paste') data.pasteId = id
+
   const share = await prisma.share.create({
+    data
+  })
+
+  return share
+}
+
+export async function updateShare(
+  id: string,
+  { password }: { password?: string | null }
+) {
+  const data: any = {}
+  if (password !== undefined) {
+    if (password === null) {
+      data.passwordHash = null
+    } else {
+      data.passwordHash = await hashPassword(password)
+    }
+  }
+
+  const share = await prisma.share.update({
+    where: {
+      id
+    },
     data
   })
 
@@ -333,30 +367,51 @@ export async function isFileInCollectionShared(
 }
 
 export async function isValidShare(
-  shareId: string | undefined,
+  credentials: {
+    id?: string
+    password?: string
+  },
   type: ShareType,
   id: string
 ) {
-  if (!shareId) return false
+  if (!credentials.id) return false
   const share = await prisma.share.findUnique({
     where: {
-      id: shareId
+      id: credentials.id
     }
   })
   if (!share) return false
+  if (share.passwordHash) {
+    if (!credentials.password) return false
+    if (!(await verifyPassword(credentials.password, share.passwordHash)))
+      return false
+  }
 
   if (type === 'file') {
     if (share.type === 'file' && share.fileId === id) return true
     if (share.type === 'folder' && share.folderId)
-      if (await isFileInFolderShared(id, shareId)) return true
+      if (await isFileInFolderShared(id, credentials.id)) return true
     if (share.type === 'collection' && share.collectionId)
-      if (await isFileInCollectionShared(id, shareId)) return true
+      if (await isFileInCollectionShared(id, credentials.id)) return true
   }
   if (type === 'folder' && share.folderId) {
-    if (await isFolderShared(id, shareId)) return true
+    if (await isFolderShared(id, credentials.id)) return true
   }
   if (type === 'collection' && share.collectionId === id) return true
   if (type === 'paste' && share.pasteId === id) return true
 
   return false
+}
+
+export function getShareCredentials(req: Request) {
+  const parsed = shareHeaderSchema.safeParse(req.headers)
+  if (!parsed.success)
+    return {
+      id: undefined,
+      password: undefined
+    }
+  return {
+    id: parsed.data['x-share-id'],
+    password: parsed.data['x-share-password']
+  }
 }

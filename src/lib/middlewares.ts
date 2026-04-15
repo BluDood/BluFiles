@@ -6,7 +6,7 @@ import mp from 'parse-multipart-data'
 import cors from 'cors'
 import path from 'path'
 
-import { generateFileMetaPage } from './opengraph.js'
+import { generateFileMetaPage, generateProtectedMetaPage } from './opengraph.js'
 import { isDev, logger } from '#lib/utils.js'
 import { useToken } from '#lib/tokens.js'
 import { idSchema } from './schemas.js'
@@ -75,12 +75,14 @@ async function shareRoute(req: Request, res: Response) {
   const protocol = req.headers['x-forwarded-proto'] || req.protocol
   const host = req.headers['x-forwarded-host'] || req.headers.host
 
-  const page = generateFileMetaPage(
-    share.id,
-    share.type,
-    share[share.type]!,
-    `${protocol}://${host}`
-  )
+  const page = share.passwordHash
+    ? generateProtectedMetaPage(share.id, `${protocol}://${host}`)
+    : generateFileMetaPage(
+        share.id,
+        share.type,
+        share[share.type]!,
+        `${protocol}://${host}`
+      )
 
   res.send(page)
 }

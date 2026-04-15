@@ -11,21 +11,52 @@ const baseHtml = `<!DOCTYPE html>
 </body>
 </html>`
 
+function generateTag(property: string[] | string, content: string) {
+  if (Array.isArray(property)) {
+    return property
+      .map(prop => `<meta property="${prop}" content="${content}">`)
+      .join('\n  ')
+  }
+  return `<meta property="${property}" content="${content}">`
+}
+
+function generateSharePage(metaTags: string[], shareId: string, host: string) {
+  const replace = [
+    ['{{meta}}', metaTags.join('\n  ')],
+    ['{{url}}', `${host}/shared?id=${shareId}`]
+  ]
+
+  return replace.reduce(
+    (html, [key, value]) => html.replace(key, value),
+    baseHtml
+  )
+}
+
+export function generateProtectedMetaPage(shareId: string, host: string) {
+  const metaTags = [
+    generateTag(['color', 'theme-color'], '#0064FF'),
+
+    generateTag(['og:title', 'twitter:title'], 'Protected Share'),
+    generateTag('og:url', `${host}/shared?id=${shareId}`),
+    generateTag('og:site_name', 'BluFiles'),
+
+    generateTag(
+      ['description', 'twitter:description', 'og:description'],
+      'The content of this share is protected by a password.'
+    ),
+    generateTag('twitter:card', 'summary'),
+    generateTag('og:type', 'website')
+  ]
+
+  return generateSharePage(metaTags, shareId, host)
+}
+
 export function generateFileMetaPage(
   shareId: string,
   type: 'file' | 'folder' | 'collection' | 'paste',
   content: File | Folder | Collection | Paste,
   host: string
 ): string {
-  const generateTag = (property: string[] | string, content: string) => {
-    if (Array.isArray(property)) {
-      return property
-        .map(prop => `<meta property="${prop}" content="${content}">`)
-        .join('\n  ')
-    }
-    return `<meta property="${property}" content="${content}">`
-  }
-
   const metaTags: string[] = [
     generateTag(['color', 'theme-color'], '#0064FF'),
 
@@ -106,13 +137,5 @@ export function generateFileMetaPage(
     )
   }
 
-  const replace = [
-    ['{{meta}}', metaTags.join('\n  ')],
-    ['{{url}}', `${host}/shared?id=${shareId}`]
-  ]
-
-  return replace.reduce(
-    (html, [key, value]) => html.replace(key, value),
-    baseHtml
-  )
+  return generateSharePage(metaTags, shareId, host)
 }

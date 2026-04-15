@@ -19,9 +19,10 @@
         itemCount: number
       }
     }
+    password?: string
   }
 
-  const { info: shareInfo }: Props = $props()
+  const { info: shareInfo, password }: Props = $props()
 
   interface CollectionInfo {
     id: string
@@ -48,8 +49,9 @@
     loading = true
 
     const res = await req.get(`collection/${id || shareInfo.collection.id}`, {
-      params: {
-        shareId: shareInfo.id
+      headers: {
+        'x-share-id': shareInfo.id,
+        'x-share-password': password
       }
     })
     if (!res) return
@@ -69,6 +71,10 @@
   {#if previewing}
     <SharedFileView
       id={previewing}
+      shareInfo={{
+        id: shareInfo.id,
+        password
+      }}
       onclose={(r: boolean) => {
         previewing = false
         if (r) reload()

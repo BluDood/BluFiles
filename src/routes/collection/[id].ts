@@ -7,13 +7,8 @@ import {
   updateCollection
 } from '#lib/collections.js'
 
-import {
-  genericShareSchema,
-  idSchema,
-  updateCollectionSchema
-} from '#lib/schemas.js'
-
-import { isValidShare } from '#lib/shares.js'
+import { getShareCredentials, isValidShare } from '#lib/shares.js'
+import { idSchema, updateCollectionSchema } from '#lib/schemas.js'
 
 /**
  * Get collection
@@ -21,15 +16,13 @@ import { isValidShare } from '#lib/shares.js'
  * Returns a collection by ID. Accessible via a valid share link or as the owner.
  */
 export async function get(req: Request, res: Response) {
-  const parsed = genericShareSchema.safeParse(req.query)
-  if (!parsed.success) return res.sendStatus(400)
-  const { shareId } = parsed.data
+  const shareCredentials = getShareCredentials(req)
 
   const parsedParams = idSchema.safeParse(req.params)
   if (!parsedParams.success) return res.sendStatus(400)
   const { id } = parsedParams.data
 
-  const validShare = await isValidShare(shareId, 'collection', id)
+  const validShare = await isValidShare(shareCredentials, 'collection', id)
 
   if (!req.user && !validShare) return res.sendStatus(401)
 

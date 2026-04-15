@@ -2,9 +2,9 @@
   import { onMount } from 'svelte'
 
   import { formatDate, formatBytes, req } from '$lib/utils'
-  import { alert } from '$lib/popups'
   import { createMessage } from '$lib/messages'
-  import { SHARE_URL } from '$lib/constants.js'
+  import { shareItem } from '$lib/share.js'
+  import { alert } from '$lib/popups'
 
   import FolderView from './FolderView.svelte'
   import FileView from './FileView.svelte'
@@ -63,109 +63,18 @@
   }
 
   async function share() {
-    if (!info) return
-    if (info.shareId) {
-      const res = await alert({
-        title: `Sharing ${info.name}`,
-        content: 'What would you like to do?',
-        buttons: [
-          {
-            text: 'Copy Link',
-            type: 'submit'
-          },
-          {
-            text: 'Delete Link',
-            type: 'delete',
-            color: 'red'
-          },
-          {
-            text: 'Cancel',
-            type: 'cancel'
-          }
-        ]
-      })
+    const res = await shareItem({
+      shareId: info?.shareId || null,
+      type: 'folder',
+      id: info!.id,
+      name: info!.name
+    })
 
-      if (res.type === 'submit') {
-        await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
-        await createMessage({
-          title: 'Link copied!',
-          type: 'success',
-          content: 'Shareable link copied to your clipboard'
-        })
-      } else if (res.type === 'delete') {
-        const confirmed = await alert({
-          title: 'Delete Link',
-          content: `Are you sure you want to delete the link for "${info.name}"?`,
-          buttons: [
-            {
-              text: 'Delete',
-              color: 'red'
-            },
-            {
-              text: 'Cancel'
-            }
-          ]
-        })
-
-        if (!confirmed.type) return
-
-        const delRes = await req.delete(`share/${info.shareId}`)
-        if (!delRes) return
-
-        if (delRes.status !== 204)
-          return createMessage({
-            type: 'error',
-            title: 'An error has occurred',
-            content: 'Please try again later.'
-          })
-
-        info.shareId = null
-        createMessage({
-          title: 'Link deleted!',
-          type: 'success',
-          content: 'The link has been deleted'
-        })
-      }
-    } else {
-      const res = await alert({
-        title: `Share ${info.name}`,
-        content:
-          'Are you sure you want to create a shareable link for this folder?',
-        buttons: [
-          {
-            text: 'Create Link'
-          },
-          {
-            text: 'Cancel'
-          }
-        ]
-      })
-
-      if (!res.type) return
-      const shareRes = await req.post('share', {
-        type: 'folder',
-        id: info.id
-      })
-
-      if (!shareRes) return
-      if (shareRes.status !== 200) {
-        const messages: Record<number, string> = {
-          403: 'You have reached your share limit.'
-        }
-
-        return createMessage({
-          type: 'error',
-          title: 'An error has occurred',
-          content: messages[shareRes.status] || 'Please try again later.'
-        })
-      }
-      info.shareId = shareRes.data.id
-      await navigator.clipboard.writeText(`${SHARE_URL}/${info.shareId}`)
-      createMessage({
-        title: 'Link created and copied!',
-        type: 'success',
-        content: 'Shareable link copied to your clipboard'
-      })
+    if (!res) return
+    if (res.type === 'deleted') {
+      info!.shareId = null
+    } else if (res.type === 'created') {
+      info!.shareId = res.shareId
     }
   }
 

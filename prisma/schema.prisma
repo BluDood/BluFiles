@@ -126,10 +126,11 @@ model Paste {
 }
 
 model Share {
-  id        String    @id @unique @default(cuid())
-  createdAt DateTime  @default(now())
-  type      ShareType
-  views     Int       @default(0)
+  id           String    @id @unique @default(cuid())
+  createdAt    DateTime  @default(now())
+  type         ShareType
+  views        Int       @default(0)
+  passwordHash String?
 
   owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId String

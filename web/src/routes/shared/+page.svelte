@@ -69,13 +69,25 @@
     | CollectionShareInfo
 
   let info: ShareInfo | null = $state(null)
+  let requiresPassword = $state(false)
+  let password = $state('')
 
   async function load() {
+    requiresPassword = false
     const id = page.url.searchParams.get('id')
     if (!id) return goto('/')
 
-    const res = await req.get(`/share/${id}`)
+    const res = await req.get(`/share/${id}`, {
+      no401Redirect: true,
+      headers: {
+        'x-share-password': password
+      }
+    })
     if (res.status === 404) return goto('/')
+    if (res.status === 401) {
+      requiresPassword = true
+      return
+    }
 
     info = res.data as ShareInfo
   }
@@ -98,14 +110,32 @@
   <div class="content">
     {#if info}
       {#if info.type === 'file'}
-        <SharedFileView {info} />
+        <SharedFileView {info} {password} />
       {:else if info.type === 'folder'}
-        <SharedFolderView {info} />
+        <SharedFolderView {info} {password} />
       {:else if info.type === 'paste'}
         <SharedPasteView {info} />
       {:else if info.type === 'collection'}
-        <SharedCollectionView {info} />
+        <SharedCollectionView {info} {password} />
       {/if}
+    {:else if requiresPassword}
+      <div class="password">
+        <p>
+          This share is protected by a password. Please enter it below to access
+          the content.
+        </p>
+        <input
+          type="password"
+          placeholder="Password"
+          bind:value={password}
+          onkeydown={e => {
+            if (e.key === 'Enter') load()
+          }}
+        />
+        <div class="buttons">
+          <button data-color="blue" onclick={load}>Submit</button>
+        </div>
+      </div>
     {:else}
       <div class="load">
         <Loader />
@@ -173,5 +203,69 @@
 
   .load {
     animation: appear 500ms ease;
+  }
+
+  .password {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: appear 500ms ease;
+  }
+
+  .password input {
+    all: unset;
+    box-sizing: border-box;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: var(--background-ter);
+    color: var(--text);
+    width: 80%;
+    max-width: 400px;
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+    transition: 200ms ease;
+  }
+
+  .password input:hover {
+    background-color: var(--hover);
+  }
+
+  .password input:focus {
+    outline-color: var(--accent);
+    background-color: var(--hover);
+  }
+
+  .password input:not(select):read-only:focus {
+    outline-color: var(--outline);
+  }
+
+  .password .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .password .buttons button {
+    all: unset;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: var(--button-color, var(--foreground));
+    transition: 200ms ease;
+    outline: 1px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .password .buttons button:hover {
+    opacity: 0.8;
+  }
+
+  .password .buttons button:focus {
+    outline-color: var(--button-color, var(--outline));
+  }
+
+  .password .buttons button[data-color='blue'] {
+    --button-color: var(--accent);
   }
 </style>

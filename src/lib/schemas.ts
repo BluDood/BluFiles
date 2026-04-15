@@ -27,12 +27,7 @@ export const updatePasswordSchema = z.object({
   newPassword: password
 })
 
-export const genericShareSchema = z.object({
-  shareId: z.string().optional()
-})
-
 export const getRawFileSchema = z.object({
-  token: z.string().optional(),
   shareId: z.string().optional()
 })
 
@@ -110,7 +105,12 @@ export const updateCollectionSchema = z.object({
 
 export const createShareSchema = z.object({
   type: z.enum(['file', 'folder', 'collection', 'paste']),
-  id
+  id,
+  password: z.string().min(1).max(128).optional()
+})
+
+export const updateShareSchema = z.object({
+  password: z.string().min(1).max(128).nullable().optional()
 })
 
 export const updateConfigSchema = z.object({
@@ -161,4 +161,9 @@ export const searchSchema = z.object({
   query: z.string().min(1),
   folderId: z.string().optional(),
   recursive: z.boolean().optional()
+})
+
+export const shareHeaderSchema = z.object({
+  'x-share-id': z.string().optional(),
+  'x-share-password': z.string().min(1).max(128).optional()
 })

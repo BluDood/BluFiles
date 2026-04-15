@@ -20,9 +20,10 @@
         mime: string
       }
     }
+    password?: string
   }
 
-  const { info: shareInfo }: Props = $props()
+  const { info: shareInfo, password }: Props = $props()
 
   let type: string | null = $state(null)
   let data: Blob | null = $state(null)
@@ -58,8 +59,9 @@
     if (foundType?.downloadRaw === true) {
       const res = await req.get(`file/${shareInfo.file.id}/raw`, {
         responseType: 'blob',
-        params: {
-          shareId: shareInfo.id
+        headers: {
+          'x-share-id': shareInfo.id,
+          'x-share-password': password
         }
       })
       if (!res) return
@@ -108,8 +110,9 @@
     if (!data) {
       const res = await req.get(`file/${shareInfo.file.id}/raw`, {
         responseType: 'blob',
-        params: {
-          shareId: shareInfo.id
+        headers: {
+          'x-share-id': shareInfo.id,
+          'x-share-password': password
         }
       })
       if (!res) return

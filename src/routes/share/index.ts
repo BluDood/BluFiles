@@ -32,7 +32,7 @@ export async function post(req: Request, res: Response) {
 
   const parsed = createShareSchema.safeParse(req.body)
   if (!parsed.success) return res.sendStatus(400)
-  const { type, id } = parsed.data
+  const { type, id, password } = parsed.data
 
   const getResource = {
     file: getFile,
@@ -47,7 +47,8 @@ export async function post(req: Request, res: Response) {
   const share = await createShare({
     ownerId: req.user.id,
     type,
-    id
+    id,
+    password
   })
 
   return res.json(filterShare(share))

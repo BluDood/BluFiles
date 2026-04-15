@@ -1,8 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
-  import { page } from '$app/state'
-
   import { formatBytes, formatDate, req } from '$lib/utils'
 
   import Loader from '$components/Loader.svelte'
@@ -10,9 +8,14 @@
 
   let {
     id,
+    shareInfo,
     onclose
   }: {
     id: string
+    shareInfo: {
+      id: string
+      password?: string
+    }
     onclose: (reload: boolean) => void
   } = $props()
 
@@ -73,11 +76,11 @@
     downloading = true
     downloadProgress = 0
 
-    const shareId = page.url.searchParams.get('id')
     const raw = await req.get(`file/${id}/raw`, {
       responseType: 'blob',
-      params: {
-        shareId
+      headers: {
+        'x-share-id': shareInfo.id,
+        'x-share-password': shareInfo.password
       },
       onDownloadProgress: p => {
         if (!p.total) return
@@ -112,10 +115,10 @@
   }
 
   onMount(async () => {
-    const shareId = page.url.searchParams.get('id')
     const res = await req.get(`file/${id}`, {
-      params: {
-        shareId
+      headers: {
+        'x-share-id': shareInfo.id,
+        'x-share-password': shareInfo.password
       }
     })
     if (!res) return
@@ -127,8 +130,9 @@
     if (foundType?.downloadRaw === true) {
       const raw = await req.get(`file/${id}/raw`, {
         responseType: 'blob',
-        params: {
-          shareId
+        headers: {
+          'x-share-id': shareInfo.id,
+          'x-share-password': shareInfo.password
         }
       })
       if (!res) return
