@@ -31,6 +31,8 @@ export function formatDate(timestamp: number | string) {
   }
 }
 
+export const isDev = import.meta.env.MODE !== 'production'
+
 export const req = axios.create({
   baseURL: API_URL!,
   validateStatus: () => true

@@ -2,8 +2,24 @@
   import { page } from '$app/state'
 
   import { userStore } from '$lib/stores.js'
+  import { isDev } from '$lib/utils.js'
 
-  const items = [
+  interface SidebarItem {
+    name: string
+    icon: string
+    path: string
+    exact?: boolean
+    admin?: boolean
+    dev?: boolean
+  }
+
+  const items: SidebarItem[] = [
+    {
+      name: 'Dashboard',
+      icon: 'home',
+      path: '/dashboard/',
+      exact: true
+    },
     {
       name: 'Files',
       icon: 'folder',
@@ -47,7 +63,8 @@
     {
       name: 'Debug',
       icon: 'bug_report',
-      path: '/dashboard/debug'
+      path: '/dashboard/debug',
+      dev: true
     },
     {
       name: 'Admin',
@@ -56,24 +73,24 @@
       admin: true
     }
   ]
+
+  const isItemShown = (item: SidebarItem) => {
+    if (item.admin && $userStore?.type !== 'admin') return false
+    if (item.dev && !isDev) return false
+
+    return true
+  }
+
+  const isItemHighlighted = (item: SidebarItem) => {
+    if (item.exact) return page.url.pathname === item.path
+    return page.url.pathname.startsWith(item.path)
+  }
 </script>
 
 <div class="sidebar">
-  <a
-    href="/dashboard"
-    class="item"
-    data-active={page.url.pathname === '/dashboard'}
-  >
-    <span class="material-icons">home</span>
-    <span class="popup">Dashboard</span>
-  </a>
   {#each items as item}
-    {#if !(item.admin && $userStore?.type !== 'admin')}
-      <a
-        href={item.path}
-        class="item"
-        data-active={page.url.pathname.startsWith(item.path)}
-      >
+    {#if isItemShown(item)}
+      <a href={item.path} class="item" data-active={isItemHighlighted(item)}>
         <span class="material-icons">{item.icon}</span>
         <span class="popup">{item.name}</span>
       </a>
