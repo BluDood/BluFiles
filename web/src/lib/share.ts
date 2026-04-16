@@ -180,7 +180,7 @@ export async function shareItem({
       ]
     })
 
-    if (res.type === 'cancel') return
+    if (['cancel', false].includes(res.type)) return
     let password: string | undefined = undefined
     if (res.type === 'pass') {
       const response = await prompt({
@@ -200,7 +200,7 @@ export async function shareItem({
         ]
       })
 
-      if (response.type === 'cancel') return
+      if (['cancel', false].includes(response.type)) return
       if (response.input) password = response.input
     }
 

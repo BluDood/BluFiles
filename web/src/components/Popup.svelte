@@ -123,7 +123,7 @@
     padding: 15px;
     border-radius: 5px;
     width: calc(100% - 40px);
-    max-width: 400px;
+    max-width: 410px;
     transition: 200ms ease;
     transition-property: transform, opacity;
   }
