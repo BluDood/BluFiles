@@ -10,6 +10,18 @@ The main interface shows a list of registered users:
 
 Administrators will have a shield symbol next to them. You will also see storage usage for each user.
 
+## User Details View
+
+Clicking a user in the list will open a popup with details about the user:
+
+![](./user_detail.png)
+
+Here you can see stats about a user's usage, and also set specific usage limits for the user by clicking "Edit Limits"s. These limits will override the default user limits set in [Configuration](../config/index.md#limits).
+
+![](./user_limits_edit.png)
+
+You also have the same controls for deleting users and adjusting their admin access, as you have in the user list.
+
 ## Creating Users
 
 ![](./create.png)

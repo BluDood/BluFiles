@@ -20,17 +20,15 @@ To create a collection, click the "+" icon in the top right of the page. You wil
 
 To view a collection, simply click on the collection in the list. This will pop up the collection viewer with a list of all the files in the collection. Here you can click on a file to view it, and click the X icon to remove it from the collection.
 
+## Sharing Collections
+
+See [Sharing Items](../../features/sharing/index.md#sharing-items) for more information.
+
 ## Adding Files to Collections
 
 ![](./add.png)
 
 To add a file to a collection, go to the file viewer and press the + icon on the right side of the file you want to add. Here you can choose which collection you want to add the file to.
-
-## Sharing Collections
-
-![](./share.png)
-
-Sharing a collection is easy, just click the share icon in the lower left of the collection viewer. Here you can choose to create and copy a link, or delete an existing shared link.
 
 ## Deleting Collections
 

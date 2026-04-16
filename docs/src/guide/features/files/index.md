@@ -40,6 +40,10 @@ To upload a file, click the "+" icon in the top left of the file manager. Here y
 
 The file manager also supports drag and drop, so you can simply drag a file from your computer into the file manager to upload it.
 
+## Sharing Files and Folders
+
+See [Sharing Items](../../features/sharing/index.md#sharing-items) for more information.
+
 ## Creating Folders
 
 ![](./folder.png)

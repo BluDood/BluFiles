@@ -28,9 +28,7 @@ After you are finished editing, you can click the checkmark in the lower left, o
 
 ## Sharing Pastes
 
-![](./share.png)
-
-Sharing a paste is easy, just click the share icon in the lower left of the paste viewer. Here you can choose to create and copy a link, or delete an existing shared link.
+See [Sharing Items](../../features/sharing/index.md#sharing-items) for more information.
 
 ## Deleting Pastes
 
