@@ -16,7 +16,7 @@ Clicking a user in the list will open a popup with details about the user:
 
 ![](./user_detail.png)
 
-Here you can see stats about a user's usage, and also set specific usage limits for the user by clicking "Edit Limits"s. These limits will override the default user limits set in [Configuration](../config/index.md#limits).
+Here you can see stats about a user's usage, and also set specific usage limits for the user by clicking "Edit Limits". These limits will override the default user limits set in [Configuration](../config/index.md#limits).
 
 ![](./user_limits_edit.png)
 
