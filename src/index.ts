@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import express from 'express'
 
 import { getPackage, isDev, logger } from '#lib/utils.js'
