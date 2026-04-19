@@ -2,11 +2,11 @@
 
 !prisma/
 !src/
-!.dockerignore
-!Dockerfile
 !package-lock.json
 !package.json
 !tsconfig.json
+!prisma.config.ts
+!docker-entrypoint.sh
 
 !web/src
 !web/static

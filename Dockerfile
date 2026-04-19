@@ -31,11 +31,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=web-builder /app/web/build ./web/build
-
-COPY --from=builder /app/package.json /app/package-lock.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/generated ./generated
 
-CMD npx prisma migrate deploy && node .
+COPY ./package.json ./
+COPY ./docker-entrypoint.sh ./
+COPY ./prisma.config.ts ./
+COPY ./prisma ./prisma
+
+RUN chmod +x /app/docker-entrypoint.sh
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
